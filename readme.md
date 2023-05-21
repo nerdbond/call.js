@@ -1,7 +1,7 @@
-# form.js
+# call.js
 
 ```
-yarn add @tunebond/form.js
+yarn add @tunebond/call.js
 ```
 
 ## Specification Examples
