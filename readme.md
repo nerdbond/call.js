@@ -1,5 +1,7 @@
 # call.js
 
+This library depends on [form.js](https://github.com/tunebond/form.js).
+
 ```
 yarn add @tunebond/call.js
 ```
@@ -72,18 +74,14 @@ export default make
 
 ## Queries
 
-Then you can make your actual queries (loads).
+Then you can make your actual queries (loads). Each query gets a
+corresponding zod type generated for it, so the object gets typed as it.
 
 ```ts
-export const findUserById = () => ({
+// read.ts
+export const readUser1 = {
   read: {
     user: {
-      find: {
-        form: 'like',
-        base: 'name',
-        test: 'bond',
-        head: 'dawn',
-      },
       read: {
         id: true,
         name: true,
@@ -96,5 +94,41 @@ export const findUserById = () => ({
       },
     },
   },
-})
+}
+
+const Read = {
+  readUser1,
+}
+
+export default Read
 ```
+
+```ts
+import { readUser1 } from './read.js'
+
+// load.ts
+export const findUserById = ({ id }) =>
+  _.merge(readUser1, {
+    read: {
+      user: {
+        find: {
+          form: 'like',
+          base: 'name',
+          test: 'bond',
+          head: id,
+        },
+      },
+    },
+  })
+
+const Load = {
+  findUserById: {
+    read: readUser1,
+    call: findUserById,
+  },
+}
+
+export default Load
+```
+
+From these two definitions, we can generate the appropriate types.
