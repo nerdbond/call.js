@@ -3,11 +3,11 @@ import path from 'path'
 import prettier from 'prettier'
 import { fileURLToPath } from 'url'
 
-import {
+import type {
   BaseForm,
   BaseFormLink,
   Base as FormBase,
-} from '@tunebond/form.js'
+} from '@tunebond/form'
 
 import { CallBase, LoadRead, LoadReadLink, ReadBase } from './index.js'
 

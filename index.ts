@@ -30,7 +30,7 @@ export type Load = {
   task?: string
 }
 
-export type LoadFind = LoadFindLink | Array<LoadFindLink>
+export type LoadFind = LoadFindLink
 
 export type LoadFindBind = {
   form: 'bind'
@@ -67,6 +67,7 @@ export type LoadReadLink = {
   find?: LoadFind
   list?: boolean
   read: LoadRead
+  // sort?: LoadSort
 }
 
 export type LoadSave = {
@@ -82,7 +83,7 @@ export type LoadSaveBase = {
 
 export type LoadSort = {
   name: string
-  tilt: '+' | '-'
+  tilt: 'rise' | 'fall'
 }
 
 export const Load: z.ZodType<Load> = z.object({
@@ -170,7 +171,7 @@ export const LoadSaveBase: z.ZodType<LoadSaveBase> = z.object({
 
 export const LoadSort: z.ZodType<LoadSort> = z.object({
   name: z.string(),
-  tilt: z.enum(['+', '-']),
+  tilt: z.enum(['rise', 'fall']),
 })
 
 assertZodObject(LoadReadLink)
