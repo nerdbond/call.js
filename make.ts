@@ -156,16 +156,17 @@ export async function makeForm(callBase: Base, base: FormBase) {
 
     for (const name in call.read) {
       const form = base[name]
+      const read = call.read[name]
 
-      if (!form) {
+      if (!form || !read) {
         throw new Error(`No form ${name}`)
       }
 
       text.push(`${name}: {`)
 
-      // if (_.isObject(call.read[name])) {
-      //   makeRead(call.read[name], form)
-      // }
+      if (isRecord(read) && isRecord(read.read)) {
+        makeRead(read.read, form)
+      }
 
       text.push(`}`)
     }
@@ -183,11 +184,44 @@ export async function makeForm(callBase: Base, base: FormBase) {
 
   text.push(`}`)
 
+  text.push(`export type Name = keyof Base`)
+
   text.push(`}`)
 
   return await makeText(text.join('\n'))
 
-  function makeRead(call: Record<string, unknown>, form: BaseForm) {}
+  function makeRead(call: Record<string, unknown>, form: BaseForm) {
+    for (const name in call) {
+      const link = form.link[name]
+      if (!link) {
+        throw new Error(name)
+      }
+
+      switch (link.form) {
+        case 'text':
+          text.push(`${name}: string`)
+          break
+        case 'date':
+          text.push(`${name}: string`)
+          break
+        case 'mark':
+          text.push(`${name}: number`)
+          break
+        case 'wave':
+          text.push(`${name}: boolean`)
+          break
+        default:
+        // const read = call[name]
+        // if (isRecord(read) && isRecord(read.read)) {
+        //   makeRead(read.read, )
+        // }
+      }
+    }
+  }
+}
+
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return _.isObject(x)
 }
 
 export async function makeTest(callBase: Base, base: FormBase) {
