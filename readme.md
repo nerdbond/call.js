@@ -1,6 +1,7 @@
 # call.js
 
-This library depends on [form.js](https://github.com/tunebond/form.js).
+This library depends on
+[`@tunebond/form.js`](https://github.com/tunebond/form.js).
 
 ```
 yarn add @tunebond/call.js
@@ -28,7 +29,7 @@ The `load` for a `call` might look like this:
     user: {
       find: {
         form: 'like',
-        base: 'name',
+        base: { link: 'user/name' },
         test: 'bond',
         head: 'Jane Doe',
       },
@@ -107,6 +108,7 @@ const read = {
             name: true,
             email: true,
             posts: {
+              list: true,
               read: {
                 size: true,
               },
