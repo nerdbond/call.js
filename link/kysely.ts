@@ -33,8 +33,6 @@ import {
 
 export type BaseName<T> = keyof OmitIndexSignature<T> & string
 
-export type HoldCall<B, N> = HoldReadCall<B, N> | HoldKillCall<B, N>
-
 export type HoldKillCall<
   B extends Base,
   N extends BaseName<B>,
@@ -118,18 +116,6 @@ export type LikeBond<B extends Base, N extends BaseName<B>> = {
   name: FormBond<B, N>
   size?: boolean
 }
-
-export type LikeTest =
-  | '='
-  | '>='
-  | '>'
-  | '<'
-  | '<='
-  | '!='
-  | '%like'
-  | 'like%'
-  | '%like%'
-  | 'in'
 
 export type Link = {
   base: LinkBond
