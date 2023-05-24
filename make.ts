@@ -3,9 +3,13 @@ import path from 'path'
 import prettier from 'prettier'
 import { fileURLToPath } from 'url'
 
-import { BaseForm, Base as FormBase } from '@tunebond/form.js'
+import {
+  BaseForm,
+  BaseFormLink,
+  Base as FormBase,
+} from '@tunebond/form.js'
 
-import { Load, LoadRead } from './index.js'
+import { CallBase, LoadRead, LoadReadLink, ReadBase } from './index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 
@@ -126,47 +130,48 @@ const ESLINT = {
   },
 }
 
-export type Base = Record<string, Call>
-
-export type Call = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  load: (link: any) => Load
-  read: LoadRead
-}
-
-export async function make(callBase: Base, base: FormBase) {
-  const form = await makeForm(callBase, base)
+export async function make(
+  callBase: CallBase,
+  formBase: FormBase,
+  readBase: ReadBase,
+  callLink: string,
+) {
+  const form = await makeForm(callBase, formBase, readBase, callLink)
   return form
 }
 
-export async function makeForm(callBase: Base, base: FormBase) {
+export async function makeForm(
+  callBase: CallBase,
+  formBase: FormBase,
+  readBase: ReadBase,
+  callLink: string,
+) {
   const text: Array<string> = []
+
+  text.push(`import fetch from 'cross-fetch'`)
+  text.push(`import CallBase from '${callLink}'`)
 
   text.push(`export namespace Call {`)
   text.push(`export namespace Form {`)
 
   for (const callName in callBase) {
     const call = callBase[callName]
+    testMesh(call)
 
     text.push(`export type ${pascal(callName)} = {`)
 
-    if (!call) {
-      throw new Error(`No call ${callName}`)
-    }
-
     for (const name in call.read) {
-      const form = base[name]
-      const read = call.read[name]
+      const read = readBase[name]
+      const form = formBase[name]
+      testMesh(read)
+      testMesh(form)
 
-      if (!form || !read) {
-        throw new Error(`No form ${name}`)
-      }
+      const load = call.read[name]
+      testMesh(load)
 
       text.push(`${name}: {`)
 
-      if (isRecord(read) && isRecord(read.read)) {
-        makeRead(read.read, form)
-      }
+      makeRead(load, form, read)
 
       text.push(`}`)
     }
@@ -188,43 +193,149 @@ export async function makeForm(callBase: Base, base: FormBase) {
 
   text.push(`}`)
 
+  text.push(
+    `export default async function call<Name extends Call.Name>(host: string, name: Name, link: Parameters<CallBase[Name]['load']>[0]) {`,
+  )
+
+  text.push(`const call = CallBase[name]`)
+  text.push(`const loadBase = await call.load(link)`)
+  text.push(`const callHead = await fetch(host, {`)
+  text.push(`  method: 'PATCH',`)
+  text.push(`  headers: {`)
+  text.push(`    'Content-Type': 'application/json',`)
+  text.push(`    Accept: 'application/json'`)
+  text.push(`  },`)
+  text.push(`  body: JSON.stringify(loadBase)`)
+  text.push(`})`)
+  text.push(`if (callHead.status >= 400) {`)
+  text.push(`  throw new Error(\`Status \${callHead.status}\`)`)
+  text.push(`}`)
+  text.push(`const loadHead = await callHead.json()`)
+  text.push(`return loadHead`)
+
+  text.push(`}`)
+
   return await makeText(text.join('\n'))
 
-  function makeRead(call: Record<string, unknown>, form: BaseForm) {
-    for (const name in call) {
-      const link = form.link[name]
-      if (!link) {
-        throw new Error(name)
+  function makeRead(
+    call: LoadReadLink,
+    form: BaseForm,
+    read: LoadReadLink,
+  ) {
+    for (const name in call.read) {
+      const formLink = form.link[name]
+      const callLink = call.read[name]
+
+      testMesh(formLink)
+
+      let readLink
+
+      if (read.list) {
+        testMesh(read.read.list)
+        readLink = read.read.list.read[name]
+      } else {
+        readLink = read.read[name]
       }
 
-      switch (link.form) {
-        case 'text':
-          text.push(`${name}: string`)
-          break
-        case 'date':
-          text.push(`${name}: string`)
-          break
-        case 'mark':
-          text.push(`${name}: number`)
-          break
-        case 'wave':
-          text.push(`${name}: boolean`)
-          break
-        default:
-        // const read = call[name]
-        // if (isRecord(read) && isRecord(read.read)) {
-        //   makeRead(read.read, )
-        // }
+      if (callLink === true) {
+        const nullable = formLink.void ? '?' : ''
+        switch (formLink.form) {
+          case 'text':
+          case 'code':
+          case 'uuid':
+            testWave(readLink)
+            text.push(`${name}${nullable}: string`)
+            break
+          case 'date':
+            testWave(readLink)
+            text.push(`${name}${nullable}: string`)
+            break
+          case 'mark':
+            testWave(readLink)
+            text.push(`${name}${nullable}: number`)
+            break
+          case 'wave':
+            testWave(readLink)
+            text.push(`${name}${nullable}: boolean`)
+            break
+          default:
+            throw new Error(String(formLink.form))
+            break
+        }
+      } else {
+        testMesh(callLink)
+        testMesh(readLink)
+        if (callLink.list) {
+          text.push(`${name}: {`)
+          makeReadList(callLink.read, formLink, readLink.read)
+          text.push(`}`)
+        } else {
+          const nullable = formLink.void ? '?' : ''
+          text.push(`${name}${nullable}: {`)
+          testText(formLink.form)
+          const form = formBase[formLink.form]
+          testMesh(form)
+          makeRead(callLink, form, readLink)
+          text.push(`}`)
+          // makeReadMesh(formLink, readLink)
+        }
       }
+    }
+  }
+
+  function makeReadList(
+    call: LoadRead,
+    link: BaseFormLink,
+    read: LoadRead,
+  ) {
+    if (call.size) {
+      testWave(read.size)
+      text.push(`size: number`)
+    }
+
+    if (call.list) {
+      testMesh(read.list)
+      text.push(`list: Array<{`)
+      testText(link.form)
+      const form = formBase[link.form]
+      testMesh(form)
+      testMesh(call.list)
+      makeRead(call.list, form, read.list)
+      text.push(`}>`)
     }
   }
 }
 
-function isRecord(x: unknown): x is Record<string, unknown> {
+function seekMesh(x: unknown): x is Record<string, unknown> {
   return _.isObject(x)
 }
 
-export async function makeTest(callBase: Base, base: FormBase) {
+function testText(x: unknown): asserts x is string {
+  if (!_.isString(x)) {
+    throw new Error()
+  }
+}
+
+function testMesh(x: unknown): asserts x is Record<string, unknown> {
+  if (!seekMesh(x)) {
+    throw new Error()
+  }
+}
+
+function testBond(x: unknown): asserts x {
+  if (x == null) {
+    throw new Error()
+  }
+}
+
+function testWave(x: unknown): asserts x is boolean {
+  if (!_.isBoolean(x)) {
+    console.log(x)
+    throw new Error()
+  }
+}
+
+export async function makeTest(callBase: CallBase, formBase: FormBase) {
   const text: Array<string> = []
 
   for (const callName in callBase) {
@@ -237,7 +348,7 @@ export async function makeTest(callBase: Base, base: FormBase) {
     }
 
     for (const name in call.read) {
-      const form = base[name]
+      const form = formBase[name]
 
       if (!form) {
         throw new Error(`No form ${name}`)

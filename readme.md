@@ -212,17 +212,15 @@ First, define each `read`, which will be converted into types.
 ```ts
 // read.ts
 export const readUser1 = {
-  read: {
-    user: {
-      read: {
-        id: true,
-        name: true,
-        email: true,
-        posts: {
-          list: true,
-          read: {
-            size: true,
-          },
+  user: {
+    read: {
+      id: true,
+      name: true,
+      email: true,
+      posts: {
+        list: true,
+        read: {
+          size: true,
         },
       },
     },

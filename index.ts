@@ -1,6 +1,16 @@
 /* eslint-disable sort-exports/sort-exports */
 import { z } from 'zod'
 
+export type Call = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  load: (link: any) => Load
+  read: LoadRead
+}
+
+export type CallBase = Record<string, Call>
+
+export type ReadBase = LoadRead
+
 export const LOAD_FIND_TEST = [
   'bond',
   'base_link_mark',
