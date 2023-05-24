@@ -1,10 +1,15 @@
 import {
   AnyColumn,
+  ComparisonOperatorExpression,
   InsertObject,
+  JoinReferenceExpression,
+  Kysely,
   OperandValueExpressionOrList,
   OrderByDirectionExpression,
   OrderByExpression,
+  ReferenceExpression,
   Selection,
+  SimpleReferenceExpression,
 } from 'kysely'
 import { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser'
 import { seekMesh, testMesh, testText } from 'make.js'
@@ -12,6 +17,7 @@ import { seekMesh, testMesh, testText } from 'make.js'
 import { Base, BaseForm } from '@tunebond/form'
 
 import {
+  InterpolateForm,
   LoadFind,
   LoadFindLikeBond,
   LoadFindLink,
@@ -19,25 +25,26 @@ import {
   LoadRead,
   LoadSave,
   LoadSort,
+  LoadTilt,
 } from '../index.js'
 
 export type BaseName<T> = keyof OmitIndexSignature<T> & string
 export type HostName<T> = keyof T & string
 
-const TEST: Record<LoadFindTest, LikeTest> = {
+const TEST: Record<LoadFindTest, ComparisonOperatorExpression> = {
   base_link_mark: '>=',
   base_mark: '>',
-  base_text: '%like',
+  // base_text: '%like',
   bond: '=',
   have_bond: 'in',
-  have_text: '%like%',
+  have_text: 'like',
   head_link_mark: '<=',
   head_mark: '<',
-  head_text: 'like%',
+  // head_text: 'like%',
   miss_bond: '!=',
 }
 
-export const TILT: Record<string, OrderByDirectionExpression> = {
+export const TILT: Record<LoadTilt, OrderByDirectionExpression> = {
   fall: 'desc',
   rise: 'asc',
 }
@@ -46,32 +53,48 @@ export const TILT: Record<string, OrderByDirectionExpression> = {
 export type FormBond<
   B extends Base,
   N extends BaseName<B>,
+  I extends InterpolateForm<B> = InterpolateForm<B>,
 > = OperandValueExpressionOrList<
-  B,
-  ExtractTableAlias<B, N>,
+  I,
+  ExtractTableAlias<I, N>,
   FormName<B, N>
 >
 
-export type FormName<B extends Base, N extends BaseName<B>> = AnyColumn<
-  B,
-  ExtractTableAlias<B, N>
+export type FormLikeLink<
+  B extends Base,
+  N extends BaseName<B>,
+> = ReferenceExpression<
+  InterpolateForm<B>,
+  ExtractTableAlias<InterpolateForm<B>, N>
 >
 
+export type FormLink<
+  B extends Base,
+  N extends BaseName<B>,
+  I extends InterpolateForm<B> = InterpolateForm<B>,
+> = JoinReferenceExpression<
+  InterpolateForm<B>,
+  ExtractTableAlias<InterpolateForm<B>, N>,
+  FormName<B, BaseName<B>, InterpolateForm<B>>
+>
+
+export type FormName<
+  B extends Base,
+  N extends BaseName<B>,
+  I extends InterpolateForm<B> = InterpolateForm<B>,
+> = AnyColumn<I, ExtractTableAlias<I, N>>
+
 export type Like<B extends Base, N extends BaseName<B>> = {
-  base: {
-    form: FormName<B, N>
-    name: FormBond<B, N>
-    size?: boolean
-  }
+  base: LikeBond<B, N>
   form: 'like'
-  head:
-    | {
-        form: FormName<B, N>
-        name: FormBond<B, N>
-        size?: boolean
-      }
-    | LoadFindLikeBond
-  test: LikeTest
+  head: LikeBond<B, N> | LoadFindLikeBond
+  test: ComparisonOperatorExpression
+}
+
+export type LikeBond<B extends Base, N extends BaseName<B>> = {
+  form: FormName<B, N>
+  name: FormBond<B, N>
+  size?: boolean
 }
 
 export type LikeTest =
@@ -112,12 +135,9 @@ export type LoadReadLikeList<B extends Base, N extends BaseName<B>> = {
   name: N
 }
 
-export type LoadReadNameList<
-  B extends Base,
-  Name extends BaseName<B>,
-> = {
-  base: Base
-  name: Name
+export type LoadReadNameList<B extends Base, N extends BaseName<B>> = {
+  base: B
+  name: N
   read: LoadRead
 }
 
@@ -131,12 +151,23 @@ export type MakeMakeSeed<Name> = {
   save: LoadSave
 }
 
-export type MakeRead<B extends Base, N extends BaseName<B>> = {
+export type MakeReadList<B extends Base, N extends BaseName<B>> = {
   base: B
+  curb?: number
   find: LoadFind
+  hold: Kysely<InterpolateForm<B>>
   linkMesh: LinkMesh
+  move?: number
   name: N
   read: LoadRead
+  sort: Array<LoadSort>
+}
+
+export type MakeSortList<B extends Base, N extends BaseName<B>> = {
+  base: B
+  linkMesh: LinkMesh
+  name: N
+  sort: Array<LoadSort>
 }
 
 export type OmitIndexSignature<ObjectType> = {
@@ -169,9 +200,9 @@ export type SortName<
   B extends Base,
   N extends BaseName<B>,
 > = OrderByExpression<
-  B,
-  ExtractTableAlias<B, N>,
-  Selection<B, ExtractTableAlias<B, N>, FormName<B, N>>
+  InterpolateForm<B>,
+  ExtractTableAlias<InterpolateForm<B>, N>,
+  {}
 >
 
 export function loadLinkList<B extends Base, N extends BaseName<B>>({
@@ -359,11 +390,38 @@ export function loadReadLikeList<
   return likeList
 }
 
-export function makeRead<B extends Base, N extends BaseName<B>>({
+export function loadReadNameList<
+  B extends Base,
+  N extends BaseName<B>,
+>({ name, read, base }: LoadReadNameList<B, N>) {
+  const list: Array<FormName<B, N>> = []
+  const form = base[name]
+  testMesh(form)
+
+  for (const name in read) {
+    if (form.link[name]) {
+      testFormName<B, N>(base, name)
+
+      list.push(name)
+    }
+  }
+
+  return list
+}
+
+export async function makeReadList<
+  B extends Base,
+  N extends BaseName<B>,
+>({
   name,
   find,
   base,
-}: MakeRead<B, N>) {
+  hold,
+  read,
+  sort,
+  curb,
+  move,
+}: MakeReadList<B, N>) {
   const linkMesh: Record<string, Link> = {}
   const likeList = loadReadLikeList({
     base,
@@ -371,6 +429,128 @@ export function makeRead<B extends Base, N extends BaseName<B>>({
     linkMesh,
     name,
   })
+  const sortList = makeSortList({ base, linkMesh, name, sort })
+
+  const nameList = loadReadNameList({ base, name, read })
+
+  let call = hold.selectFrom(name)
+
+  for (const linkName in linkMesh) {
+    const link = linkMesh[linkName]
+    testMesh(link)
+
+    testFormName(base, link.head.form)
+    testFormBond(base, link.head.form as N, link.head.name)
+    call = call.innerJoin<
+      FormName<B, N>,
+      JoinReferenceExpression<
+        InterpolateForm<B>,
+        ExtractTableAlias<InterpolateForm<B>, N>,
+        FormName<B, N, InterpolateForm<B>>
+      >,
+      JoinReferenceExpression<InterpolateForm<B>, N, FormName<B, N>>
+    >(
+      link.head.form,
+      `${link.head.form}.${link.head.name}`,
+      `${link.base.form}.${link.base.name}`,
+    )
+  }
+
+  likeList.forEach(like => {
+    if (seekMesh(like.head)) {
+      call = call.where(
+        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
+        like.test,
+        `${like.head.form}.${like.head.name}` as FormLikeLink<B, N>,
+      )
+    } else {
+      call = call.where(
+        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
+        like.test,
+        like.head,
+      )
+    }
+  })
+
+  const { count } = hold.fn
+
+  const form = base[name]
+  testMesh(form)
+
+  testBaseFormName(base, name, form.dock)
+
+  const { size } = (await call
+    .select([count(form.dock).as('size')])
+    .executeTakeFirst()) ?? { size: 0 }
+
+  call = call.select(nameList)
+
+  sortList.forEach(sort => {
+    call = call.orderBy(sort.name, sort.tilt)
+  })
+
+  if (curb) {
+    call = call.limit(curb)
+  }
+
+  if (move) {
+    call = call.offset(move)
+  }
+
+  const list = await call.execute()
+
+  return { list, size }
+}
+
+export function makeSortList<B extends Base, N extends BaseName<B>>({
+  name,
+  sort,
+  base,
+  linkMesh,
+}: MakeSortList<B, N>) {
+  const sortList: Array<Sort<B, N>> = []
+  const form = base[name]
+  testMesh(form)
+
+  sort.forEach(baseSort => {
+    const baseName = baseSort.name
+    if (seekSortName<SortName<B, N>>(baseName, form)) {
+      sortList.push({
+        name: baseName,
+        tilt: TILT[baseSort.tilt],
+      })
+    } else {
+      // if long
+      // linkMesh
+    }
+  })
+
+  return sortList
+}
+
+export function readBaseLinkForm(blob: unknown) {
+  const form = typeof blob
+  switch (form) {
+    case 'string':
+      return 'text'
+    case 'number':
+      return 'mark'
+    case 'undefined':
+      return 'void'
+    default:
+      if (blob == null) {
+        return 'void'
+      } else {
+        return 'mesh'
+      }
+  }
+}
+
+export function seekFormName<
+  B extends Base,
+  N extends BaseName<B> = BaseName<B>,
+>(base: B, name: unknown): name is FormName<B, N> {
+  return Boolean(base[name as string])
 }
 
 export function seekLinkForm<N>(
@@ -379,6 +559,26 @@ export function seekLinkForm<N>(
 ): link is N {
   const form = readBaseLinkForm(link)
   return form_list.includes(form)
+}
+
+export function seekSortName<Name>(
+  name: unknown,
+  nameList: object,
+): name is Name {
+  return nameList.hasOwnProperty(name as string)
+}
+
+export function testBaseFormName<B extends Base, N extends BaseName<B>>(
+  base: B,
+  form: N,
+  name: unknown,
+): asserts name is SimpleReferenceExpression<
+  InterpolateForm<B>,
+  keyof InterpolateForm<B>
+> {
+  if (!base[form]?.link[name as string]) {
+    throw new Error()
+  }
 }
 
 export function testFormBond<
@@ -394,7 +594,7 @@ export function testFormName<
   B extends Base,
   N extends BaseName<B> = BaseName<B>,
 >(base: B, name: unknown): asserts name is FormName<B, N> {
-  if (!base[name as string]) {
+  if (!seekFormName(base, name)) {
     throw new Error(`Property ${name} undefined`)
   }
 }

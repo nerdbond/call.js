@@ -17,8 +17,8 @@ export const LOAD_FIND_TEST = [
   'head_link_mark',
   'base_mark',
   'head_mark',
-  'base_text',
-  'head_text',
+  // 'base_text',
+  // 'head_text',
   'miss_bond',
   'have_bond',
   'have_text',
@@ -84,8 +84,10 @@ export type LoadSaveBase = {
 
 export type LoadSort = {
   name: string
-  tilt: 'rise' | 'fall'
+  tilt: LoadTilt
 }
+
+export type LoadTilt = 'rise' | 'fall'
 
 export const Load: z.ZodType<Load> = z.object({
   find: z.optional(z.lazy(() => LoadFind)),
@@ -94,10 +96,7 @@ export const Load: z.ZodType<Load> = z.object({
   task: z.optional(z.string()),
 })
 
-export const LoadFind: z.ZodType<LoadFind> = z.union([
-  z.lazy(() => LoadFindLink),
-  z.array(z.lazy(() => LoadFindLink)),
-])
+export const LoadFind: z.ZodType<LoadFind> = z.lazy(() => LoadFindLink)
 
 export const LoadRead: z.ZodType<LoadRead> = z.record(
   z.union([z.lazy(() => LoadReadLink), z.literal(true)]),
@@ -125,6 +124,7 @@ export const LoadFindTest = z.enum([
   'base_mark',
   'head_mark',
   'base_text',
+  'head_text',
   'miss_bond',
   'have_bond',
   'have_text',
