@@ -161,3 +161,12 @@ async function handle() {
   const result = await call('findByUserId', { id: '123' })
 }
 ```
+
+## Development
+
+```
+yarn test:make
+yarn test
+```
+
+Those are the testing commands.
