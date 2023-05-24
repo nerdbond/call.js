@@ -8,6 +8,7 @@ import {
   OrderByDirectionExpression,
   OrderByExpression,
   ReferenceExpression,
+  SelectQueryBuilder,
   Selection,
   SimpleReferenceExpression,
 } from 'kysely'
@@ -29,6 +30,16 @@ import {
 } from '../index.js'
 
 export type BaseName<T> = keyof OmitIndexSignature<T> & string
+
+export type HoldCall<
+  B extends Base,
+  N extends BaseName<B>,
+> = SelectQueryBuilder<
+  InterpolateForm<B>,
+  ExtractTableAlias<InterpolateForm<B>, N>,
+  {}
+>
+
 export type HostName<T> = keyof T & string
 
 const TEST: Record<LoadFindTest, ComparisonOperatorExpression> = {
@@ -151,13 +162,19 @@ export type MakeMakeSeed<Name> = {
   save: LoadSave
 }
 
-export type MakeReadList<B extends Base, N extends BaseName<B>> = {
-  base: B
+export type MakeReadList<
+  B extends Base,
+  N extends BaseName<B>,
+> = MakeReadMesh<B, N> & {
   curb?: number
+  move?: number
+}
+
+export type MakeReadMesh<B extends Base, N extends BaseName<B>> = {
+  base: B
   find: LoadFind
   hold: Kysely<InterpolateForm<B>>
   linkMesh: LinkMesh
-  move?: number
   name: N
   read: LoadRead
   sort: Array<LoadSort>
@@ -204,6 +221,52 @@ export type SortName<
   ExtractTableAlias<InterpolateForm<B>, N>,
   {}
 >
+
+export function bindLikeList<B extends Base, N extends BaseName<B>>(
+  base: B,
+  call: HoldCall<B, N>,
+  likeList: Array<Like<B, N>>,
+) {
+  likeList.forEach(like => {
+    if (seekMesh(like.head)) {
+      call = call.where(
+        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
+        like.test,
+        `${like.head.form}.${like.head.name}` as FormLikeLink<B, N>,
+      )
+    } else {
+      call = call.where(
+        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
+        like.test,
+        like.head,
+      )
+    }
+  })
+
+  return call
+}
+
+export function bindLinkMesh<B extends Base, N extends BaseName<B>>(
+  base: B,
+  call: HoldCall<B, N>,
+  linkMesh: LinkMesh,
+) {
+  for (const linkName in linkMesh) {
+    const link = linkMesh[linkName]
+    testMesh(link)
+
+    testFormName(base, link.head.form)
+    testFormBond(base, link.head.form as N, link.head.name)
+    call = call.innerJoin(
+      link.head.form,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `${link.head.form}.${link.head.name}` as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `${link.base.form}.${link.base.name}` as any,
+    )
+  }
+  return call
+}
 
 export function loadLinkList<B extends Base, N extends BaseName<B>>({
   base,
@@ -434,37 +497,8 @@ export async function makeReadList<
   const nameList = loadReadNameList({ base, name, read })
 
   let call = hold.selectFrom(name)
-
-  for (const linkName in linkMesh) {
-    const link = linkMesh[linkName]
-    testMesh(link)
-
-    testFormName(base, link.head.form)
-    testFormBond(base, link.head.form as N, link.head.name)
-    call = call.innerJoin(
-      link.head.form,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      `${link.head.form}.${link.head.name}` as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      `${link.base.form}.${link.base.name}` as any,
-    )
-  }
-
-  likeList.forEach(like => {
-    if (seekMesh(like.head)) {
-      call = call.where(
-        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
-        like.test,
-        `${like.head.form}.${like.head.name}` as FormLikeLink<B, N>,
-      )
-    } else {
-      call = call.where(
-        `${like.base.form}.${like.base.name}` as FormLikeLink<B, N>,
-        like.test,
-        like.head,
-      )
-    }
-  })
+  call = bindLinkMesh(base, call, linkMesh)
+  call = bindLikeList(base, call, likeList)
 
   const { count } = hold.fn
 
@@ -494,6 +528,36 @@ export async function makeReadList<
   const list = await call.execute()
 
   return { list, size }
+}
+
+export async function makeReadMesh<
+  B extends Base,
+  N extends BaseName<B>,
+>({ name, find, base, hold, read, sort }: MakeReadMesh<B, N>) {
+  const linkMesh: Record<string, Link> = {}
+  const likeList = loadReadLikeList({
+    base,
+    find,
+    linkMesh,
+    name,
+  })
+  const sortList = makeSortList({ base, linkMesh, name, sort })
+
+  const nameList = loadReadNameList({ base, name, read })
+
+  let call = hold.selectFrom(name)
+  call = bindLinkMesh(base, call, linkMesh)
+  call = bindLikeList(base, call, likeList)
+
+  call = call.select(nameList)
+
+  sortList.forEach(sort => {
+    call = call.orderBy(sort.name, sort.tilt)
+  })
+
+  const mesh = await call.executeTakeFirst()
+
+  return mesh
 }
 
 export function makeSortList<B extends Base, N extends BaseName<B>>({
