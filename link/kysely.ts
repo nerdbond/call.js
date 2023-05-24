@@ -441,18 +441,12 @@ export async function makeReadList<
 
     testFormName(base, link.head.form)
     testFormBond(base, link.head.form as N, link.head.name)
-    call = call.innerJoin<
-      FormName<B, N>,
-      JoinReferenceExpression<
-        InterpolateForm<B>,
-        ExtractTableAlias<InterpolateForm<B>, N>,
-        FormName<B, N, InterpolateForm<B>>
-      >,
-      JoinReferenceExpression<InterpolateForm<B>, N, FormName<B, N>>
-    >(
+    call = call.innerJoin(
       link.head.form,
-      `${link.head.form}.${link.head.name}`,
-      `${link.base.form}.${link.base.name}`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `${link.head.form}.${link.head.name}` as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `${link.base.form}.${link.base.name}` as any,
     )
   }
 

@@ -233,3 +233,20 @@ type StringToForm = {
   number: number
   string: string
 }
+
+export type InterpolateType<T> = {
+  [K in keyof T]: {
+    [K2 in keyof T[K]]: 'form' extends keyof T[K][K2]
+      ? T[K][K2]['form'] extends keyof StringToForm
+        ? StringToForm[T[K][K2]['form']]
+        : T[K][K2] extends {
+            form: ReadonlyArray<unknown>
+            list: boolean
+          }
+        ? Array<
+            StringToForm[T[K][K2]['form'][number] & keyof StringToForm]
+          >
+        : T[K][K2]['form']
+      : T[K][K2]
+  }
+}
