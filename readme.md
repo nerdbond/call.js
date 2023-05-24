@@ -137,14 +137,16 @@ There are 3 kinds of conditions:
 
 These are the kinds of `like` conditions:
 
-1. `bond`: equals
-1. `base_mark`: greater than
-1. `base_link_mark`: greater than or equal to
-1. `head_mark`: less than
-1. `head_link_mark`: less than or equal to
-1. `miss_bond`: not equal
-1. `have_bond`: `in` in SQL (list contains an item)
-1. `have_text`: text `contains` a substring
+| like             | meaning                             |
+| :--------------- | :---------------------------------- |
+| `bond`           | equals                              |
+| `base_mark`      | greater than                        |
+| `base_link_mark` | greater than or equal to            |
+| `head_mark`      | less than                           |
+| `head_link_mark` | less than or equal to               |
+| `miss_bond`      | not equal                           |
+| `have_bond`      | `in` in SQL (list contains an item) |
+| `have_text`      | text `contains` a substring         |
 
 So for example, you can do this to
 `find a user where name is "Jane Doe" or "John Doe"`:
