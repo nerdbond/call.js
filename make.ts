@@ -306,10 +306,6 @@ export async function makeForm(
   }
 }
 
-function seekMesh(x: unknown): x is Record<string, unknown> {
-  return _.isObject(x)
-}
-
 // write a function to build a zod string from a form base
 export async function makeTest(callBase: CallBase, formBase: FormBase) {
   const text: Array<string> = []
@@ -333,6 +329,10 @@ export async function makeTest(callBase: CallBase, formBase: FormBase) {
 
     text.push(`)`)
   }
+}
+
+export function seekMesh(x: unknown): x is Record<string, unknown> {
+  return _.isObject(x)
 }
 
 export async function test(read: LoadRead, base: FormBase) {

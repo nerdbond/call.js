@@ -8,6 +8,7 @@ const User: BaseForm = {
     name: { form: 'text' },
     posts: { back: 'author', form: 'post', list: true },
   },
+  name: 'tl_user',
 }
 
 const Post: BaseForm = {
@@ -19,6 +20,7 @@ const Post: BaseForm = {
     id: { form: 'code' },
     title: { baseSize: 3, form: 'text' },
   },
+  name: 'tl_post',
 }
 
 const FormBase = {

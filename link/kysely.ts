@@ -7,206 +7,34 @@ import {
   Selection,
 } from 'kysely'
 import { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser'
-import { testMesh, testText } from 'make.js'
+import { seekMesh, testMesh, testText } from 'make.js'
 
-import { BaseForm, Base as BaseHold } from '@tunebond/form'
+import { Base, BaseForm } from '@tunebond/form'
 
 import {
   LoadFind,
+  LoadFindLikeBond,
   LoadFindLink,
+  LoadFindTest,
   LoadRead,
   LoadSave,
   LoadSort,
 } from '../index.js'
 
-type BaseName<T> = keyof OmitIndexSignature<T> & string
+export type BaseName<T> = keyof OmitIndexSignature<T> & string
+export type HostName<T> = keyof T & string
 
-class Tool<Base extends BaseHold, HookBase, NameBase extends string> {
-  base: Base
-
-  nameBase: string
-
-  constructor(base: Base, hook: HookBase, nameBase: NameBase) {
-    this.base = base
-    this.nameBase = nameBase
-  }
-
-  makeRead<Name extends BaseName<Base>>(name: Name) {}
-
-  makeLinkList<Name extends BaseName<Base>>({
-    name,
-    save,
-  }: MakeLinkList<Base, Name>) {}
-
-  loadLinkList<Name extends BaseName<Base>>({
-    line,
-    name,
-    linkMesh,
-  }: LoadLinkList<Base, Name>) {
-    const link_name_list: Array<string> = [name]
-
-    let form = this.base[name]
-
-    let link: Link = {
-      base: {
-        form: name,
-        name: '',
-      },
-      head: {
-        form: '',
-        name: '',
-      },
-    }
-
-    let name_list = line.split('/')
-    let i = 0
-
-    while (i < name_list.length) {
-      testMesh(form)
-
-      const link_name = name_list[i++]
-      testText(link_name)
-
-      const form_link = form.link[link_name]
-
-      if (!form_link) {
-        throw new Error(`Property ${link_name} undefined`)
-      }
-
-      switch (form_link.form) {
-        case 'wave':
-        case 'text':
-        case 'mark':
-        case 'date':
-        case 'code':
-          // return property to do condition at
-          return {
-            form: link.base.form,
-            name: link_name,
-          }
-        default:
-          link_name_list.push(link_name)
-          const hook = link_name_list.join(':')
-
-          if (form_link.list) {
-            testText(form_link.form)
-            testText(form_link.name)
-
-            const link_form = this.base[form_link.form]
-            testMesh(link_form)
-
-            const link_form_link = link_form.link[form_link.name]
-            testMesh(link_form_link)
-
-            link.base.name = 'code'
-            link.head.form = form_link.form
-            link.head.name = `${form_link.name}_code`
-          } else if (form_link.code) {
-            testText(form_link.form)
-
-            link.base.name = `${link_name}_code`
-            link.head.form = form_link.form
-            link.head.name = 'code'
-          } else {
-            throw new Error('unhandled')
-            // if (seek_list(form_link.form)) {
-            //   form_link.form.forEach(form => {
-            //   })
-            // }
-          }
-
-          linkMesh[hook] = link
-
-          link = {
-            base: {
-              form: link.head.form,
-              name: '',
-            },
-            head: {
-              form: '',
-              name: '',
-            },
-          }
-
-          break
-      }
-
-      testText(form_link.form)
-
-      if (form_link.list) {
-        const link_name = name_list[i++]
-        switch (link_name) {
-          case 'list':
-          case 'size': // not used in this question, but used in my code
-            form = this.base[form_link.form]
-            break
-          default:
-            throw new Error('Unknown list property')
-        }
-      } else {
-        const f = this.base[form_link.form]
-        testMesh(f)
-        form = f
-      }
-    }
-
-    return linkMesh
-  }
-
-  loadReadLikeList<Name extends BaseName<Base>>({
-    name,
-    find,
-    seek,
-    linkMesh,
-  }: LoadReadLikeList<Base, Name>) {
-    const like_list: Array<Like<Base, Name>> = []
-    const form = this.base[name]
-    const find_like_list: Array<LoadFindLink> = Array.isArray(find)
-      ? find
-      : find
-      ? [find]
-      : []
-
-    find_like_list.forEach(like => {
-      switch (like.form) {
-        case 'like':
-          this.loadLinkList({
-            line: like.base.link,
-            linkMesh,
-            name,
-          })
-          break
-        default:
-          break
-      }
-    })
-
-    // for (const name in find) {
-    //   const form_list = form[name]
-
-    //   if (!form_list) {
-    //     continue
-    //   }
-
-    //   if (!seek(name)) {
-    //     continue
-    //   }
-
-    //   const link = find[name]
-
-    //   if (!seek_link_form<FormBond<Name>>(link, form_list)) {
-    //     continue
-    //   }
-
-    //   list.push({
-    //     link,
-    //     name,
-    //     test: '=',
-    //   })
-    // }
-
-    return like_list
-  }
+const TEST: Record<LoadFindTest, LikeTest> = {
+  base_link_mark: '>=',
+  base_mark: '>',
+  base_text: '%like',
+  bond: '=',
+  have_bond: 'in',
+  have_text: '%like%',
+  head_link_mark: '<=',
+  head_mark: '<',
+  head_text: 'like%',
+  miss_bond: '!=',
 }
 
 export const TILT: Record<string, OrderByDirectionExpression> = {
@@ -216,24 +44,47 @@ export const TILT: Record<string, OrderByDirectionExpression> = {
 
 // eslint-disable-next-line sort-exports/sort-exports
 export type FormBond<
-  HoldBase,
-  Name extends keyof HoldBase,
+  B extends Base,
+  N extends BaseName<B>,
 > = OperandValueExpressionOrList<
-  HoldBase,
-  ExtractTableAlias<HoldBase, Name>,
-  FormName<HoldBase, Name>
+  B,
+  ExtractTableAlias<B, N>,
+  FormName<B, N>
 >
 
-export type FormName<HoldBase, Name extends keyof HoldBase> = AnyColumn<
-  HoldBase,
-  ExtractTableAlias<HoldBase, Name>
+export type FormName<B extends Base, N extends BaseName<B>> = AnyColumn<
+  B,
+  ExtractTableAlias<B, N>
 >
 
-export type Like<HoldBase, Name extends keyof HoldBase> = {
-  bond: FormBond<HoldBase, Name>
-  name: FormName<HoldBase, Name>
-  test: '=' | '>=' | '>' | '<' | '<=' | '!='
+export type Like<B extends Base, N extends BaseName<B>> = {
+  base: {
+    form: FormName<B, N>
+    name: FormBond<B, N>
+    size?: boolean
+  }
+  form: 'like'
+  head:
+    | {
+        form: FormName<B, N>
+        name: FormBond<B, N>
+        size?: boolean
+      }
+    | LoadFindLikeBond
+  test: LikeTest
 }
+
+export type LikeTest =
+  | '='
+  | '>='
+  | '>'
+  | '<'
+  | '<='
+  | '!='
+  | '%like'
+  | 'like%'
+  | '%like%'
+  | 'in'
 
 export type Link = {
   base: LinkBond
@@ -247,32 +98,31 @@ export type LinkBond = {
 
 export type LinkMesh = Record<string, Link>
 
-export type LoadLinkList<Base, Name extends BaseName<Base>> = {
+export type LoadLinkList<B extends Base, N extends BaseName<B>> = {
+  base: B
   line: string
   linkMesh: LinkMesh
-  name: Name
+  name: N
 }
 
-export type LoadReadLikeList<
-  Base extends BaseHold,
-  Name extends BaseName<Base>,
-> = {
-  base: Base
+export type LoadReadLikeList<B extends Base, N extends BaseName<B>> = {
+  base: B
   find?: LoadFind
   linkMesh: LinkMesh
-  name: Name
-  seek: (name: unknown) => name is FormName<Base, Name>
+  name: N
 }
 
-export type LoadReadNameList<HoldBase, Name extends keyof HoldBase> = {
+export type LoadReadNameList<
+  B extends Base,
+  Name extends BaseName<B>,
+> = {
   base: Base
   name: Name
   read: LoadRead
-  seek: (name: unknown) => name is FormName<HoldBase, Name>
 }
 
-export type MakeLinkList<Base, Name extends keyof Base> = {
-  name: Name
+export type MakeLinkList<B extends Base, N extends BaseName<B>> = {
+  name: N
   save: LoadSave
 }
 
@@ -281,13 +131,12 @@ export type MakeMakeSeed<Name> = {
   save: LoadSave
 }
 
-export type MakeRead<HoldBase, Name extends keyof HoldBase> = {
-  base: HoldBase
+export type MakeRead<B extends Base, N extends BaseName<B>> = {
+  base: B
   find: LoadFind
   linkMesh: LinkMesh
-  name: Name
+  name: N
   read: LoadRead
-  seek: (name: unknown) => name is FormName<HoldBase, Name>
 }
 
 export type OmitIndexSignature<ObjectType> = {
@@ -296,53 +145,256 @@ export type OmitIndexSignature<ObjectType> = {
     : KeyType]: ObjectType[KeyType]
 }
 
-export type ReadList<HoldBase, Name extends keyof HoldBase> = {
+export type ReadList<B extends Base, N extends BaseName<B>> = {
   curb?: number
   find: LoadFind
   move?: number
-  name: Name
+  name: N
   read: LoadRead
-  seek: (name: unknown) => name is FormName<HoldBase, Name>
   sort?: Array<LoadSort>
 }
 
-export type ReadMesh<HoldBase, Name extends keyof HoldBase> = {
+export type ReadMesh<B extends Base, N extends BaseName<B>> = {
   find: LoadFind
-  name: Name
+  name: N
   read: LoadRead
-  seek: (name: unknown) => name is FormName<HoldBase, Name>
 }
 
-export type Sort<HoldBase, Name extends keyof HoldBase> = {
-  name: SortName<HoldBase, Name>
+export type Sort<B extends Base, N extends BaseName<B>> = {
+  name: SortName<B, N>
   tilt: OrderByDirectionExpression
 }
 
 export type SortName<
-  HoldBase,
-  Name extends keyof HoldBase,
+  B extends Base,
+  N extends BaseName<B>,
 > = OrderByExpression<
-  HoldBase,
-  ExtractTableAlias<HoldBase, Name>,
-  Selection<
-    HoldBase,
-    ExtractTableAlias<HoldBase, Name>,
-    FormName<HoldBase, Name>
-  >
+  B,
+  ExtractTableAlias<B, N>,
+  Selection<B, ExtractTableAlias<B, N>, FormName<B, N>>
 >
 
-export function make_read<Name extends keyof Base>({
+export function loadLinkList<B extends Base, N extends BaseName<B>>({
+  base,
+  line,
+  name,
+  linkMesh,
+}: LoadLinkList<B, N>) {
+  const linkNameList: Array<string> = [name]
+
+  let form: BaseForm | undefined = base[name]
+
+  let link: Link = {
+    base: {
+      form: name,
+      name: '',
+    },
+    head: {
+      form: '',
+      name: '',
+    },
+  }
+
+  let name_list = line.split('/')
+  let i = 0
+
+  while (i < name_list.length) {
+    testMesh(form)
+
+    const linkName = name_list[i++]
+    testText(linkName)
+
+    const formLink = form.link[linkName]
+
+    if (!formLink) {
+      throw new Error(`Property ${linkName} undefined`)
+    }
+
+    switch (formLink.form) {
+      case 'wave':
+      case 'text':
+      case 'mark':
+      case 'date':
+      case 'code':
+        // return property to do condition at
+        return {
+          form: link.base.form,
+          name: linkName,
+        }
+      default:
+        linkNameList.push(linkName)
+        const hook = linkNameList.join(':')
+
+        if (formLink.list) {
+          testText(formLink.form)
+          testText(formLink.name)
+
+          const link_form = base[formLink.form]
+          testMesh(link_form)
+
+          const linkFormLink = link_form.link[formLink.name]
+          testMesh(linkFormLink)
+
+          link.base.name = 'code'
+          link.head.form = formLink.form
+          link.head.name = `${formLink.name}_code`
+        } else if (formLink.code) {
+          testText(formLink.form)
+
+          link.base.name = `${linkName}_code`
+          link.head.form = formLink.form
+          link.head.name = 'code'
+        } else {
+          throw new Error('unhandled')
+          // if (seek_list(formLink.form)) {
+          //   formLink.form.forEach(form => {
+          //   })
+          // }
+        }
+
+        linkMesh[hook] = link
+
+        link = {
+          base: {
+            form: link.head.form,
+            name: '',
+          },
+          head: {
+            form: '',
+            name: '',
+          },
+        }
+
+        break
+    }
+
+    testText(formLink.form)
+
+    if (formLink.list) {
+      const linkName = name_list[i++]
+      switch (linkName) {
+        case 'list':
+          form = base[formLink.form]
+          break
+        case 'size': // not used in this question, but used in my code
+          return {
+            form: link.base.form,
+            name: linkName,
+            size: true,
+          }
+        default:
+          throw new Error('Unknown list property')
+      }
+    } else {
+      form = base[formLink.form]
+    }
+  }
+
+  throw new Error()
+}
+
+export function loadReadLikeList<
+  B extends Base,
+  N extends BaseName<B>,
+>({ name, find, base, linkMesh }: LoadReadLikeList<B, N>) {
+  const likeList: Array<Like<B, N>> = []
+  const form = base[name]
+  testMesh(form)
+
+  const findLikeList: Array<LoadFindLink> = Array.isArray(find)
+    ? find
+    : find
+    ? [find]
+    : []
+
+  findLikeList.forEach(like => {
+    switch (like.form) {
+      case 'like':
+        const likeBase = loadLinkList({
+          base,
+          line: like.base.link,
+          linkMesh,
+          name,
+        })
+
+        const likeBaseForm = likeBase.form
+        const likeBaseName = likeBase.name
+        testFormBond<B, N>(base, likeBaseForm as N, likeBaseName)
+        testFormName<B, N>(base, likeBaseForm)
+
+        if (seekMesh(like.head) && like.head.link) {
+          const likeHead = loadLinkList({
+            base,
+            line: like.head.link,
+            linkMesh,
+            name,
+          })
+
+          const likeHeadForm = likeHead.form
+          const likeHeadName = likeHead.name
+          testFormName<B, N>(base, likeHeadForm)
+          testFormBond<B, N>(base, likeHeadForm as N, likeHeadName)
+
+          likeList.push({
+            base: { form: likeBaseForm, name: likeBaseName },
+            form: 'like',
+            head: { form: likeHeadForm, name: likeHeadName },
+            test: TEST[like.test],
+          })
+        } else if (!seekMesh(like.head)) {
+          likeList.push({
+            base: { form: likeBaseForm, name: likeBaseName },
+            form: 'like',
+            head: like.head,
+            test: TEST[like.test],
+          })
+        }
+        break
+      default:
+        throw new Error('TODO')
+        break
+    }
+  })
+
+  return likeList
+}
+
+export function makeRead<B extends Base, N extends BaseName<B>>({
   name,
   find,
-  seek,
   base,
-}: MakeRead<Name>) {
+}: MakeRead<B, N>) {
   const linkMesh: Record<string, Link> = {}
-  const like_list = load_read_like_list({
+  const likeList = loadReadLikeList({
     base,
     find,
     linkMesh,
     name,
-    seek,
   })
+}
+
+export function seekLinkForm<N>(
+  link: unknown,
+  form_list: Array<string>,
+): link is N {
+  const form = readBaseLinkForm(link)
+  return form_list.includes(form)
+}
+
+export function testFormBond<
+  B extends Base,
+  N extends BaseName<B> = BaseName<B>,
+>(base: B, form: N, name: unknown): asserts name is FormBond<B, N> {
+  if (!base[form]?.link[name as string]) {
+    throw new Error(`Property ${name} undefined`)
+  }
+}
+
+export function testFormName<
+  B extends Base,
+  N extends BaseName<B> = BaseName<B>,
+>(base: B, name: unknown): asserts name is FormName<B, N> {
+  if (!base[name as string]) {
+    throw new Error(`Property ${name} undefined`)
+  }
 }

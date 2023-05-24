@@ -18,6 +18,7 @@ export const LOAD_FIND_TEST = [
   'base_mark',
   'head_mark',
   'base_text',
+  'head_text',
   'miss_bond',
   'have_bond',
   'have_text',
@@ -215,4 +216,20 @@ export function isType<S extends z.ZodType>(
 
 export type Prefixed<P extends string, T> = {
   [K in keyof T as K extends string ? `${P}${K}` : never]: T[K]
+}
+
+export type InterpolateForm<T> = {
+  [K in keyof T]: {
+    [K2 in keyof T[K]]: 'form' extends keyof T[K][K2]
+      ? T[K][K2]['form'] extends keyof StringToForm
+        ? StringToForm[T[K][K2]['form']]
+        : T[K][K2]
+      : T[K][K2]
+  }
+}
+
+type StringToForm = {
+  boolean: boolean
+  number: number
+  string: string
 }
