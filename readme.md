@@ -8,10 +8,49 @@ yarn add @tunebond/call.js
 
 ## How it works
 
-First, you specify a "query" (a `call`), which is basically a payload of
-JSON (a "load"). This can have keys of `read` (for select/projections),
-`save` for effects/updates, `find` for filtering, and `task` for the
-action. The action can be any of these:
+1. **`call`**: A `call` is a query.
+1. **`load`**: A `load` is a query payload.
+1. **`task`**: A `task` is a query action.
+1. **`read`**: A `read` is a query projection.
+1. **`find`**: A `find` is a query filter.
+1. **`mesh`**: A `mesh` is a query mutation.
+
+Each one of these has types defined in the main TypeScript file.
+
+### The `load`
+
+The `load` for a `call` might look like this:
+
+```js
+{
+  task: 'read',
+  read: {
+    user: {
+      find: {
+        form: 'like',
+        base: 'name',
+        test: 'bond',
+        head: 'Jane Doe',
+      },
+      read: {
+        id: true,
+        name: true,
+        email: true,
+        posts: {
+          list: true,
+          read: {
+            size: true,
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+### The `task`
+
+A `task` is a query action, and can take any of these forms.
 
 - `link`: connect
 - `free`: disconnect
@@ -21,13 +60,17 @@ action. The action can be any of these:
 - `make`: create
 - `test`: verify
 - `save`: upsert
+- `mesh`: modify
 
-## Specification Examples
+### The `read`
 
-Here you specify your allowed read depth and allowed save structure.
+There are two aspects to the `read`:
 
-The `read` needs to be defined separately from the rest of the call, so
-we can generate a type from it. The response will then be of this type.
+1. The allowed read depth.
+2. Each read query.
+
+The allowed read depth says how far any query is allowed to go for each
+model.
 
 ```ts
 // base/call/read.ts
@@ -75,27 +118,92 @@ const read = {
   },
 }
 
-export default call
+export default read
 ```
 
+Then you have your specific read queries, which are part of a call, as
+illustrated earlier.
+
+### The `find`
+
+The find is a filtering function, which can be an array or an object. It
+includes `and` and `or` functionality, albeit with a custom language.
+
+There are 3 kinds of conditions:
+
+- `like`: A basic comparison, using one of the conditions defined next.
+- `roll`: An `or` comparison.
+- `bind`: An `and` comparison.
+
+These are the kinds of `like` conditions:
+
+1. `bond`: equals
+1. `base_mark`: greater than
+1. `base_link_mark`: greater than or equal to
+1. `head_mark`: less than
+1. `head_link_mark`: less than or equal to
+1. `miss_bond`: not equal
+1. `have_bond`: `in` in SQL (list contains an item)
+1. `have_text`: text `contains` a substring
+
+So for example, you can do this to
+`find a user where name is "Jane Doe" or "John Doe"`:
+
+```
+{
+  task: 'read',
+  read: {
+    user: {
+      find: {
+        form: 'roll',
+        list: [
+          {
+            form: 'like',
+            base: 'name',
+            test: 'bond',
+            head: 'Jane Doe',
+          },
+          {
+            form: 'like',
+            base: 'name',
+            test: 'bond',
+            head: 'John Doe',
+          }
+        ]
+      },
+      read: {
+        id: true,
+        name: true,
+      },
+    },
+  },
+}
+```
+
+### The `mesh`
+
+Like the `read`, there is a set of things you can change through the
+`mesh`:
+
 ```ts
-// base/call/make.ts
-const make = {
+// base/call/mesh.ts
+const mesh = {
   user: {
-    save: {
+    mesh: {
       name: true,
       email: true,
     },
   },
 }
 
-export default make
+export default mesh
 ```
 
-## Queries
+Then there is the `mesh` part of the load.
 
-Then you can make your actual queries (loads). Each query gets a
-corresponding zod type generated for it, so the object gets typed as it.
+## Example
+
+First, define each `read`, which will be converted into types.
 
 ```ts
 // read.ts
@@ -123,6 +231,8 @@ const Read = {
 
 export default Read
 ```
+
+Next, define each `call`, which uses each `read`.
 
 ```ts
 // call.ts
@@ -155,7 +265,23 @@ export default Call
 From these two definitions, we can generate the appropriate types.
 
 ```ts
-import call from './call.js'
+import fs from 'fs'
+
+import { make } from '@tunebond/call.js/make'
+
+import Base from './base'
+import Call from './call'
+
+const { form, call } = make(Call, Base)
+
+fs.writeFileSync(`gen/call.ts`, call)
+fs.writeFileSync(`gen/form.ts`, form)
+```
+
+That should generate the code for you:
+
+```ts
+import call from './gen/call.js'
 
 async function handle() {
   const result = await call('findByUserId', { id: '123' })
