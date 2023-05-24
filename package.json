@@ -11,7 +11,9 @@
     "build": "tsc && tsc-alias",
     "watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "lint": "eslint --ext .ts ./make",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "test:make": "npx ts-node-esm -P tsconfig.json test/make.ts",
+    "test": "npx ts-node-esm -P tsconfig.json test/load.ts"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
@@ -42,6 +44,7 @@
     "kysely": "^0.24.2"
   },
   "dependencies": {
+    "@tunebond/form.js": "^0.0.1",
     "lodash": "^4.17.21",
     "zod": "^3.21.4"
   }

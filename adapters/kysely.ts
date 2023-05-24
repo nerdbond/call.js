@@ -8,13 +8,7 @@ import {
 } from 'kysely'
 import { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser'
 
-import type {
-  Base,
-  BaseFormName,
-  LoadFind,
-  LoadFindLink,
-  LoadRead,
-} from '../types'
+import type { LoadFind, LoadFindLink, LoadRead } from '../index.js'
 
 export type BaseFormLinkName<Name extends BaseFormName> = AnyColumn<
   Base,
