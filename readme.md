@@ -161,13 +161,13 @@ So for example, you can do this to
         list: [
           {
             form: 'like',
-            base: 'name',
+            base: { link: 'user/name' },
             test: 'bond',
             head: 'Jane Doe',
           },
           {
             form: 'like',
-            base: 'name',
+            base: { link: 'user/name' },
             test: 'bond',
             head: 'John Doe',
           }
