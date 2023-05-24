@@ -17,11 +17,12 @@ export type Link = {
   }
 }
 
-export type ReadCall<Base, FormName extends keyof Base> = {
-  base: FormName
+export type ReadCall = {
   find?: LoadFind
-  link: Array<Link> // joins
-  name: Array<string>
+  form: 'read-call'
+  link: Array<Link>
+  name: string // joins
+  read: Array<string>
   sort: Array<LoadSort>
 }
 

@@ -212,3 +212,7 @@ export function isType<S extends z.ZodType>(
 ): x is S extends z.ZodType<infer T> ? T : never {
   return schema.safeParse(x).success
 }
+
+export type Prefixed<P extends string, T> = {
+  [K in keyof T as K extends string ? `${P}${K}` : never]: T[K]
+}

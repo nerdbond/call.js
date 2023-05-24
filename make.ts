@@ -310,31 +310,7 @@ function seekMesh(x: unknown): x is Record<string, unknown> {
   return _.isObject(x)
 }
 
-function testText(x: unknown): asserts x is string {
-  if (!_.isString(x)) {
-    throw new Error()
-  }
-}
-
-function testMesh(x: unknown): asserts x is Record<string, unknown> {
-  if (!seekMesh(x)) {
-    throw new Error()
-  }
-}
-
-function testBond(x: unknown): asserts x {
-  if (x == null) {
-    throw new Error()
-  }
-}
-
-function testWave(x: unknown): asserts x is boolean {
-  if (!_.isBoolean(x)) {
-    console.log(x)
-    throw new Error()
-  }
-}
-
+// write a function to build a zod string from a form base
 export async function makeTest(callBase: CallBase, formBase: FormBase) {
   const text: Array<string> = []
 
@@ -391,6 +367,33 @@ export async function test(read: LoadRead, base: FormBase) {
     //   if (!_.isObject(readLink)) {
     //   }
     // }
+  }
+}
+
+function testBond(x: unknown): asserts x {
+  if (x == null) {
+    throw new Error()
+  }
+}
+
+function testWave(x: unknown): asserts x is boolean {
+  if (!_.isBoolean(x)) {
+    console.log(x)
+    throw new Error()
+  }
+}
+
+export function testMesh(
+  x: unknown,
+): asserts x is Record<string, unknown> {
+  if (!seekMesh(x)) {
+    throw new Error()
+  }
+}
+
+export function testText(x: unknown): asserts x is string {
+  if (!_.isString(x)) {
+    throw new Error()
   }
 }
 
