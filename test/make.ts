@@ -14,14 +14,16 @@ const __dirname = path.dirname(__filename)
 start()
 
 async function start() {
-  const call = await make(
-    CallBase,
-    FormBase,
-    ReadBase,
-    path.relative(
-      path.resolve('./test/host'),
-      path.join(__dirname, 'call.js'),
-    ),
+  const link = path.relative(
+    path.resolve('./test/host'),
+    path.join(__dirname, 'call.js'),
   )
+  const base = {
+    call: CallBase,
+    form: FormBase,
+    link,
+    read: ReadBase,
+  }
+  const call = await make(CallBase, FormBase, ReadBase, link)
   fs.writeFileSync('./test/host/call.ts', call)
 }

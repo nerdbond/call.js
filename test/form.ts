@@ -1,6 +1,6 @@
-import type { BaseForm } from '@tunebond/form.js'
+import type { Base, Form } from '@tunebond/form'
 
-const User: BaseForm = {
+const User = {
   dock: 'id',
   link: {
     email: { form: 'text', void: true },
@@ -9,9 +9,9 @@ const User: BaseForm = {
     posts: { back: 'author', form: 'post', list: true },
   },
   name: 'tl_user',
-}
+} as const
 
-const Post: BaseForm = {
+const Post = {
   dock: 'id',
   link: {
     author: { form: 'user', link: { form: 'code', name: 'authorId' } },
@@ -21,11 +21,11 @@ const Post: BaseForm = {
     title: { baseSize: 3, form: 'text' },
   },
   name: 'tl_post',
-}
+} as const
 
 const FormBase = {
   post: Post,
   user: User,
-}
+} satisfies Base
 
 export default FormBase

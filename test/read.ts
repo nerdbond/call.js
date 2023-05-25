@@ -1,6 +1,6 @@
 import { ReadBase } from '../index.js'
 
-const ReadBase: ReadBase = {
+const ReadBase = {
   post: {
     read: {
       list: {
@@ -54,6 +54,6 @@ const ReadBase: ReadBase = {
       size: true,
     },
   },
-}
+} satisfies ReadBase
 
 export default ReadBase

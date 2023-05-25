@@ -1,15 +1,28 @@
 /* eslint-disable sort-exports/sort-exports */
 import { z } from 'zod'
 
+import type { Base as FormBase } from '@tunebond/form'
+
 export type Call = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   load: (link: any) => Load
   read: LoadRead
 }
 
+export type { FormBase }
+
 export type CallBase = Record<string, Call>
 
 export type ReadBase = LoadRead
+
+export type SaveBase = LoadSave
+
+export type Base = {
+  call: CallBase
+  form: FormBase
+  read: ReadBase
+  save: SaveBase
+}
 
 export const LOAD_FIND_TEST = [
   'bond',
@@ -83,7 +96,7 @@ export type LoadSaveBase = {
 }
 
 export type LoadSort = {
-  name: string
+  link: string
   tilt: LoadTilt
 }
 
@@ -123,8 +136,8 @@ export const LoadFindTest = z.enum([
   'head_link_mark',
   'base_mark',
   'head_mark',
-  'base_text',
-  'head_text',
+  // 'base_text',
+  // 'head_text',
   'miss_bond',
   'have_bond',
   'have_text',
@@ -171,7 +184,7 @@ export const LoadSaveBase: z.ZodType<LoadSaveBase> = z.object({
 })
 
 export const LoadSort: z.ZodType<LoadSort> = z.object({
-  name: z.string(),
+  link: z.string(),
   tilt: z.enum(['rise', 'fall']),
 })
 
@@ -218,17 +231,17 @@ export type Prefixed<P extends string, T> = {
   [K in keyof T as K extends string ? `${P}${K}` : never]: T[K]
 }
 
-export type InterpolateForm<T> = {
+export type MoldBase<T> = {
   [K in keyof T]: {
     [K2 in keyof T[K]]: 'form' extends keyof T[K][K2]
-      ? T[K][K2]['form'] extends keyof StringToForm
-        ? StringToForm[T[K][K2]['form']]
+      ? T[K][K2]['form'] extends keyof TextFormLink
+        ? TextFormLink[T[K][K2]['form']]
         : T[K][K2]
       : T[K][K2]
   }
 }
 
-type StringToForm = {
+export type TextFormLink = {
   boolean: boolean
   number: number
   string: string
@@ -237,14 +250,14 @@ type StringToForm = {
 export type InterpolateType<T> = {
   [K in keyof T]: {
     [K2 in keyof T[K]]: 'form' extends keyof T[K][K2]
-      ? T[K][K2]['form'] extends keyof StringToForm
-        ? StringToForm[T[K][K2]['form']]
+      ? T[K][K2]['form'] extends keyof TextFormLink
+        ? TextFormLink[T[K][K2]['form']]
         : T[K][K2] extends {
             form: ReadonlyArray<unknown>
             list: boolean
           }
         ? Array<
-            StringToForm[T[K][K2]['form'][number] & keyof StringToForm]
+            TextFormLink[T[K][K2]['form'][number] & keyof TextFormLink]
           >
         : T[K][K2]['form']
       : T[K][K2]
