@@ -2,11 +2,7 @@ import { Form, FormMesh, FormTree } from '@tunebond/form'
 import { HaltMesh, saveHalt } from '@tunebond/halt'
 import { haveMesh, testMesh, testWave } from '@tunebond/have'
 import { Base, ReadTakeBase } from '../../base.js'
-import {
-  haveForm,
-  haveFormMesh,
-  testFormMesh,
-} from '../../call/have.js'
+import { haveFormMesh, testFormMesh } from '../../call/have.js'
 import halt from '../../halt.js'
 
 export function haveRise(
@@ -112,24 +108,31 @@ export function bindFormTreeList({
 
   for (const readLinkName in readLink) {
     const lead = readLink[readLinkName]
+    const formLinkLine = `${formLine}.${readLinkName}`
+    const readLinkLine = `${readLine}.${readLinkName}`
     switch (readLinkName) {
       case 'size':
-        haveRise(lead, `${readLine}.${readLinkName}`)
-        form.link.size
+        haveRise(lead, readLinkLine)
+        form.link.size = { form: 'wave' }
         break
       case 'list':
+        haveMesh(lead, readLinkLine)
+
+        form.link.list = bindFormTree({
+          base,
+          formLine: formLinkLine,
+          readLine: readLinkLine,
+          readLink: lead,
+          baseForm,
+          haltList,
+        })
         break
       default:
-        throw halt('link_miss', { call: `${line}.${readLinkName}` })
+        throw halt('link_miss', { call: readLinkLine })
     }
   }
 
   return form
-}
-
-export type LineHold = {
-  form: string
-  read: string
 }
 
 export type BindFormTree = {
@@ -196,10 +199,7 @@ export function bindFormTreeMesh({
   baseForm,
   haltList,
 }: BindFormTreeMesh) {
-  const form: FormTree = {
-    link: {},
-  }
-  haveMesh(form.link, 'form.link')
+  const form: FormTree = {}
 
   for (const readName in readLink) {
     try {
@@ -209,16 +209,17 @@ export function bindFormTreeMesh({
       const formLinkLine = `${formLine}.${readName}`
       haveMesh(baseFormLink, readLinkLine)
 
-      const headLink: FormTree = { void: true }
-
-      form.link[readName] = headLink
-
       if (testMesh(readBase)) {
+        form.link = {}
+        haveMesh(form.link, 'form.link')
+
         if (Array.isArray(baseFormLink.form)) {
           const readBaseNameLine = `${readLinkLine}.name`
           haveMesh(readBase.name, readBaseNameLine)
+          const headLink: FormTree = { void: true, name: {} }
 
-          const headLinkName = (headLink.name = {})
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const headLinkName = headLink.name
           haveMesh(headLinkName, 'headLinkName')
 
           for (const readLinkName in readBase.name) {
@@ -229,19 +230,31 @@ export function bindFormTreeMesh({
               const readBaseLinkLine = `${readBaseNameLine}.${readLinkName}`
               haveFormBond(find, readBaseLinkLine)
 
-              // headLinkName[readLinkName] = bindFormTree
+              const nestBaseForm = base.form[readLinkName]
+              haveFormMesh(nestBaseForm, formLinkLine)
+
+              const headLink = bindFormTree({
+                base,
+                formLine: formLinkLine,
+                readLine: readLinkLine,
+                baseForm: nestBaseForm,
+                readLink: readBase,
+                haltList,
+                list: baseFormLink.list === true,
+              })
+
+              headLinkName[readLinkName] = headLink
             } catch (kink) {
               saveHalt(haltList, kink)
             }
           }
+
+          form.link[readName] = headLink
         } else if (baseFormLink.form) {
           const nestBaseForm = base.form[baseFormLink.form]
           haveFormMesh(nestBaseForm, formLinkLine)
 
-          const headLinkLink = (headLink.link = {})
-          haveMesh(headLinkLink, 'headLinkLink')
-
-          bindFormTree({
+          const headLink = bindFormTree({
             base,
             formLine: formLinkLine,
             readLine: readLinkLine,
@@ -250,6 +263,8 @@ export function bindFormTreeMesh({
             haltList,
             list: baseFormLink.list === true,
           })
+
+          form.link[readName] = headLink
         }
       } else if (testWave(readBase)) {
         haveRise(readBase, readLinkLine)
