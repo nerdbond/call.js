@@ -1,49 +1,46 @@
 import _ from 'lodash'
-
-import type { Form, Base as FormBase, FormLink } from '@tunebond/form'
+import type { Form, FormLink } from '@tunebond/form'
 import loveCode from '@tunebond/love-code'
 import { haveMesh, haveText, haveWave } from '@tunebond/have'
 
-import { CallBase, LoadRead, LoadReadLink, ReadBase } from './index.js'
+import { Base, FormBase, LoadRead, LoadReadLink } from '../index.js'
+import { formCodeCase, saveCode, haveForm, makeHead } from './base.js'
 
-export async function make(
-  callBase: CallBase,
-  formBase: FormBase,
-  readBase: ReadBase,
-  baseLink: string,
-) {
-  const form = await makeForm(
-    callBase,
-    formBase,
-    readBase,
-    baseLink.replace(/\.ts$/, '.js'),
-  )
-  return form
+export default async function make(base: Base, baseLink: string) {
+  codeBase(base)
+
+  const form = await makeForm(base, baseLink)
+  const load = await makeLoad(base)
+
+  return { form, load }
 }
 
-export async function makeForm(
-  callBase: CallBase,
-  formBase: FormBase,
-  readBase: ReadBase,
-  baseLink: string,
-) {
+export function codeBase(base: Base) {
+  for (const callName in base.call) {
+    const call = base.call[callName]
+    haveMesh(call, 'call')
+    saveCode(call.read)
+  }
+}
+
+export async function makeForm(base: Base, baseLink: string) {
   const text: Array<string> = []
 
+  text.push(...makeHead())
   text.push(`import fetch from 'cross-fetch'`)
-  text.push(`import { base, Base } from '${baseLink}'`)
+  text.push(`import base, { Base } from '../${baseLink}'`)
 
-  text.push(`export namespace Call {`)
   text.push(`export namespace Form {`)
 
-  for (const callName in callBase) {
-    const call = callBase[callName]
+  for (const callName in base.call) {
+    const call = base.call[callName]
     haveMesh(call, 'call')
 
-    text.push(`export type ${pascal(callName)} = {`)
+    text.push(`export type ${formCodeCase(callName)} = {`)
 
     for (const name in call.read) {
-      const read = readBase[name]
-      const form = formBase[name]
+      const read = base.read[name]
+      const form = base.form[name]
       haveMesh(read, 'read')
       haveMesh(form, 'form')
 
@@ -51,6 +48,8 @@ export async function makeForm(
       haveMesh(load, 'load')
 
       text.push(`${name}: {`)
+
+      haveForm(form, name)
 
       makeRead(load, form, read)
 
@@ -64,15 +63,13 @@ export async function makeForm(
 
   text.push(`export type Base = {`)
 
-  for (const callName in callBase) {
-    text.push(`${callName}: Form.${pascal(callName)}`)
+  for (const callName in base.call) {
+    text.push(`${callName}: Form.${formCodeCase(callName)}`)
   }
 
   text.push(`}`)
 
   text.push(`export type Name = keyof Base`)
-
-  text.push(`}`)
 
   text.push(
     `export default async function call<Name extends Call.Name>(host: string, name: Name, link: Parameters<Base['call'][Name]['load']>[0]) {`,
@@ -154,8 +151,9 @@ export async function makeForm(
           const nullable = formLink.void ? '?' : ''
           text.push(`${name}${nullable}: {`)
           haveText(formLink.form, 'formLink.form')
-          const form = formBase[formLink.form]
+          const form = base.form[formLink.form]
           haveMesh(form, 'form')
+          haveForm(form, formLink.form)
           makeRead(callLink, form, readLink)
           text.push(`}`)
           // makeReadMesh(formLink, readLink)
@@ -180,9 +178,10 @@ export async function makeForm(
       haveMesh(read.list, 'read.list')
       text.push(`list: Array<{`)
       haveText(link.form, 'link.form')
-      const form = formBase[link.form]
+      const form = base.form[link.form]
       haveMesh(form, 'form')
       haveMesh(call.list, 'call.list')
+      haveForm(form, link.form)
       makeRead(call.list, form, read.list)
       text.push(`}>`)
     }
@@ -190,28 +189,28 @@ export async function makeForm(
 }
 
 // write a function to build a zod string from a form base
-export async function makeTest(callBase: CallBase, formBase: FormBase) {
+export async function makeLoad(base: Base) {
   const text: Array<string> = []
 
-  for (const callName in callBase) {
-    const call = callBase[callName]
-
-    text.push(`const ${pascal(callName)}Test: z.ZodType<> = z.object(`)
-
+  for (const callName in base.call) {
+    const call = base.call[callName]
     if (!call) {
-      throw new Error(`No call ${callName}`)
+      continue
     }
 
-    for (const name in call.read) {
-      const form = formBase[name]
+    text.push(
+      `const ${formCodeCase(callName)}Test: z.ZodType<> = z.object(`,
+    )
 
-      if (!form) {
-        throw new Error(`No form ${name}`)
-      }
+    for (const name in call.read) {
+      const form = base.form[name]
+      haveForm(form, name)
     }
 
     text.push(`)`)
   }
+
+  return await loveCode(text.join('\n'))
 }
 
 export async function test(read: LoadRead, base: FormBase) {
@@ -231,8 +230,4 @@ export async function test(read: LoadRead, base: FormBase) {
       throw new Error()
     }
   }
-}
-
-function pascal(text: string) {
-  return _.startCase(_.camelCase(text)).replace(/ /g, '')
 }

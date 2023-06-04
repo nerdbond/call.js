@@ -13,15 +13,15 @@ export type { FormBase }
 
 export type CallBase = Record<string, Call>
 
-export type ReadBase = LoadRead
+export type ReadTakeBase = LoadRead
 
-export type SaveBase = LoadSave
+export type SaveTakeBase = LoadSave
 
 export type Base = {
   call: CallBase
   form: FormBase
-  read: ReadBase
-  save: SaveBase
+  read: ReadTakeBase
+  save: SaveTakeBase
 }
 
 export const LOAD_FIND_TEST = [

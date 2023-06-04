@@ -1,30 +1,11 @@
 import _ from 'lodash'
 
-import type { CallBase } from '../index.js'
+import type { CallBase } from '../../index.js'
+import { readUser1 } from './read.js'
 
 type WithId = { id: string }
 
 type WithName = { name: string }
-
-const userPosts = {
-  posts: {
-    list: true,
-    read: {
-      list: {
-        read: {
-          author: {
-            read: {
-              id: true,
-            },
-          },
-          id: true,
-          title: true,
-        },
-      },
-      size: true,
-    },
-  },
-}
 
 export const findUserById = ({ id }: WithId) => ({
   read: {
@@ -32,7 +13,7 @@ export const findUserById = ({ id }: WithId) => ({
       user: {
         find: {
           base: {
-            link: 'user/id',
+            link: 'id',
           },
           form: 'like' as const,
           head: id,
@@ -49,7 +30,7 @@ export const findUserByName = ({ name }: WithName) => ({
       user: {
         find: {
           base: {
-            link: 'user/name',
+            link: 'name',
           },
           form: 'like' as const,
           head: name,
@@ -59,17 +40,6 @@ export const findUserByName = ({ name }: WithName) => ({
     }),
   },
 })
-
-export const readUser1 = {
-  user: {
-    read: {
-      email: true,
-      id: true,
-      name: true,
-      ...userPosts,
-    },
-  },
-}
 
 const CallBase = {
   findUserById: {

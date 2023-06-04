@@ -34,7 +34,7 @@ definitions.
 1. **`task`**: A `task` is a query action.
 1. **`read`**: A `read` is a query projection.
 1. **`find`**: A `find` is a query filter.
-1. **`mesh`**: A `mesh` is a query mutation.
+1. **`save`**: A `save` is a query mutation.
 
 Each one of these has types defined in the main TypeScript file.
 
@@ -49,7 +49,7 @@ The `load` for a `call` might look like this:
     user: {
       find: {
         form: 'like',
-        base: { link: 'user/name' },
+        base: { link: 'name' },
         test: 'bond',
         head: 'Jane Doe',
       },
@@ -73,15 +73,14 @@ The `load` for a `call` might look like this:
 
 A `task` is a query action, and can take any of these forms.
 
-- `link`: connect
-- `free`: disconnect
+- `link`: attach (connect)
+- `free`: detach (disconnect)
 - `read`: select
 - `kill`: remove
 - `diff`: update
 - `make`: create
 - `test`: verify
 - `save`: upsert
-- `mesh`: modify
 
 ### The `read`
 
@@ -183,13 +182,13 @@ So for example, you can do this to
         list: [
           {
             form: 'like',
-            base: { link: 'user/name' },
+            base: { link: 'name' },
             test: 'bond',
             head: 'Jane Doe',
           },
           {
             form: 'like',
-            base: { link: 'user/name' },
+            base: { link: 'name' },
             test: 'bond',
             head: 'John Doe',
           }
@@ -204,26 +203,26 @@ So for example, you can do this to
 }
 ```
 
-### The `mesh`
+### The `save`
 
 Like the `read`, there is a set of things you can change through the
-`mesh`:
+`save`:
 
 ```ts
-// base/call/mesh.ts
-const mesh = {
+// base/call/save.ts
+const save = {
   user: {
-    mesh: {
+    save: {
       name: true,
       email: true,
     },
   },
 }
 
-export default mesh
+export default save
 ```
 
-Then there is the `mesh` part of the load.
+Then there is the `save` part of the load.
 
 ## Example
 
@@ -284,7 +283,9 @@ const Call = {
 export default Call
 ```
 
-From these two definitions, we can generate the appropriate types.
+From these two definitions, we can generate the appropriate types. The
+read constructs a zod type, using the form definitions on what it
+accepts and validations and such.
 
 ```ts
 import fs from 'fs'
