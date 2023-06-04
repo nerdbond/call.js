@@ -10,13 +10,17 @@ const load = ({ id }: WithId) => ({
   read: {
     ..._.merge(readUser1, {
       user: {
-        find: {
-          base: {
-            link: 'id',
+        read: {
+          list: {
+            find: {
+              base: {
+                link: 'id',
+              },
+              form: 'like' as const,
+              head: id,
+              test: 'bond' as const,
+            },
           },
-          form: 'like' as const,
-          head: id,
-          test: 'bond' as const,
         },
       },
     }),
