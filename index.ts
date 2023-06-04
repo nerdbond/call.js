@@ -1,7 +1,9 @@
-/* eslint-disable sort-exports/sort-exports */
-import { z } from 'zod'
+import { ZodCustomIssue, ZodIssue, z, RefinementCtx } from 'zod'
 
 import type { Base as FormBase } from '@tunebond/form'
+import { haveMesh, haveText, testMesh } from '@tunebond/have'
+import halt, { HaltBase, HaltBaseName } from 'halt'
+import { Link } from '@tunebond/halt'
 
 export type Call = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,4 +264,83 @@ export type MakeForm<T> = {
         : T[K][K2]['form']
       : T[K][K2]
   }
+}
+
+export function makeHaltFromZod(issue: ZodIssue | ZodCustomIssue) {
+  switch (issue.code) {
+    case 'invalid_type':
+      switch (issue.message) {
+        case 'Required':
+          return halt('link_need', { line: issue.path }).toJSON()
+        default:
+          return halt('link_form', {
+            line: issue.path,
+            need: issue.expected,
+          }).toJSON()
+      }
+    case 'invalid_union':
+      break
+    case 'invalid_enum_value':
+      return halt('link_take', {
+        line: issue.path,
+        need: issue.options,
+      }).toJSON()
+    case 'custom':
+      if (
+        testMesh(issue.params) &&
+        issue.params.halt &&
+        testMesh(issue.params.bond)
+      ) {
+        return issue.params.bond
+      } else {
+      }
+    default:
+      throw new Error(`Unhandled ` + JSON.stringify(issue))
+  }
+}
+
+export type BondHaltRest = {
+  link?: Link<HaltBase, HaltBaseName>
+  test: (bond: unknown, link: Record<string, unknown>) => boolean
+  line?: Array<string>
+}
+
+export function bondHalt(
+  form: HaltBaseName,
+  lead: unknown,
+  bind: RefinementCtx,
+  { link = {}, test, line }: BondHaltRest,
+) {
+  const rise = test(lead, link)
+
+  if (!rise) {
+    const { note, ...bond } = halt(form, link).toJSON()
+
+    bind.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: note,
+      path: line,
+      params: {
+        halt: true,
+        bond: {
+          ...bond,
+          lead,
+        },
+      },
+    })
+  }
+
+  return rise
+}
+
+export function testHave(lead: unknown) {
+  return lead != null
+}
+
+type TestTakeRest = {
+  take: Array<unknown>
+}
+
+export function testTake(lead: unknown, { take }: TestTakeRest) {
+  return take.includes(lead)
 }

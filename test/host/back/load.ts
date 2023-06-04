@@ -1,11 +1,22 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { z } from 'zod'
+import { bondHalt, testHave, testTake } from '../../../index.js'
 import Load from '../form/load.js'
+import base from '../../base/index.js'
 import { FormLinkHostMoveName } from '@tunebond/form'
 import { Form, Name, Base } from './form.js'
+
 const Post_AuthorId_Load = Load.Code
 const Post_Content_Load = z.string()
-const Post_CreatedAt_Load = z.string().datetime()
+const Post_CreatedAt_Load = z
+  .string()
+  .datetime()
+  .superRefine((lead, bind) => {
+    bondHalt('link_take', lead, bind, {
+      test: () =>
+        testTake(lead, { take: base.form.post.link.createdAt.take }),
+    })
+  })
 const Post_Id_Load = Load.Code
 const Post_Title_Load = z.string()
 const Post_AuthorId_Base_Load = Post_AuthorId_Load

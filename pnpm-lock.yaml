@@ -9,8 +9,8 @@ dependencies:
     specifier: 0.2.1
     version: 0.2.1(kysely@0.24.2)
   '@tunebond/halt':
-    specifier: ^0.1.3
-    version: 0.1.3
+    specifier: ^0.1.4
+    version: 0.1.4
   '@tunebond/have':
     specifier: ^0.1.1
     version: 0.1.1
@@ -541,8 +541,8 @@ packages:
       - supports-color
     dev: false
 
-  /@tunebond/halt@0.1.3:
-    resolution: {integrity: sha512-QGw5Qn1FDpXXJgs5nZQSPnTQVxNTjq9WZy9Vh4nCFnQzgQSYvKO39o1r8FVJY+9qIXG/DSMnnEmmRYIT3NX18A==}
+  /@tunebond/halt@0.1.4:
+    resolution: {integrity: sha512-TRgFK1+0pUJaF1TiUvWIMJ8XvoHyLvJnrQ2pIVU7nljcnFpVmz0IH6qBPkOkKt0NoqazmhRWZaKDClz0jW0EWg==}
     dependencies:
       ts-custom-error: 3.3.1
     dev: false
@@ -550,7 +550,7 @@ packages:
   /@tunebond/have@0.1.1:
     resolution: {integrity: sha512-QHnfa3oS22wXspMqfHvwg2TFGD9GKGaiKY228XXAtzEb29COWple+Cr7qylRRM26185EgcJg+Dz9zuiuhkLjtg==}
     dependencies:
-      '@tunebond/halt': 0.1.3
+      '@tunebond/halt': 0.1.4
       '@tunebond/tone-code': 0.1.1
       '@types/uuid': 9.0.1
       lodash: 4.17.21

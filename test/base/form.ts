@@ -38,7 +38,7 @@ const Post = {
   link: {
     author: { form: 'user', site: { form: 'code', name: 'authorId' } },
     content: { form: 'text' },
-    createdAt: { form: 'date' },
+    createdAt: { form: 'date', take: ['jan', 'feb'] },
     id: { form: 'code' },
     title: { form: 'text', size: { base: 3 } },
   },

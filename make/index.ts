@@ -9,7 +9,7 @@ import _ from 'lodash'
 export default async function make(base: Base, link: string) {
   const baseLink = link.replace(/\.ts$/, '.js')
   const face = await makeFace(base)
-  const back = await makeBack(base)
+  const back = await makeBack(base, baseLink)
   const site = await makeSite(base)
   const call = await makeCall(base, baseLink)
   const form = await makeForm(base, baseLink)

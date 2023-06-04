@@ -23,14 +23,14 @@ export default async function form(headLink: string, hostLink: string) {
   fs.mkdirSync(`${hostLink}/site/save`, { recursive: true })
   fs.mkdirSync(`${hostLink}/face/save`, { recursive: true })
 
-  fs.writeFileSync(`${hostLink}/call/form.ts`, head.call.form)
-  fs.writeFileSync(`${hostLink}/call/load.ts`, head.call.load)
+  fs.writeFileSync(`${hostLink}/call/form.ts`, move(head.call.form, 3))
+  fs.writeFileSync(`${hostLink}/call/load.ts`, move(head.call.load, 3))
 
-  fs.writeFileSync(`${hostLink}/form/form.ts`, head.form.form)
-  fs.writeFileSync(`${hostLink}/form/load.ts`, head.form.load)
+  fs.writeFileSync(`${hostLink}/form/form.ts`, move(head.form.form, 3))
+  fs.writeFileSync(`${hostLink}/form/load.ts`, move(head.form.load, 3))
 
-  fs.writeFileSync(`${hostLink}/back/form.ts`, head.back.form)
-  fs.writeFileSync(`${hostLink}/back/load.ts`, head.back.load)
+  fs.writeFileSync(`${hostLink}/back/form.ts`, move(head.back.form, 3))
+  fs.writeFileSync(`${hostLink}/back/load.ts`, move(head.back.load, 3))
 
   // fs.writeFileSync(`${hostLink}/site/read/form.ts`, head.site.read.form)
   // fs.writeFileSync(`${hostLink}/site/read/load.ts`, head.site.read.load)
@@ -46,4 +46,12 @@ export default async function form(headLink: string, hostLink: string) {
 async function load(card: string) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return (await import(card)).default as unknown
+}
+
+function move(code: string, size = 1) {
+  if (process.env.TEST_CALL) {
+    const list = new Array(size).fill('..').join('/')
+    return code.replace(/@tunebond\/call/g, `${list}/index.js`)
+  }
+  return code
 }

@@ -10,9 +10,9 @@ import {
   makeHead,
 } from './base.js'
 
-export default async function make(base: Base) {
+export default async function make(base: Base, baseLink: string) {
   const form = await makeForm(base)
-  const load = await makeLoad(base)
+  const load = await makeLoad(base, baseLink)
   return { form, load }
 }
 
@@ -76,12 +76,16 @@ async function makeForm(base: Base) {
   return text
 }
 
-async function makeLoad(base: Base) {
+async function makeLoad(base: Base, baseLink: string) {
   const list: Array<string> = []
 
   list.push(...makeHead())
   list.push(`import { z } from 'zod'`)
+  list.push(
+    `import { bondHalt, testHave, testTake } from '@tunebond/call'`,
+  )
   list.push(`import Load from '../form/load.js'`)
+  list.push(`import base from '../${baseLink}'`)
   list.push(`import { FormLinkHostMoveName } from '@tunebond/form'`)
   list.push(`import { Form, Name, Base } from './form.js'`)
 
@@ -124,6 +128,20 @@ async function makeLoad(base: Base) {
 
         if (link.void) {
           bond.push(`)`)
+        }
+
+        const bondHaltList: Array<string> = []
+
+        if (link.take) {
+          bondHaltList.push(
+            `bondHalt('link_take', lead, bind, { test: () => testTake(lead, { take: base.form.${name}.link.${linkName}.take }) })`,
+          )
+        }
+
+        if (bondHaltList.length) {
+          bond.push(`.superRefine((lead, bind) => {`)
+          bond.push(...bondHaltList)
+          bond.push(`})`)
         }
 
         const loadName = `${formCodeCase(name)}_${formCodeCase(

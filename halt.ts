@@ -1,8 +1,12 @@
+import { FormLinkSize } from '@tunebond/form'
 import Halt, { Link } from '@tunebond/halt'
 import { make4 } from '@tunebond/tone-code'
 
-type HaveName = {
-  name: string
+export type HaveBase = {
+  line?: Array<string | number>
+  name?: string
+  lead?: unknown
+  need?: FormLinkSize | Array<string> | unknown
 }
 
 const host = '@tunebond/call'
@@ -10,16 +14,39 @@ const host = '@tunebond/call'
 const base = {
   form_miss: {
     code: 2,
-    note: ({ name }: HaveName) => `Form '${name}' undefined`,
+    note: (link: HaveBase) => `Form is undefined.`,
+  },
+  link_need: {
+    code: 3,
+    note: (link: HaveBase) => `Link is required.`,
+  },
+  link_size: {
+    code: 4,
+    note: (link: HaveBase) => `Link size out of bounds.`,
+  },
+  link_take: {
+    code: 5,
+    note: (link: HaveBase) => `Link provided invalid value.`,
+  },
+  link_form: {
+    code: 6,
+    note: (link: HaveBase) => `Link is invalid form.`,
   },
 }
 
-type Base = typeof base
+export type HaltBase = typeof base
 
-type Name = keyof Base
+export type HaltBaseName = keyof HaltBase
 
 export const code = (code: number) => make4(BigInt(code))
 
-export default function halt(form: Name, link: Link<Base, Name>) {
+export default function halt(
+  form: HaltBaseName,
+  { name, ...link }: Link<HaltBase, HaltBaseName>,
+) {
+  if (name) {
+    link.line = [name]
+  }
+
   return new Halt({ base, code, form, host, link })
 }
