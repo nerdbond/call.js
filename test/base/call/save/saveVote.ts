@@ -4,17 +4,25 @@ import { readUserBasic } from '../../read.js'
 import { LoadTask } from '~/call/load.js'
 import { Call } from '~/call/index.js'
 
-type MakeUser = {
-  email: string
-  slug: string
+type SaveVote = {
+  value: number
+  object: {
+    type: string
+    id: string
+  }
 }
 
-const load = ({ email, slug }: MakeUser) => ({
+const load = ({ value, object }: SaveVote) => ({
   move: {
-    user: {
+    vote: {
       move: {
-        email,
-        slug,
+        value,
+        object: {
+          move: {
+            type: object.type,
+            id: object.id,
+          },
+        },
       },
     },
   },

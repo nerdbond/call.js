@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Base as FormBase, FormTree } from '@tunebond/form'
+import type { Base as FormBase } from '@tunebond/form'
 import { Call } from '../call/index.js'
 
 export type CallBase = Record<string, Call>

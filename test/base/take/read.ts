@@ -1,4 +1,4 @@
-import { ReadTakeBase } from '../../../base.js'
+import { ReadTakeBase } from '~/base/index.js'
 
 const ReadTakeBase = {
   post: {
@@ -11,7 +11,6 @@ const ReadTakeBase = {
               id: true,
               name: true,
               posts: {
-                list: true,
                 read: {
                   size: true,
                 },
@@ -25,15 +24,14 @@ const ReadTakeBase = {
     },
   },
   user: {
-    list: true,
     read: {
       list: {
         read: {
           email: true,
           id: true,
           name: true,
+          slug: true,
           posts: {
-            list: true,
             read: {
               list: {
                 read: {
@@ -52,6 +50,30 @@ const ReadTakeBase = {
         },
       },
       size: true,
+    },
+  },
+  vote: {
+    read: {
+      size: true,
+      list: {
+        read: {
+          value: true,
+          object: {
+            name: {
+              user: {
+                read: {
+                  id: true,
+                },
+              },
+              post: {
+                read: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 } satisfies ReadTakeBase

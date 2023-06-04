@@ -4,7 +4,7 @@ import { Load, LoadRead, LoadTask } from './load'
 export type Call = {
   task: LoadTask
   load: (link: any) => Load
-  read: LoadRead
+  read?: LoadRead
 }
 
 export * from './load'

@@ -1,6 +1,5 @@
 export const userPosts = {
   posts: {
-    list: true,
     read: {
       list: {
         read: {
@@ -39,11 +38,15 @@ export const readVote = {
 export const readUser1 = {
   user: {
     read: {
-      email: true,
-      id: true,
-      name: true,
-      slug: true,
-      ...userPosts,
+      list: {
+        read: {
+          email: true,
+          id: true,
+          name: true,
+          slug: true,
+          ...userPosts,
+        },
+      },
     },
   },
 }

@@ -1,7 +1,8 @@
 import _ from 'lodash'
 
 import { readUser1 } from '../../read.js'
-import { Task } from 'base.js'
+import { LoadTask } from '~/call/load.js'
+import { Call } from '~/call/index.js'
 
 type WithId = { id: string }
 
@@ -23,7 +24,7 @@ const load = ({ id }: WithId) => ({
 })
 
 export default {
-  task: Task.Read,
+  task: LoadTask.Read,
   load,
   read: readUser1,
-}
+} satisfies Call

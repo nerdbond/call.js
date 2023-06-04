@@ -11,12 +11,15 @@
     "strict": true,
     "esModuleInterop": true,
     "noUncheckedIndexedAccess": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "noErrorTruncation": true,
     "types": ["node"],
     "typeRoots": ["node_modules/@types"],
     "noImplicitAny": true,
-    "declaration": true
+    "declaration": true,
+    "paths": {
+      "~/*": ["./*"]
+    }
   },
   "include": ["*.ts", "**/*.ts", "*.d.ts"],
   "exclude": ["node_modules", "host"]

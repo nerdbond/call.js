@@ -1,4 +1,5 @@
 export enum LoadTask {
+  Move = 'move',
   Save = 'save',
   Read = 'read',
   Kill = 'kill',
@@ -20,10 +21,8 @@ export const LOAD_FIND_TEST = [
 ] as const
 
 export type Load = {
-  task: LoadTask
-  name: string
   read?: LoadRead
-  save?: LoadSave
+  move?: LoadMove
 }
 
 export type LoadFind = LoadFindLink
@@ -36,11 +35,11 @@ export type LoadFindBind = {
 export type LoadFindLike = {
   base: LoadFindLikeLinkBond
   form: 'like' // test
-  head: LoadFindLikeBond | LoadFindLikeLinkBond
+  head: LoadBond | LoadFindLikeLinkBond
   test: LoadFindTest
 }
 
-export type LoadFindLikeBond = string | boolean | null | number
+export type LoadBond = string | boolean | null | number
 
 export type LoadFindLikeLinkBond = {
   link: string
@@ -66,15 +65,14 @@ export type LoadReadLink = {
   // sort?: LoadSort
 }
 
-export type LoadSave = {
-  [key: string]: Array<LoadSaveBase> | LoadSaveBase
+export type LoadMove = {
+  [key: string]: Array<LoadMoveBase> | LoadMoveBase | LoadBond
 }
 
-export type LoadSaveBase = {
+export type LoadMoveBase = {
   task?: LoadTask
   find?: LoadFind
-  read?: LoadRead
-  save?: LoadSave
+  move?: LoadMove
 }
 
 export type LoadSort = {
