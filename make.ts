@@ -2,7 +2,7 @@ import _ from 'lodash'
 import path from 'path'
 
 import type { Form, Base as FormBase, FormLink } from '@tunebond/form'
-import { makeText } from '@tunebond/form/host/tool.js'
+import loveCode from '@tunebond/love-code'
 import { haveMesh, haveText, haveWave } from '@tunebond/have'
 
 import { CallBase, LoadRead, LoadReadLink, ReadBase } from './index.js'
@@ -98,7 +98,7 @@ export async function makeForm(
 
   text.push(`}`)
 
-  return await makeText(text.join('\n'))
+  return await loveCode(text.join('\n'))
 
   function makeRead(
     call: LoadReadLink,

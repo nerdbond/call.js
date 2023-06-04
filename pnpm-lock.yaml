@@ -1,6 +1,16 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 dependencies:
+  '@tunebond/halt':
+    specifier: ^0.1.3
+    version: 0.1.3
+  '@tunebond/love-code':
+    specifier: ^0.1.0
+    version: 0.1.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -443,6 +453,16 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
+  /@lancejpollard/configured-quadratic-residue-prng.js@1.0.0:
+    resolution: {integrity: sha512-TGKhTiD1v3aHCjfYnSkzW5VG4/r75RO8ZkSSIyFrlH0uXh+0s0w5ElUUZ1g9I3TYRceTV+ZdsnWvTAwxq/LppQ==}
+    dependencies:
+      '@lancejpollard/quadratic-residue-prng.js': 1.0.0
+    dev: false
+
+  /@lancejpollard/quadratic-residue-prng.js@1.0.0:
+    resolution: {integrity: sha512-njr7owTIRuTAncZeO5yZWZ2mBuSXZu0wqFqZsJm5gGcUKL+p+lyjOel+dKG3rouB0q//Nw1uYLa8foM89bnehQ==}
+    dev: false
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -510,6 +530,18 @@ packages:
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
+
+  /@tunebond/halt@0.1.3:
+    resolution: {integrity: sha512-QGw5Qn1FDpXXJgs5nZQSPnTQVxNTjq9WZy9Vh4nCFnQzgQSYvKO39o1r8FVJY+9qIXG/DSMnnEmmRYIT3NX18A==}
+    dependencies:
+      ts-custom-error: 3.3.1
+    dev: false
+
+  /@tunebond/love-code@0.1.0:
+    resolution: {integrity: sha512-Jk0i1pY7xf5xveYHidzQn/KATCLVzFLB4G4da3JMENgjdeKhuioS3B8mExk+mYebOPx4AiVn1XB/rz8Ths6s4w==}
+    dependencies:
+      '@lancejpollard/configured-quadratic-residue-prng.js': 1.0.0
+    dev: false
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -2814,6 +2846,11 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
     dev: true
+
+  /ts-custom-error@3.3.1:
+    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /ts-node@10.9.1(@types/node@18.11.17)(typescript@4.9.4):
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
