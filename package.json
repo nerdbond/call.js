@@ -1,20 +1,24 @@
 {
   "name": "@tunebond/call",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "license": "MIT",
   "main": "./host/index.js",
   "files": [
+    "./form.ts",
+    "./index.ts",
+    "./make.ts",
+    "./tsconfig.lib.json",
     "./host/index.js",
     "./host/index.d.ts",
     "./host/make.js",
     "./host/make.d.ts",
     "./host/link/kysely.js",
     "./host/link/kysely.d.ts",
-    "./host/link/scan.js",
-    "./host/link/scan.d.ts",
-    "./host/link/halt.js",
-    "./host/link/halt.d.ts"
+    "./host/scan.js",
+    "./host/scan.d.ts",
+    "./host/halt.js",
+    "./host/halt.d.ts"
   ],
   "scripts": {
     "make": "tsc && tsc-alias",
@@ -22,7 +26,8 @@
     "lint": "eslint --ext .ts ./make",
     "lint:tool": "npm run lint -- --fix",
     "test:make": "npx ts-node-esm -P tsconfig.json test/make.ts",
-    "test": "npx ts-node-esm -P tsconfig.json test/load.ts"
+    "test": "npx ts-node-esm -P tsconfig.json test/load.ts",
+    "host": "pnpm make && npm publish --access=public"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
@@ -57,8 +62,11 @@
     "kysely": "^0.24.2"
   },
   "dependencies": {
+    "@tunebond/form": "^0.1.0",
     "@tunebond/halt": "^0.1.3",
+    "@tunebond/have": "^0.1.1",
     "@tunebond/love-code": "^0.1.0",
+    "@tunebond/tone-code": "^0.1.1",
     "lodash": "^4.17.21",
     "zod": "^3.21.4"
   }

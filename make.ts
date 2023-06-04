@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import path from 'path'
 
 import type { Form, Base as FormBase, FormLink } from '@tunebond/form'
 import loveCode from '@tunebond/love-code'
@@ -11,14 +10,13 @@ export async function make(
   callBase: CallBase,
   formBase: FormBase,
   readBase: ReadBase,
-  callLink: string,
+  baseLink: string,
 ) {
   const form = await makeForm(
     callBase,
     formBase,
     readBase,
-    '~/' +
-      path.relative(process.cwd(), callLink).replace(/\.ts$/, '.js'),
+    baseLink.replace(/\.ts$/, '.js'),
   )
   return form
 }
@@ -27,12 +25,12 @@ export async function makeForm(
   callBase: CallBase,
   formBase: FormBase,
   readBase: ReadBase,
-  callLink: string,
+  baseLink: string,
 ) {
   const text: Array<string> = []
 
   text.push(`import fetch from 'cross-fetch'`)
-  text.push(`import CallBase from '${callLink}'`)
+  text.push(`import { base, Base } from '${baseLink}'`)
 
   text.push(`export namespace Call {`)
   text.push(`export namespace Form {`)
@@ -77,10 +75,10 @@ export async function makeForm(
   text.push(`}`)
 
   text.push(
-    `export default async function call<Name extends Call.Name>(host: string, name: Name, link: Parameters<CallBase[Name]['load']>[0]) {`,
+    `export default async function call<Name extends Call.Name>(host: string, name: Name, link: Parameters<Base['call'][Name]['load']>[0]) {`,
   )
 
-  text.push(`const call = CallBase[name]`)
+  text.push(`const call = base.call[name]`)
   text.push(`const loadBase = await call.load(link)`)
   text.push(`const callHead = await fetch(host, {`)
   text.push(`  method: 'PATCH',`)

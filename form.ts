@@ -3,14 +3,22 @@ import path from 'path'
 
 import type { Base } from './index.js'
 import { make } from './make.js'
+import { haveText } from '@tunebond/have'
 
-boot(process.argv[2] as string, process.argv[3] as string)
+const head = process.argv[2]
+const host = process.argv[3]
+
+haveText(head, 'head')
+haveText(host, 'host')
+
+boot(head, host)
 
 async function boot(headLink: string, hostLink: string) {
   fs.mkdirSync(hostLink, { recursive: true })
 
   const base = (await load(headLink)) as Base
-  const code = await make(base.call, base.form, base.read, headLink)
+  const siteHeadLink = path.relative(hostLink, headLink)
+  const code = await make(base.call, base.form, base.read, siteHeadLink)
   save(path.join(hostLink, './index.ts'), code)
 }
 

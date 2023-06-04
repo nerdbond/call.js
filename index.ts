@@ -71,7 +71,7 @@ export type LoadFindRoll = {
   list: Array<LoadFindLink>
 }
 
-export type LoadFindTest = (typeof LOAD_FIND_TEST)[number]
+export type LoadFindTest = typeof LOAD_FIND_TEST[number]
 
 export type LoadRead = {
   [key: string]: boolean | LoadReadLink
@@ -247,7 +247,7 @@ export type TextFormLink = {
   string: string
 }
 
-export type InterpolateType<T> = {
+export type MakeForm<T> = {
   [K in keyof T]: {
     [K2 in keyof T[K]]: 'form' extends keyof T[K][K2]
       ? T[K][K2]['form'] extends keyof TextFormLink

@@ -1,3 +1,4 @@
+import { Form, FormLink } from '@tunebond/form'
 import {
   ComparisonOperatorExpression,
   DeleteQueryBuilder,
@@ -14,7 +15,6 @@ import {
 } from 'kysely'
 import { ExtractTableAlias } from 'kysely/dist/cjs/parser/table-parser'
 
-import { Form } from '@tunebond/form'
 import { haveMesh, haveText, testMesh } from '@tunebond/have'
 
 import halt from '../halt.js'
@@ -380,7 +380,7 @@ export function haveBaseFormName<
 export function haveForm(
   form: unknown,
   name: string,
-): asserts form is Record<string, unknown> {
+): asserts form is Form {
   if (!form) {
     throw halt('form_miss', { name })
   }
@@ -392,6 +392,15 @@ export function haveFormBond<
 >(base: B, form: N, name: unknown): asserts name is FormBond<B, N> {
   if (!base.form[form]?.link[name as string]) {
     throw new Error(`Property ${name} undefined`)
+  }
+}
+
+export function haveFormLink(
+  link: unknown,
+  name: string,
+): asserts link is FormLink {
+  if (!link) {
+    throw halt('form_miss', { name })
   }
 }
 
@@ -428,7 +437,9 @@ export function loadLinkList<
 >({ base, line, name, linkMesh }: LoadLinkList<B, N>) {
   const linkNameList: Array<string> = [name]
 
-  let form: Form | undefined = base.form[name]
+  let form = base.form[name]
+
+  haveForm(form, name)
 
   let link: Link = {
     base: {
@@ -450,11 +461,8 @@ export function loadLinkList<
     const linkName = name_list[i++]
     haveText(linkName, 'linkName')
 
-    const formLink = form.link[linkName]
-
-    if (!formLink) {
-      throw new Error(`Property ${linkName} undefined`)
-    }
+    const formLink: FormLink | undefined = form.link[linkName]
+    haveFormLink(formLink, linkName)
 
     switch (formLink.form) {
       case 'wave':

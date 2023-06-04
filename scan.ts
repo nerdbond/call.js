@@ -23,22 +23,26 @@ export default function boot({ base, head, host }: Boot) {
 
   const scan = chokidar.watch(baseLink)
 
+  console.log(`  scanning ${baseLink}`)
+
   scan.on('add', makeBase).on('change', makeBase).on('unlink', makeBase)
 
   async function makeBase(file: string) {
+    console.log(`  changed ${file}`)
+
     // console.log(`changed ${file}`)
-    const formLink = path.join(__dirname, 'form.ts')
-    const baseLink = path.join(__dirname, 'tsconfig.lib.json')
+    const formLink = path.join(__dirname, '../form.ts')
+    const baseLink = path.join(__dirname, '../tsconfig.lib.json')
 
     // for tmp files
-    const holdLink = path.join(__dirname, 'hold')
+    const holdLink = path.join(__dirname, '../hold')
     if (!fs.existsSync(holdLink)) {
       fs.mkdirSync(holdLink, { recursive: true })
     }
 
-    exec(
-      `npx ts-node-esm -P ${baseLink} ${formLink} "${headLink}" "${hostLink}"`,
-    ).on('error', halt => {
+    const tool = `npx ts-node-esm -P ${baseLink} ${formLink} "${headLink}" "${hostLink}"`
+
+    exec(tool).on('error', halt => {
       console.log(halt)
     })
   }
