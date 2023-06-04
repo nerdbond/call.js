@@ -1,4 +1,4 @@
-import { SaveTakeBase } from '../../../index.js'
+import { SaveTakeBase } from '../../../base.js'
 
 const SaveTakeBase = {} satisfies SaveTakeBase
 

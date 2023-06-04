@@ -29,7 +29,7 @@ import {
   LoadSort,
   LoadTilt,
   MoldBase,
-} from '../index.js'
+} from '../base.js'
 
 export type FormBase<B extends Base> = B['form']
 

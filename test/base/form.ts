@@ -26,6 +26,7 @@ const User = {
   dock: 'id',
   link: {
     email: { form: 'text', void: true },
+    slug: { form: 'text' },
     id: { form: 'code' },
     name: { form: 'text' },
     posts: { back: 'author', form: 'post', list: true },

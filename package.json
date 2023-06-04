@@ -62,7 +62,7 @@
     "kysely": "^0.24.2"
   },
   "dependencies": {
-    "@tunebond/form": "0.2.1",
+    "@tunebond/form": "0.2.2",
     "@tunebond/halt": "^0.1.4",
     "@tunebond/have": "^0.1.1",
     "@tunebond/love-code": "^0.1.1",

@@ -3,7 +3,12 @@ import type { Form, FormLink } from '@tunebond/form'
 import loveCode from '@tunebond/love-code'
 import { haveMesh, haveText, haveWave } from '@tunebond/have'
 
-import { Base, FormBase, LoadRead, LoadReadLink } from '../index.js'
+import {
+  Base,
+  FormBase,
+  LoadRead,
+  LoadReadLink,
+} from '../../make/take/index.js'
 import { formCodeCase, saveCode, haveForm, makeHead } from './base.js'
 
 export default async function make(base: Base, baseLink: string) {

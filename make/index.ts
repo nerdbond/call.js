@@ -1,17 +1,45 @@
-import { Base } from '../index.js'
-import makeFace from './face.js'
-import makeBack from './back.js'
-import makeSite from './site.js'
-import makeCall from './call.js'
-import makeForm from './form.js'
-import _ from 'lodash'
+export type BondHaltRest = {
+  link?: Link<HaltBase, HaltBaseName>
+  test: (bond: unknown, link: Record<string, unknown>) => boolean
+  line?: Array<string>
+}
 
-export default async function make(base: Base, link: string) {
-  const baseLink = link.replace(/\.ts$/, '.js')
-  const face = await makeFace(base)
-  const back = await makeBack(base, baseLink)
-  const site = await makeSite(base)
-  const call = await makeCall(base, baseLink)
-  const form = await makeForm(base, baseLink)
-  return { back, call, face, form, site }
+export function bondHalt(
+  form: HaltBaseName,
+  lead: unknown,
+  bind: RefinementCtx,
+  { link = {}, test, line }: BondHaltRest,
+) {
+  const rise = test(lead, link)
+
+  if (!rise) {
+    const { note, ...bond } = halt(form, link).toJSON()
+
+    bind.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: note,
+      path: line,
+      params: {
+        halt: true,
+        bond: {
+          ...bond,
+          lead,
+        },
+      },
+    })
+  }
+
+  return rise
+}
+
+export function testHave(lead: unknown) {
+  return lead != null
+}
+
+type TestTakeRest = {
+  take: Array<unknown>
+}
+
+export function testTake(lead: unknown, { take }: TestTakeRest) {
+  return take.includes(lead)
 }

@@ -3,7 +3,7 @@ import { Form, FormCode, FormLinkHostMoveName } from '@tunebond/form'
 import { haveMesh, testMesh } from '@tunebond/have'
 import { make8 } from '@tunebond/tone-code'
 import halt from '../halt.js'
-import { Base } from '../index.js'
+import { Base } from '../../make/take/index.js'
 
 const CODE_NAME = '__code__'
 
@@ -136,19 +136,6 @@ export function makeFormZodText(form: string, base: Base) {
         throw new Error(`Undefined '${form}'`)
       }
     }
-  }
-}
-
-export function testForm(bond: unknown): bond is Form {
-  return testMesh(bond) && 'link' in bond
-}
-
-export function haveForm(
-  bond: unknown,
-  name: string,
-): asserts bond is Form {
-  if (!testForm(bond)) {
-    throw halt('form_miss', { name })
   }
 }
 

@@ -1,11 +1,10 @@
 import loveCode from '@tunebond/love-code'
-import { Base } from '../index.js'
+import { Base } from '../../base.js'
 import {
   formCodeCase,
   makeFormText,
   makeFormZodText,
   makeFoot,
-  testForm,
   SLOT,
   makeHead,
 } from './base.js'

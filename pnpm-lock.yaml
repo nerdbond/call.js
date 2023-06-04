@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@tunebond/form':
-    specifier: 0.2.1
-    version: 0.2.1(kysely@0.24.2)
+    specifier: 0.2.2
+    version: 0.2.2(kysely@0.24.2)
   '@tunebond/halt':
     specifier: ^0.1.4
     version: 0.1.4
@@ -526,8 +526,8 @@ packages:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
 
-  /@tunebond/form@0.2.1(kysely@0.24.2):
-    resolution: {integrity: sha512-ucj0HAuta7/J7Zip08ssHUWuL2Bp3kdGe/ETVI2xVjnIJUwDDof6MAoBfKJu2Bu/wUdh5LkMG1u83z4TyH7ARA==}
+  /@tunebond/form@0.2.2(kysely@0.24.2):
+    resolution: {integrity: sha512-T1UqBh7B12134RCh2snc/3RV5gSTviDRimkd9Q6pWOl3JZTA92k7XE0zA9nXprTN37EGuldcqx+YWLzRu8wv7g==}
     peerDependencies:
       kysely: ^0.24.2
     dependencies:

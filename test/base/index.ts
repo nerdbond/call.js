@@ -1,4 +1,4 @@
-import CallBase from './call.js'
+import CallBase from './call/index.js'
 import FormBase from './form.js'
 import ReadTakeBase from './take/read.js'
 import SaveTakeBase from './take/save.js'

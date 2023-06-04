@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { z } from 'zod'
-import { bondHalt, testHave, testTake } from '../../../index.js'
+import { bondHalt, testHave, testTake } from '../../../base.js'
 import Load from '../form/load.js'
 import base from '../../base/index.js'
 import { FormLinkHostMoveName } from '@tunebond/form'

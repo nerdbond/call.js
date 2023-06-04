@@ -1,4 +1,4 @@
-import { ReadTakeBase } from '../../../index.js'
+import { ReadTakeBase } from '../../../base.js'
 
 const ReadTakeBase = {
   post: {

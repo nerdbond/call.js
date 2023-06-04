@@ -1,5 +1,5 @@
 import loveCode from '@tunebond/love-code'
-import { Base } from '../index.js'
+import { Base } from '../../base.js'
 import { formCodeCase, makeHead, testFormCode } from './base.js'
 
 export default async function make(base: Base, baseLink: string) {
