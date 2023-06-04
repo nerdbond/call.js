@@ -93,22 +93,24 @@ The allowed read depth says how far any query is allowed to go for each
 model.
 
 ```ts
-// base/call/read.ts
+// base/take/read.ts
 const read = {
   user: {
-    size: true,
-    list: {
-      read: {
-        id: true,
-        name: true,
-        email: true,
-        posts: {
-          read: {
-            size: true,
-            list: {
-              read: {
-                title: true,
-                // notice, no author, can't get the user.posts.author
+    read: {
+      size: true,
+      list: {
+        read: {
+          id: true,
+          name: true,
+          email: true,
+          posts: {
+            read: {
+              size: true,
+              list: {
+                read: {
+                  title: true,
+                  // notice, no author, can't get the user.posts.author
+                },
               },
             },
           },
@@ -117,19 +119,21 @@ const read = {
     },
   },
   post: {
-    size: true,
-    list: {
-      read: {
-        title: true,
-        author: {
-          read: {
-            id: true,
-            name: true,
-            email: true,
-            posts: {
-              list: true,
-              read: {
-                size: true,
+    read: {
+      size: true,
+      list: {
+        read: {
+          title: true,
+          author: {
+            read: {
+              id: true,
+              name: true,
+              email: true,
+              posts: {
+                list: true,
+                read: {
+                  size: true,
+                },
               },
             },
           },
@@ -141,6 +145,10 @@ const read = {
 
 export default read
 ```
+
+This read "take" or "what is allowed to be read" is transformed into a
+tree schema so we can quickly check the data that comes in in a query
+and see if it is valid.
 
 Then you have your specific read queries, which are part of a call, as
 illustrated earlier.
@@ -209,7 +217,7 @@ Like the `read`, there is a set of things you can change through the
 `save`:
 
 ```ts
-// base/call/save.ts
+// base/take/save.ts
 const save = {
   user: {
     save: {

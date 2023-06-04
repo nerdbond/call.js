@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 import type { Base } from './base.js'
-import make from './make/take/index.js'
+import make from './base/take/index.js'
 
 export default async function form(headLink: string, hostLink: string) {
   fs.mkdirSync(hostLink, { recursive: true })

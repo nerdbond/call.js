@@ -3,7 +3,7 @@ import { Form, FormCode, FormLinkHostMoveName } from '@tunebond/form'
 import { haveMesh, testMesh } from '@tunebond/have'
 import { make8 } from '@tunebond/tone-code'
 import halt from '../halt.js'
-import { Base } from '../../make/take/index.js'
+import { Base } from '../../base/take/index.js'
 
 const CODE_NAME = '__code__'
 

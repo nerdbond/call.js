@@ -1,7 +1,7 @@
 import { Form, FormMesh, FormTree } from '@tunebond/form'
 import { HaltMesh, saveHalt } from '@tunebond/halt'
 import { haveMesh, testMesh, testWave } from '@tunebond/have'
-import { Base, ReadTakeBase } from '../../base.js'
+import { Base, ReadTakeBase } from '../../base/index.js'
 import { haveFormMesh, testFormMesh } from '../../call/have.js'
 import halt from '../../halt.js'
 

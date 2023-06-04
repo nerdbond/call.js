@@ -1,4 +1,4 @@
-import { Base } from '../../make/take/index.js'
+import { Base } from '../../base/take/index.js'
 import makeFace from './face.js'
 import makeBack from './back.js'
 import makeSite from './site.js'

@@ -1,5 +1,5 @@
 import { HaltMesh } from '@tunebond/halt'
-import { Base } from '../../base.js'
+import { Base } from '../../base/index.js'
 import makeTakeRead from './read.js'
 import makeTakeSave from './save.js'
 
