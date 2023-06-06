@@ -10,13 +10,9 @@ import {
   testMesh,
   testWave,
 } from '@tunebond/have'
-import {
-  Base,
-  ReadTakeBase,
-  ReadTakeBaseLink,
-} from '../../base/index.js'
-import { haveFormMesh, testFormMesh } from '../../call/have.js'
-import halt from '../../halt.js'
+import { Base, ReadTakeBase, ReadTakeBaseLink } from '~/base/index.js'
+import { haveFormMesh, testFormMesh } from '~/call/have.js'
+import halt from '~/halt.js'
 import {
   LOAD_FIND_TEST,
   LoadFind,
@@ -24,6 +20,7 @@ import {
   LoadFindLike,
   LoadFindRoll,
 } from '~/call/load.js'
+import { ReadTakeTree } from '~/base/read'
 
 export function haveRise(
   wave: unknown,
@@ -34,8 +31,12 @@ export function haveRise(
   }
 }
 
+/**
+ * This file makes the read take validator.
+ */
+
 export default function make(base: Base, haltList: Array<HaltMesh>) {
-  const head = makeBaseFormTree({
+  const head = makeReadTakeTreeBase({
     base,
     haltList,
     formLine: `base.form`,
@@ -51,16 +52,24 @@ export type MakeFormTree = {
   readLine: string
 }
 
-export function makeBaseFormTree({
+export type MakeReadTakeTreeBase = {
+  base: Base
+  haltList: Array<HaltMesh>
+  formLine: string
+  readLine: string
+}
+
+export function makeReadTakeTreeBase({
   base,
   haltList,
   formLine,
   readLine,
-}: MakeFormTree) {
-  const head: FormTree = {
+}: MakeReadTakeTreeBase) {
+  const head: ReadTakeTree = {
+    like: 'read-take-tree',
     link: {},
+    name: {},
   }
-  haveMesh(head.link, 'head.link')
 
   for (const name in base.read) {
     const readLink = base.read[name]
@@ -73,7 +82,7 @@ export function makeBaseFormTree({
       const readNameLine = `${readLine}.${name}`
       haveMesh(readLink, readNameLine)
 
-      const tree = makeFormTree({
+      const link = makeReadTakeTree({
         base,
         formLine: formNameLine,
         readLine: readNameLine,
@@ -84,13 +93,51 @@ export function makeBaseFormTree({
         head,
       })
 
-      head.link[name] = tree
+      head.link[name] = link
     } catch (kink) {
       saveHalt(haltList, kink)
     }
   }
+}
 
-  return head
+export type MakeReadTakeTree = {
+  base: Base
+  formLine: string
+  readLine: string
+  readLink: ReadTakeBaseLink
+  baseForm: FormMesh
+  haltList: Array<HaltMesh>
+  list?: boolean
+}
+
+export function makeReadTakeTree({
+  base,
+  formLine,
+  readLine,
+  readLink,
+  baseForm,
+  haltList,
+  list = false,
+}: MakeReadTakeTree) {
+  if (list) {
+    return makeReadTakeTreeList({
+      base,
+      formLine,
+      readLine,
+      readLink,
+      baseForm,
+      haltList,
+    })
+  } else {
+    return makeReadTakeTreeMesh({
+      base,
+      formLine,
+      readLine,
+      readLink,
+      baseForm,
+      haltList,
+    })
+  }
 }
 
 export type BindForm = {
@@ -113,7 +160,7 @@ export function bindForm({
   list = false,
 }: BindForm) {
   if (testFormMesh(baseForm)) {
-    const headForm = makeFormTree({
+    const headForm = makeReadTakeTree({
       base,
       formLine,
       readLine,
@@ -128,7 +175,7 @@ export function bindForm({
   }
 }
 
-export type BindFormTreeList = {
+export type MakeReadTakeTreeList = {
   base: Base
   formLine: string
   readLine: string
@@ -137,18 +184,19 @@ export type BindFormTreeList = {
   haltList: Array<HaltMesh>
 }
 
-export function makeFormTreeList({
+export function makeReadTakeTreeList({
   base,
   formLine,
   readLine,
   readLink,
   baseForm,
   haltList,
-}: BindFormTreeList) {
-  const form: FormTree = {
+}: MakeReadTakeTreeList) {
+  const head: ReadTakeTree = {
+    like: 'read-take-tree',
     link: {},
+    name: {},
   }
-  haveMesh(form.link, 'form.link')
 
   for (const readLinkName in readLink.read) {
     const lead = readLink.read[readLinkName]
@@ -157,105 +205,57 @@ export function makeFormTreeList({
     switch (readLinkName) {
       case 'size':
         haveRise(lead, readLinkLine)
-        form.link.size = { form: 'wave' }
+        head.link.size = {
+          like: 'read-take-tree-leaf',
+          form: 'mark',
+        }
         break
       case 'list':
         haveMesh(lead, readLinkLine)
 
-        form.link.list = makeFormTree({
+        const link = makeReadTakeTree({
           base,
           formLine: formLinkLine,
           readLine: readLinkLine,
           readLink: lead,
           baseForm,
           haltList,
-          head: form,
         })
+
+        head.link.list = link
+        linkBind(link, head)
+
         break
       default:
         throw halt('link_miss', { call: readLinkLine })
     }
   }
 
-  return form
+  return head
 }
 
-export type BindFormTree = {
+export type MakeReadTakeTreeMesh = {
   base: Base
   formLine: string
   readLine: string
   readLink: ReadTakeBaseLink
   baseForm: FormMesh
   haltList: Array<HaltMesh>
-  list?: boolean
-  head: FormTree
 }
 
-export function makeFormTree({
+export function makeReadTakeTreeMesh({
   base,
   formLine,
   readLine,
   readLink,
   baseForm,
   haltList,
-  head,
-  list = false,
-}: BindFormTree) {
-  const leadForm: FormTree = {
+}: MakeReadTakeTreeMesh) {
+  const head: ReadTakeTree = {
+    like: 'read-take-tree',
     link: {},
+    name: {},
   }
-  haveMesh(leadForm.link, 'leadForm.link')
-
-  leadForm.link.find = { hook: makeFind }
-
-  // linkBind(leadForm, head)
-  linkBind(leadForm.link.find, leadForm)
-
-  if (list) {
-    leadForm.link.read = makeFormTreeList({
-      base,
-      formLine,
-      readLine,
-      readLink,
-      baseForm,
-      haltList,
-    })
-  } else {
-    leadForm.link.read = makeFormTreeMesh({
-      base,
-      formLine,
-      readLine,
-      readLink,
-      baseForm,
-      haltList,
-    })
-  }
-
-  linkBind(leadForm.link.read, leadForm)
-
-  return leadForm
-}
-
-export type BindFormTreeMesh = {
-  base: Base
-  formLine: string
-  readLine: string
-  readLink: ReadTakeBaseLink
-  baseForm: FormMesh
-  haltList: Array<HaltMesh>
-}
-
-export function makeFormTreeMesh({
-  base,
-  formLine,
-  readLine,
-  readLink,
-  baseForm,
-  haltList,
-}: BindFormTreeMesh) {
-  const head: FormTree = {}
-  head.link = {}
-  haveMesh(head.link, 'form.link')
 
   for (const readName in readLink.read) {
     try {
@@ -269,11 +269,15 @@ export function makeFormTreeMesh({
         if (Array.isArray(baseFormLink.form)) {
           const readBaseNameLine = `${readLinkLine}.name`
           haveMesh(readBase.name, readBaseNameLine)
-          const headLink: FormTree = { void: true, name: {} }
+          const nameTree: ReadTakeTree = {
+            like: 'read-take-tree',
+            link: {},
+            name: {},
+          }
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const headLinkName = headLink.name
-          haveMesh(headLinkName, 'headLinkName')
+          const nameTreeName = nameTree.name
+          haveMesh(nameTreeName, 'nameTreeName')
 
           for (const readLinkName in readBase.name) {
             try {
@@ -289,7 +293,7 @@ export function makeFormTreeMesh({
               const readLink = readBase.name[readLinkName]
               haveMesh(readLink, readBaseLinkLine)
 
-              const headLinkTree = makeFormTree({
+              const link = makeReadTakeTree({
                 base,
                 formLine: formLinkLine,
                 readLine: readLinkLine,
@@ -297,23 +301,22 @@ export function makeFormTreeMesh({
                 readLink,
                 haltList,
                 list: baseFormLink.list === true,
-                head: headLink,
               })
 
-              headLinkName[readLinkName] = headLinkTree
+              nameTreeName[readLinkName] = link
+
+              linkBind(link, nameTree)
             } catch (kink) {
               saveHalt(haltList, kink)
             }
           }
-
-          linkBind(headLink, head)
-
-          head.link[readName] = headLink
+          head.link[readName] = nameTree
+          linkBind(nameTree, head)
         } else if (baseFormLink.form) {
           const nestBaseForm = base.form[baseFormLink.form]
           haveFormMesh(nestBaseForm, formLinkLine)
 
-          const headLinkTree = makeFormTree({
+          const link = makeReadTakeTree({
             base,
             formLine: formLinkLine,
             readLine: readLinkLine,
@@ -321,14 +324,19 @@ export function makeFormTreeMesh({
             readLink: readBase,
             haltList,
             list: baseFormLink.list === true,
-            head,
           })
 
-          head.link[readName] = headLinkTree
+          head.link[readName] = link
+          linkBind(link, head)
         }
       } else if (testWave(readBase)) {
         haveRise(readBase, readLinkLine)
-        head.link[readName] = { form: 'wave' }
+        haveText(baseFormLink.form, 'baseFormLink.form')
+
+        head.link[readName] = {
+          like: 'read-take-tree-leaf',
+          form: baseFormLink.form,
+        }
       }
     } catch (kink) {
       saveHalt(haltList, kink)

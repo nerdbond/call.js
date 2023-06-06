@@ -1,5 +1,5 @@
 import loveCode from '@tunebond/love-code'
-import { Base } from '../../base.js'
+import { Base } from '~/base/index.js'
 import {
   formCodeCase,
   makeFormText,

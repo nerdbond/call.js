@@ -1,6 +1,6 @@
 import { HaltMesh } from '~/../halt.js/host/index.js'
 import base from './base/index.js'
-import makeRead from '~/base/take/read'
+import makeRead from '~/make/base/take/read.js'
 import makeCall from '~/call/make.js'
 import findUserById from './base/call/read/findUserById.js'
 

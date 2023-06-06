@@ -8,7 +8,7 @@ import {
   FormBase,
   LoadRead,
   LoadReadLink,
-} from '../../base/take/index.js'
+} from '../base/take/index.js'
 import { formCodeCase, saveCode, haveForm, makeHead } from './base.js'
 
 export default async function make(base: Base, baseLink: string) {
