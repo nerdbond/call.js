@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@tunebond/call</h3>
+<h3 align='center'>@nerdbond/call</h3>
 <p align='center'>
   GraphQL-like query resolver for TypeScript
 </p>
@@ -18,13 +18,13 @@
 ## Installation
 
 ```
-pnpm add @tunebond/call
-yarn add @tunebond/call
-npm i @tunebond/call
+pnpm add @nerdbond/call
+yarn add @nerdbond/call
+npm i @nerdbond/call
 ```
 
 This library depends on the
-[`@tunebond/form`](https://github.com/tunebond/form.js) model
+[`@nerdbond/form`](https://github.com/nerdbond/form.js) model
 definitions.
 
 ## How it works
@@ -74,7 +74,7 @@ The `load` for a `call` might look like this:
 A `task` is a query action, and can take any of these forms.
 
 - `link`: attach (connect)
-- `free`: detach (disconnect)
+- `toss`: detach (disconnect)
 - `read`: select
 - `kill`: remove
 - `diff`: update
@@ -298,7 +298,7 @@ accepts and validations and such.
 ```ts
 import fs from 'fs'
 
-import { make } from '@tunebond/call.js/make'
+import { make } from '@nerdbond/call.js/make'
 
 import Base from './base'
 import Call from './call'
@@ -332,17 +332,17 @@ Those are the testing commands.
 
 MIT
 
-## TuneBond
+## NerdBond
 
-This is being developed by the folks at [TuneBond](https://tune.bond), a
+This is being developed by the folks at [NerdBond](https://nerd.bond), a
 California-based project for helping humanity master information and
-computation. TuneBond started off in the winter of 2008 as a spark of an
+computation. NerdBond started off in the winter of 2008 as a spark of an
 idea, to forming a company 10 years later in the winter of 2018, to a
 seed of a project just beginning its development phases. It is entirely
 bootstrapped by working full time and running
-[Etsy](https://etsy.com/shop/tunebond) and
+[Etsy](https://etsy.com/shop/nerdbond) and
 [Amazon](https://www.amazon.com/s?rh=p_27%3AMount+Build) shops. Also
-find us on [Facebook](https://www.facebook.com/tunebond),
-[Twitter](https://twitter.com/tunebond), and
-[LinkedIn](https://www.linkedin.com/company/tunebond). Check out our
+find us on [Facebook](https://www.facebook.com/nerdbond),
+[Twitter](https://twitter.com/nerdbond), and
+[LinkedIn](https://www.linkedin.com/company/nerdbond). Check out our
 other GitHub projects as well!
