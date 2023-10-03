@@ -1,8 +1,8 @@
 import { toPascalCase } from '~/code/tool/helper'
 import { BaseType } from '~/code/type/base'
-import { MutatePermitType } from '~/code/type/permit/mutate'
+import { PermitType } from '~/code/type/permit'
+import { FilterPermitType } from '~/code/type/permit/filter'
 import {
-  SchemaFilterPossibleType,
   SchemaPropertyContainerType,
   SchemaPropertyType,
 } from '~/code/type/schema'
@@ -12,7 +12,7 @@ export function handleFilter({
   filter,
 }: {
   base: BaseType
-  filter: SchemaFilterPossibleType
+  filter: FilterPermitType
 }) {
   const list: Array<string> = []
 
@@ -48,29 +48,34 @@ export function handleSchema({
   mutate,
 }: {
   base: BaseType
-  mutate: MutatePermitType
+  mutate: PermitType
 }) {
   const list: Array<string> = []
+  list.push(`z.object({`)
 
   if ('filter' in mutate && mutate.filter) {
     handleFilter({ base, filter: mutate.filter }).forEach(line => {
-      list.push(line)
+      list.push(`  ${line}`)
     })
   }
 
   if ('effect' in mutate && mutate.effect) {
-    list.push(`effect: z.object({`)
+    list.push(`  effect: z.object({`)
     handleEachProperty({
       base,
       schema: { type: 'object', property: mutate.effect },
     }).forEach(line => {
-      list.push(`  ${line}`)
+      list.push(`    ${line}`)
     })
-    list.push(`}),`)
+    list.push(`  }),`)
   }
 
-  if ('extend' in mutate && mutate.extend) {
-    list.push(`extend: ${toPascalCase(mutate.extend)}Extend,`)
+  list.push(`})`)
+
+  if ('extend' in mutate && typeof mutate.extend === 'string') {
+    list.push(`.merge(${toPascalCase(mutate.extend)})`)
+  } else {
+    list.push(`.merge(Extend)`)
   }
 
   return list
@@ -133,7 +138,8 @@ export function handleProperty({
     case 'json':
       push(name, `z.object({}).passthrough()`)
       break
-    case 'object': {
+    case 'object':
+    case undefined: {
       if (property.optional) {
         list.push(`${name}: z.optional(`)
         list.push(`  z.object({`)

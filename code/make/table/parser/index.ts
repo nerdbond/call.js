@@ -60,25 +60,31 @@ export function handleEachProperty({
     const field = path.concat([name]).join('__')
     switch (property.type) {
       case 'timestamp':
-        list.push(`${field}: z.optional(z.coerce.date()),`)
+        list.push(`${field}: z.optional(z.nullable(z.coerce.date())),`)
         break
       case 'text':
-        list.push(`${field}: z.optional(z.string().trim()),`)
+        list.push(
+          `${field}: z.optional(z.nullable(z.string().trim())),`,
+        )
         break
       case 'uuid':
-        list.push(`${field}: z.optional(z.string().uuid()),`)
+        list.push(
+          `${field}: z.optional(z.nullable(z.string().uuid())),`,
+        )
         break
       case 'integer':
-        list.push(`${field}: z.optional(z.number().int()),`)
+        list.push(`${field}: z.optional(z.nullable(z.number().int())),`)
         break
       case 'decimal':
-        list.push(`${field}: z.optional(z.number()),`)
+        list.push(`${field}: z.optional(z.nullable(z.number())),`)
         break
       case 'boolean':
-        list.push(`${field}: z.optional(z.boolean()),`)
+        list.push(`${field}: z.optional(z.nullable(z.boolean())),`)
         break
       case 'json':
-        list.push(`${field}: z.optional(z.object({}).passthrough()),`)
+        list.push(
+          `${field}: z.optional(z.nullable(z.object({}).passthrough())),`,
+        )
         break
       case 'object':
         handleEachProperty({
@@ -93,12 +99,12 @@ export function handleEachProperty({
         list.push(
           `${path
             .concat([name, 'id'])
-            .join('__')}: z.optional(z.string().uuid()),`,
+            .join('__')}: z.optional(z.nullable(z.string().uuid())),`,
         )
         list.push(
           `${path
             .concat([name, 'type'])
-            .join('__')}?: z.optional(z.string().trim()),`,
+            .join('__')}?: z.optional(z.nullable(z.string().trim())),`,
         )
         break
       default:
@@ -106,7 +112,9 @@ export function handleEachProperty({
           list.push(
             `${path
               .concat([name, 'id'])
-              .join('__')}?: z.optional(z.string().uuid()),`,
+              .join(
+                '__',
+              )}?: z.optional(z.nullable(z.string().uuid())),`,
           )
         }
     }

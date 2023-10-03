@@ -1,6 +1,5 @@
 import { BaseType } from '~/code/type/base'
 import {
-  ExtendPermitContainerType,
   ExtendPermitType,
   ExtendPermitValueType,
 } from '~/code/type/permit/extend'
@@ -9,131 +8,22 @@ import {
   SchemaPropertyType,
 } from '~/code/type/schema'
 import { handleFilter } from './manage'
-
-export function handleEachProperty({
-  base,
-  schema,
-  extend,
-}: {
-  base: BaseType
-  schema: SchemaPropertyContainerType
-  extend: ExtendPermitType
-}) {
-  const list: Array<string> = []
-
-  for (const name in extend) {
-    const childExtend = extend[name]
-    const childProperty = schema.property?.[name]
-
-    if (childProperty) {
-      const childList = handleProperty({
-        name,
-        base,
-        property: childProperty,
-        extend: childExtend,
-      })
-
-      childList.forEach(line => {
-        list.push(line)
-      })
-    }
-  }
-
-  return list
-}
-
-export function handleProperty({
-  name,
-  base,
-  property,
-  extend,
-}: {
-  name: string
-  base: BaseType
-  property: SchemaPropertyType
-  extend: ExtendPermitValueType
-}) {
-  const list: Array<string> = []
-
-  const value = extend[name]
-  switch (property.type) {
-    case 'timestamp':
-    case 'text':
-    case 'uuid':
-    case 'integer':
-    case 'decimal':
-    case 'json':
-    case 'boolean':
-      list.push(`${name}: z.optional(z.boolean()),`)
-      break
-    case 'object':
-      if (typeof value === 'object') {
-        list.push(`${name}: z.optional(z.object({`)
-        handleContainer({
-          base,
-          schema: property,
-          isList: false,
-          extend: value,
-        }).forEach(line => {
-          list.push(`  ${line}`)
-        })
-        list.push(`})),`)
-      }
-      break
-    case 'record':
-      if (typeof value === 'object' && value.case) {
-        list.push(`${name}: z.optional(`)
-        list.push(`  z.union([`)
-        for (const name in value.case) {
-          const container = value.case[name]
-          const childSchema = base[name]
-          list.push(`    z.object({`)
-          handleContainer({
-            base,
-            schema: childSchema,
-            isList: !!property.list,
-            extend: container,
-          }).forEach(line => {
-            list.push(`      ${line}`)
-          })
-          list.push(`    })`)
-        }
-        list.push(`  ])`)
-        list.push(`),`)
-      }
-      break
-    default: {
-      if (typeof value === 'object') {
-        const childSchema = base[property.type]
-        list.push(`${name}: z.optional(`)
-        list.push(`  z.object({`)
-        handleContainer({
-          base,
-          schema: childSchema,
-          extend: value,
-          isList: !!property.list,
-        }).forEach(line => {
-          list.push(`    ${line}`)
-        })
-        list.push(`  })`)
-        list.push(`),`)
-      }
-    }
-  }
-
-  return list
-}
+import { toPascalCase } from '~/code/tool/helper'
 
 export function handleContainer({
   base,
   schema,
   extend,
   isList = false,
+  hoist,
+  path,
 }: {
   base: BaseType
   schema: SchemaPropertyContainerType
-  extend: ExtendPermitContainerType
-  isList: boolean
+  extend: ExtendPermitType
+  isList?: boolean
+  hoist: Array<string>
+  path: Array<string>
 }) {
   const list: Array<string> = []
 
@@ -152,14 +42,159 @@ export function handleContainer({
     list.push(`extend: z.optional(`)
     list.push(`  z.object({`)
 
-    handleEachProperty({ base, schema, extend: extend.extend }).forEach(
-      line => {
-        list.push(`  ${line}`)
-      },
-    )
+    handleEachProperty({
+      base,
+      schema,
+      extend: extend.extend,
+      hoist,
+      path,
+    }).forEach(line => {
+      list.push(`    ${line}`)
+    })
 
     list.push(`  })`)
     list.push(`),`)
+  }
+
+  const nameName = path.map(toPascalCase).join('_')
+  const nameList: Array<string> = [``]
+  nameList.push(`export const ${nameName}Extend = z.object({`)
+  list.forEach(line => {
+    nameList.push(`  ${line}`)
+  })
+  nameList.push(`})`)
+
+  hoist.push(...nameList)
+
+  list.length = 0
+
+  list.push(`${nameName}Extend.merge(`)
+  list.push(`  z.object({`)
+  list.push(`    name: z.record(z.string(), ${nameName}Extend)`)
+  list.push(`  })`)
+  list.push(`),`)
+
+  return list
+}
+
+export function handleEachProperty({
+  base,
+  schema,
+  extend,
+  path,
+  hoist,
+}: {
+  base: BaseType
+  schema: SchemaPropertyContainerType
+  extend: ExtendPermitType
+  hoist: Array<string>
+  path: Array<string>
+}) {
+  const list: Array<string> = []
+
+  for (const name in extend) {
+    const childExtend = extend[name]
+    const childProperty = schema.property?.[name]
+
+    if (childProperty) {
+      handleProperty({
+        name,
+        base,
+        property: childProperty,
+        extend: childExtend,
+        hoist,
+        path,
+      }).forEach(line => {
+        list.push(`  ${line}`)
+      })
+    }
+  }
+
+  return list
+}
+
+export function handleProperty({
+  name,
+  base,
+  property,
+  extend,
+  hoist,
+  path,
+}: {
+  name: string
+  base: BaseType
+  property: SchemaPropertyType
+  extend: ExtendPermitValueType
+  hoist: Array<string>
+  path: Array<string>
+}) {
+  const list: Array<string> = []
+
+  switch (property.type) {
+    case 'timestamp':
+    case 'text':
+    case 'uuid':
+    case 'integer':
+    case 'decimal':
+    case 'json':
+    case 'boolean':
+      list.push(`${name}: z.optional(z.boolean()),`)
+      break
+    case 'object':
+      if (typeof extend === 'object') {
+        list.push(`${name}: z.optional(`)
+        handleContainer({
+          base,
+          schema: property,
+          isList: false,
+          extend,
+          hoist,
+          path: path.concat([name]),
+        }).forEach(line => {
+          list.push(`  ${line}`)
+        })
+        list.push(`),`)
+      }
+      break
+    case 'record':
+      if (typeof extend === 'object' && extend.case) {
+        list.push(`${name}: z.optional(`)
+        list.push(`  z.union([`)
+        for (const name in extend.case) {
+          const container = extend.case[name]
+          const childSchema = base[name]
+          handleContainer({
+            base,
+            schema: childSchema,
+            isList: !!property.list,
+            extend: container,
+            hoist,
+            path: path.concat([name]),
+          }).forEach(line => {
+            list.push(`    ${line}`)
+          })
+        }
+        list.push(`  ])`)
+        list.push(`),`)
+      }
+      break
+    default: {
+      if (typeof extend === 'object') {
+        const childSchema = base[property.type]
+        list.push(`${name}: z.optional(`)
+        handleContainer({
+          base,
+          schema: childSchema,
+          extend,
+          isList: !!property.list,
+          hoist,
+          path: path.concat([name]),
+        }).forEach(line => {
+          list.push(`  ${line}`)
+        })
+        list.push(`),`)
+      }
+    }
   }
 
   return list

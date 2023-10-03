@@ -1,8 +1,10 @@
 import { toPascalCase } from '~/code/tool/helper'
 import { BaseType } from '~/code/type/base'
-import { MutatePermitType } from '~/code/type/permit/mutate'
+import { CreatePermitType } from '~/code/type/permit/create'
+import { FilterPermitType } from '~/code/type/permit/filter'
+import { RemovePermitType } from '~/code/type/permit/remove'
+import { UpdatePermitType } from '~/code/type/permit/update'
 import {
-  SchemaFilterPossibleType,
   SchemaPropertyContainerType,
   SchemaPropertyType,
 } from '~/code/type/schema'
@@ -13,7 +15,7 @@ export function handleFilter({
   optional,
 }: {
   base: BaseType
-  filter: SchemaFilterPossibleType
+  filter: FilterPermitType
   optional?: boolean
 }) {
   const list: Array<string> = []
@@ -47,31 +49,38 @@ export function handleFilter({
 export function handleSchema({
   base,
   mutate,
+  hoist,
 }: {
   base: BaseType
-  mutate: MutatePermitType
+  mutate: CreatePermitType | UpdatePermitType | RemovePermitType
+  hoist: Array<string>
 }) {
   const list: Array<string> = []
+  list.push(`{`)
 
   if ('filter' in mutate && mutate.filter) {
     handleFilter({ base, filter: mutate.filter }).forEach(line => {
-      list.push(line)
+      list.push(`  ${line}`)
     })
   }
 
   if ('effect' in mutate && mutate.effect) {
-    list.push(`effect: {`)
+    list.push(`  effect: {`)
     handleEachProperty({
       base,
       schema: { type: 'object', property: mutate.effect },
     }).forEach(line => {
-      list.push(`  ${line}`)
+      list.push(`    ${line}`)
     })
-    list.push(`}`)
+    list.push(`  }`)
   }
 
+  list.push(`}`)
+
   if ('extend' in mutate && mutate.extend) {
-    list.push(`extend: ${toPascalCase(mutate.extend)}ExtendType`)
+    list.push(` & ${toPascalCase(mutate.extend)}Type`)
+  } else {
+    list.push(` & ExtendType`)
   }
 
   return list
@@ -134,6 +143,7 @@ export function handleProperty({
       push(`object`)
       break
     case 'object':
+    case undefined:
       list.push(`${name}${optional}: ${listPrefix}{`)
       handleEachProperty({ base, schema: property }).forEach(line => {
         list.push(`  ${line}`)

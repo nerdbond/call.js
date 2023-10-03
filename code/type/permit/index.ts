@@ -1,18 +1,18 @@
 import { CreatePermitBuilderType, CreatePermitType } from './create'
+import { ExtendPermitBuilderType, ExtendPermitType } from './extend'
 import { RemovePermitBuilderType, RemovePermitType } from './remove'
 import { UpdatePermitBuilderType, UpdatePermitType } from './update'
 
-export type MutatePermitBuilderMapType = Record<
-  string,
-  MutatePermitBuilderType
->
+export type PermitBuilderMapType = Record<string, PermitBuilderType>
 
-export type MutatePermitBuilderType =
+export type PermitBuilderType =
   | CreatePermitBuilderType
   | UpdatePermitBuilderType
+  | ExtendPermitBuilderType
   | RemovePermitBuilderType
 
-export type MutatePermitType =
+export type PermitType =
   | CreatePermitType
   | UpdatePermitType
+  | ExtendPermitType
   | RemovePermitType

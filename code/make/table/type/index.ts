@@ -51,21 +51,21 @@ export function handleEachProperty({
     const field = path.concat([name]).join('__')
     switch (property.type) {
       case 'timestamp':
-        list.push(`${field}?: Date`)
+        list.push(`${field}?: Date | null`)
         break
       case 'text':
       case 'uuid':
-        list.push(`${field}?: string`)
+        list.push(`${field}?: string | null`)
         break
       case 'integer':
       case 'decimal':
-        list.push(`${field}?: number`)
+        list.push(`${field}?: number | null`)
         break
       case 'boolean':
-        list.push(`${field}?: boolean`)
+        list.push(`${field}?: boolean | null`)
         break
       case 'json':
-        list.push(`${field}?: object`)
+        list.push(`${field}?: object | null`)
         break
       case 'object':
         handleEachProperty({
@@ -77,15 +77,17 @@ export function handleEachProperty({
         })
         break
       case 'record':
-        list.push(`${path.concat([name, 'id']).join('__')}?: string`)
         list.push(
-          `  ${path.concat([name, 'type']).join('__')}?: string`,
+          `${path.concat([name, 'id']).join('__')}?: string | null`,
+        )
+        list.push(
+          `  ${path.concat([name, 'type']).join('__')}?: string | null`,
         )
         break
       default:
         if (property.reference && !property.list) {
           list.push(
-            `  ${path.concat([name, 'id']).join('__')}?: string`,
+            `  ${path.concat([name, 'id']).join('__')}?: string | null`,
           )
         }
     }

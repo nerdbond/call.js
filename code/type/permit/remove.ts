@@ -1,8 +1,8 @@
-import { SchemaFilterPossibleType } from '../schema'
+import { FilterPermitQuery } from './filter'
 
 export type RemovePermitBuilderType = () => RemovePermitType
 
 export type RemovePermitType = {
-  filter?: SchemaFilterPossibleType
-  select?: string
+  filter?: FilterPermitQuery
+  extend?: string
 }

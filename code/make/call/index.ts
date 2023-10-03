@@ -2,75 +2,48 @@ import loveCode from '@nerdbond/love-code'
 import makeEachParser from './parser'
 import makeEachType from './type'
 import { BaseType } from '~/code/type/base'
-import {
-  ExtendPermitBuilderMapType,
-  ExtendPermitType,
-} from '~/code/type/permit/extend'
-import {
-  MutatePermitBuilderMapType,
-  MutatePermitType,
-} from '~/code/type/permit/mutate'
+import { ExtendPermitType } from '~/code/type/permit/extend'
+import { PermitBuilderMapType, PermitType } from '~/code/type/permit'
 
 export default async function make({
   base,
   name,
-  extend,
-  manage,
+  source,
 }: {
   base: BaseType
   name: string
-  extend: ExtendPermitBuilderMapType
-  manage: MutatePermitBuilderMapType
+  source: PermitBuilderMapType
 }) {
   const schema = base[name]
 
-  const extendCallList: Array<{
+  const callList: Array<{
     name: string
-    call: ExtendPermitType
-  }> = []
-  const manageCallList: Array<{
-    name: string
-    call: MutatePermitType
+    call: PermitType
   }> = []
 
-  for (const name in extend) {
-    const builder = extend[name]
+  for (const name in source) {
+    const builder = source[name]
 
     if (typeof builder !== 'function') {
       continue
     }
 
     const call = builder()
-    extendCallList.push({ name, call })
-  }
-
-  for (const name in manage) {
-    const builder = manage[name]
-
-    if (typeof builder !== 'function') {
-      continue
-    }
-
-    const call = builder()
-
-    manageCallList.push({ name, call })
+    callList.push({ name, call })
   }
 
   const parserTextList = makeEachParser({
     base,
     schema,
-    extend: extendCallList,
-    manage: manageCallList,
+    list: callList,
   })
   const typeTextList = makeEachType({
     base,
     schema,
-    extend: extendCallList,
-    manage: manageCallList,
+    list: callList,
   })
 
-  console.log(parserTextList.join('\n'))
-  console.log(typeTextList.join('\n'))
+  // console.log(typeTextList.join('\n'))
 
   const parser = await loveCode(parserTextList.join('\n'))
   const type = await loveCode(typeTextList.join('\n'))
