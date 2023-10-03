@@ -7,8 +7,12 @@ export default async function handle({ base }: { base: BaseType }) {
   const list: Array<string> = []
 
   list.push(`import { z } from 'zod'`)
-  list.push(`import { paginated } from './mixin/paginated'`)
-  list.push(`import { record } from './mixin/record'`)
+  list.push(
+    `import { paginated } from '@nerdbond/call/host/code/type/tree/mixin/paginated'`,
+  )
+  list.push(
+    `import { record } from '@nerdbond/call/host/code/type/tree/mixin/record'`,
+  )
   list.push(`import * as Type from '.'`)
 
   for (const name in base) {

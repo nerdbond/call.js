@@ -6,7 +6,9 @@ import { SchemaPropertyContainerType } from '~/code/type/schema'
 export default async function handle({ base }: { base: BaseType }) {
   const list: Array<string> = []
 
-  list.push(`import { Paginated } from './mixin/paginated'`)
+  list.push(
+    `import { Paginated } from '@nerdbond/call/host/code/type/tree/mixin/paginated'`,
+  )
 
   for (const name in base) {
     list.push(``)
