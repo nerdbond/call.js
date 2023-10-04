@@ -1,4 +1,4 @@
-import { FilterPermitQuery } from './filter'
+import { FilterPermitType } from './filter'
 
 export type ExtendPermitBuilderType = () => ExtendPermitType
 
@@ -9,7 +9,7 @@ export type ExtendPermitObjectType = {
 export type ExtendPermitValueType = boolean | ExtendPermitType
 
 export type ExtendPermitType = {
-  filter?: FilterPermitQuery
+  filter?: FilterPermitType
   extend?: ExtendPermitObjectType
   case?: Record<string, ExtendPermitType>
 }

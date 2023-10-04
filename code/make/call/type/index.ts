@@ -22,6 +22,7 @@ export default function handle({
   }>
 }) {
   const textList: Array<string> = []
+  textList.push(`import { Filter } from '@nerdbond/call'`)
   handleEach({ base, schema, list, hoist: textList })
   return textList
 }

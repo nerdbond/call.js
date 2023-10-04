@@ -10,11 +10,7 @@ export type FilterPermitTestType =
   | '!='
   | 'in'
 
-export type FilterPermitType =
-  | FilterPermitObjectType
-  | Array<FilterPermitObjectType>
-
-export type FilterPermitObjectType = {
+export type FilterPermitType = {
   [key: string]: FilterPermitPropertyType
 }
 

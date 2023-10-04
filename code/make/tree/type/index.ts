@@ -1,14 +1,9 @@
-import loveCode from '@nerdbond/love-code'
 import { toPascalCase } from '~/code/tool/helper'
 import { BaseType } from '~/code/type/base'
 import { SchemaPropertyContainerType } from '~/code/type/schema'
 
-export default async function handle({ base }: { base: BaseType }) {
+export default function handle({ base }: { base: BaseType }) {
   const list: Array<string> = []
-
-  list.push(
-    `import { Paginated } from '@nerdbond/call/host/code/type/tree/mixin/paginated'`,
-  )
 
   for (const name in base) {
     list.push(``)
@@ -17,8 +12,7 @@ export default async function handle({ base }: { base: BaseType }) {
     })
   }
 
-  const text = await loveCode(list.join('\n'))
-  return text
+  return list
 }
 
 export function handleOne({

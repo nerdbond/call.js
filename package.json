@@ -1,6 +1,7 @@
 {
   "name": "@nerdbond/call",
   "version": "0.2.5",
+  "main": "./host/index.js",
   "scripts": {
     "make": "tsc && tsc-alias",
     "scan": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",

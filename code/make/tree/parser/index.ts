@@ -1,19 +1,9 @@
-import loveCode from '@nerdbond/love-code'
 import { toPascalCase } from '~/code/tool/helper'
 import { BaseType } from '~/code/type/base'
 import { SchemaPropertyContainerType } from '~/code/type/schema'
 
-export default async function handle({ base }: { base: BaseType }) {
+export default function handle({ base }: { base: BaseType }) {
   const list: Array<string> = []
-
-  list.push(`import { z } from 'zod'`)
-  list.push(
-    `import { paginated } from '@nerdbond/call/host/code/type/tree/mixin/paginated'`,
-  )
-  list.push(
-    `import { record } from '@nerdbond/call/host/code/type/tree/mixin/record'`,
-  )
-  list.push(`import * as Type from '.'`)
 
   for (const name in base) {
     list.push(``)
@@ -22,8 +12,7 @@ export default async function handle({ base }: { base: BaseType }) {
     })
   }
 
-  const text = await loveCode(list.join('\n'))
-  return text
+  return list
 }
 
 export function handleOne({
@@ -39,7 +28,7 @@ export function handleOne({
   const typeName = toPascalCase(name)
 
   list.push(
-    `export const ${typeName}: z.ZodType<Type.${typeName}Type> = z.object({`,
+    `export const ${typeName}: z.ZodType<${typeName}Type> = z.object({`,
   )
 
   handleEachProperty({ base, schema }).forEach(line => {

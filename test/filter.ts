@@ -1,15 +1,21 @@
+import { z } from 'zod'
 import * as Filter from '~/code/type/query/filter'
 
-const TestFilter = Filter.FilterQuery('string', ['foo', 'bar'])
+const TestFilter = Filter.FilterQuery([
+  Filter.FilterString(['foo', 'bar']),
+  Filter.FilterString(['hello', 'world']),
+  Filter.FilterNumber(['baz']),
+])
+type TestFilterType = z.infer<typeof TestFilter>
 
-console.log(
-  TestFilter.parse({
-    type: 'test',
-    path: ['foo', 'bar'],
-    test: '=',
-    value: 'hello',
-  }),
-)
+const filter: TestFilterType = TestFilter.parse({
+  type: 'test',
+  path: ['foo', 'bar'],
+  test: '=',
+  value: 'hello',
+})
+
+console.log(filter)
 
 console.log(
   TestFilter.parse({
@@ -17,9 +23,23 @@ console.log(
     condition: [
       {
         type: 'test',
-        path: ['foo', 'bar'],
+        path: ['hello', 'world'],
         test: '=',
         value: 'hello',
+      },
+    ],
+  }),
+)
+
+console.log(
+  TestFilter.parse({
+    type: 'or',
+    condition: [
+      {
+        type: 'test',
+        path: ['baz'],
+        test: '>',
+        value: 123,
       },
     ],
   }),

@@ -1,10 +1,10 @@
 import { SchemaMapType } from '../schema'
-import { FilterPermitQuery } from './filter'
+import { FilterPermitType } from './filter'
 
 export type UpdatePermitBuilderType = () => UpdatePermitType
 
 export type UpdatePermitType = {
-  filter?: FilterPermitQuery
+  filter?: FilterPermitType
   effect?: SchemaMapType
   extend?: string
 }

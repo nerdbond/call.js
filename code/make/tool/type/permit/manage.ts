@@ -9,6 +9,12 @@ import {
   SchemaPropertyType,
 } from '~/code/type/schema'
 
+export type FilterLinkType = {
+  path: Array<string>
+  type: string
+  optional?: boolean
+}
+
 export function handleFilter({
   base,
   filter,
@@ -33,17 +39,42 @@ export function handleFilter({
       list.push(`  }`)
     })
   } else {
-    list.push(`filter${optional ? '?' : ''}: {`)
-    handleEachProperty({
+    const pathList: Array<FilterLinkType> = []
+    const path = []
+    handleEachFilterProperty({
       base,
       schema: { type: 'object', property: filter },
-    }).forEach(line => {
-      list.push(`  ${line}`)
+      list: pathList,
+      path,
     })
-    list.push(`}`)
+    const filterPathList: Array<string> = []
+    pathList.forEach(link => {
+      const filterText = getFilterType(link.type)
+      if (filterText) {
+        filterPathList.push(`${filterText}<Array<string>>`)
+      }
+    })
+    list.push(
+      `filter${
+        optional ? '?' : ''
+      }: Filter.FilterQueryType<${filterPathList.join(' | ')}>`,
+    )
   }
 
   return list
+}
+
+function getFilterType(type: string) {
+  switch (type) {
+    case 'string':
+      return `Filter.FilterStringType`
+    case 'number':
+      return `Filter.FilterNumberType`
+    case 'date':
+      return `Filter.FilterDateType`
+    case 'boolean':
+      return `Filter.FilterBooleanType`
+  }
 }
 
 export function handleSchema({
@@ -126,7 +157,7 @@ export function handleProperty({
 
   switch (property.type) {
     case 'timestamp':
-      push(`Date`)
+      push(`date`)
       break
     case 'text':
     case 'uuid':
@@ -149,6 +180,93 @@ export function handleProperty({
         list.push(`  ${line}`)
       })
       list.push(`}${listSuffix}`)
+      break
+    default:
+      throw new Error(`Invalid permit type property '${property.type}'`)
+  }
+
+  return list
+}
+
+export function handleEachFilterProperty({
+  base,
+  schema,
+  list,
+  path,
+}: {
+  base: BaseType
+  schema: SchemaPropertyContainerType
+  list: Array<FilterLinkType>
+  path: Array<string>
+}) {
+  for (const name in schema.property) {
+    const property = schema.property[name]
+
+    handleFilterProperty({
+      base,
+      name,
+      property,
+      list,
+      path: path.concat([name]),
+    })
+  }
+}
+
+export function handleFilterProperty({
+  name,
+  base,
+  property,
+  list,
+  path,
+}: {
+  base: BaseType
+  name: string
+  property: SchemaPropertyType
+  list: Array<FilterLinkType>
+  path: Array<string>
+}) {
+  const optional = property.optional ? '?' : ''
+  const listPrefix = property.list ? `Array<` : ''
+  const listSuffix = property.list ? `>` : ''
+
+  // function push(expression: string) {
+  //   list.push(
+  //     `${name}${optional}: ${listPrefix}${expression}${listSuffix}`,
+  //   )
+  // }
+
+  switch (property.type) {
+    case 'timestamp':
+      list.push({ type: `date`, path, optional: !!property.optional })
+      break
+    case 'text':
+    case 'uuid':
+      list.push({ type: `string`, path, optional: !!property.optional })
+      break
+    case 'integer':
+    case 'decimal':
+      list.push({ type: `number`, path, optional: !!property.optional })
+      break
+    case 'boolean':
+      list.push({
+        type: `boolean`,
+        path,
+        optional: !!property.optional,
+      })
+      break
+    case 'json':
+      list.push({ type: `object`, path, optional: !!property.optional })
+      break
+    case 'object':
+    case undefined:
+      // list.push(`${name}${optional}: ${listPrefix}{`)
+      handleEachFilterProperty({
+        base,
+        schema: property,
+        list,
+        path,
+      })
+      // list.push(`}${listSuffix}`)
       break
     default:
       throw new Error(`Invalid permit type property '${property.type}'`)

@@ -23,6 +23,7 @@ export default function handle({
 }) {
   const textList: Array<string> = []
   textList.push(`import { z } from 'zod'`)
+  textList.push(`import { Filter } from '@nerdbond/call'`)
   textList.push(`import * as Type from '.'`)
   handleEach({ base, schema, list, hoist: textList })
   return textList

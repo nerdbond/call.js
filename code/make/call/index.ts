@@ -4,6 +4,7 @@ import makeEachType from './type'
 import { BaseType } from '~/code/type/base'
 import { ExtendPermitType } from '~/code/type/permit/extend'
 import { PermitBuilderMapType, PermitType } from '~/code/type/permit'
+import { toPascalCase } from '~/code/tool/helper'
 
 export default async function make({
   base,
@@ -21,15 +22,35 @@ export default async function make({
     call: PermitType
   }> = []
 
-  for (const name in source) {
-    const builder = source[name]
+  const indexTypeList: Array<string> = []
+  const indexParserList: Array<string> = []
+
+  for (const action in source) {
+    const builder = source[action]
 
     if (typeof builder !== 'function') {
       continue
     }
 
     const call = builder()
-    callList.push({ name, call })
+    callList.push({ name: action, call })
+
+    switch (action) {
+      case 'extend':
+      case 'select':
+      case 'create':
+      case 'update':
+      case 'remove':
+        const titleAction = toPascalCase(action)
+        const titleObject = toPascalCase(name)
+
+        indexTypeList.push(
+          `${titleAction}Type as ${titleObject}${titleAction}Type`,
+        )
+        indexParserList.push(
+          `${titleAction} as ${titleObject}${titleAction}`,
+        )
+    }
   }
 
   const parserTextList = makeEachParser({
@@ -43,10 +64,17 @@ export default async function make({
     list: callList,
   })
 
-  // console.log(typeTextList.join('\n'))
+  const indexList: Array<string> = []
+  indexList.push(
+    `export { ${indexTypeList.join(', ')} } from './${name}'`,
+  )
+  indexList.push(
+    `export { ${indexParserList.join(', ')} } from './${name}/parser'`,
+  )
 
+  const index = await loveCode(indexList.join('\n'))
   const parser = await loveCode(parserTextList.join('\n'))
   const type = await loveCode(typeTextList.join('\n'))
 
-  return { parser, type }
+  return { parser, type, index }
 }

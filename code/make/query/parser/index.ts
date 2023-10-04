@@ -56,7 +56,7 @@ export function handleOne({
     base,
     schema,
     query,
-    isList: query.action === 'gather',
+    isList: false,
   }).forEach(line => {
     list.push(`  ${line}`)
   })

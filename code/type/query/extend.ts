@@ -3,7 +3,7 @@ import { SchemaQueryMapType } from './schema'
 export type ExtendQueryBuilderType = () => ExtendQueryType
 
 export type ExtendQueryType = {
-  [key: string]: ExtendQuerySchemaValueType
+  [key: string]: ExtendQueryValueType
 }
 
 export type ExtendQueryContainerType = {
@@ -14,6 +14,4 @@ export type ExtendQueryContainerType = {
   case?: Record<string, ExtendQueryContainerType>
 }
 
-export type ExtendQuerySchemaValueType =
-  | boolean
-  | ExtendQueryContainerType
+export type ExtendQueryValueType = boolean | ExtendQueryContainerType

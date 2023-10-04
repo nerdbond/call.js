@@ -1,8 +1,8 @@
-import { FilterPermitQuery } from './filter'
+import { FilterPermitType } from './filter'
 
 export type RemovePermitBuilderType = () => RemovePermitType
 
 export type RemovePermitType = {
-  filter?: FilterPermitQuery
+  filter?: FilterPermitType
   extend?: string
 }

@@ -1,22 +1,26 @@
 import _ from 'lodash'
 import { z } from 'zod'
 
-type AS = Array<string>
+type Z2 = z.ZodType<FilterTestQueryType>
+type Z3 = z.ZodType<FilterQueryType<FilterTestQueryType>>
+type Z1 = z.ZodType<
+  FilterQueryType<FilterTestQueryType> | FilterTestQueryType
+>
 
-export type FilterQueryType<
-  T extends FilterTestQueryType = FilterTestQueryType,
-> =
+export type FilterQueryType<T extends FilterTestQueryType> =
   | FilterAndQueryType<T>
+  | FilterAndBasicQueryType<T>
   | FilterOrQueryType<T>
-  | FilterNotQueryType<T>
-  | T
+  | FilterOrBasicQueryType<T>
+// | FilterNotQueryType<T>
 
 export type FilterNotQueryType<T extends FilterTestQueryType> = {
   type: 'not'
   condition:
-    | Array<FilterAndQueryType<T> | FilterOrQueryType<T> | T>
     | FilterAndQueryType<T>
+    | FilterAndBasicQueryType<T>
     | FilterOrQueryType<T>
+    | FilterOrBasicQueryType<T>
     | T
 }
 
@@ -40,21 +44,21 @@ export type FilterOrBasicQueryType<T extends FilterTestQueryType> = {
   condition: Array<T>
 }
 
-export type FilterTestQueryType<P extends AS = Array<string>> =
-  | FilterStringQueryType<P>
-  | FilterNumberQueryType<P>
-  | FilterDateQueryType<P>
-  | FilterBooleanQueryType<P>
+export type FilterTestQueryType =
+  | FilterStringType
+  | FilterNumberType
+  | FilterDateType
+  | FilterBooleanType
 
-export type FilterTestBaseQueryType<P extends AS> = {
+export type FilterTestBaseQueryType = {
   type: 'test'
-  path: P
+  path: Array<string>
 }
 
 // string
 
-export type FilterStringQueryType<P extends AS> =
-  FilterTestBaseQueryType<P> & FilterStringValueQueryType
+export type FilterStringType = FilterTestBaseQueryType &
+  FilterStringValueQueryType
 
 export type FilterStringValueQueryType =
   | FilterStringBasicQueryType
@@ -78,8 +82,8 @@ export type FilterStringBasicArrayQueryType = {
 
 // number
 
-export type FilterNumberQueryType<P extends AS> =
-  FilterTestBaseQueryType<P> & FilterNumberValueQueryType
+export type FilterNumberType = FilterTestBaseQueryType &
+  FilterNumberValueQueryType
 
 export type FilterNumberValueQueryType =
   | FilterNumberBasicQueryType
@@ -103,8 +107,8 @@ export type FilterNumberBasicArrayQueryType = {
 
 // date
 
-export type FilterDateQueryType<P extends AS> =
-  FilterTestBaseQueryType<P> & FilterDateValueQueryType
+export type FilterDateType = FilterTestBaseQueryType &
+  FilterDateValueQueryType
 
 export type FilterDateValueQueryType =
   | FilterDateBasicQueryType
@@ -128,76 +132,106 @@ export type FilterDateBasicArrayQueryType = {
 
 // boolean
 
-export type FilterBooleanQueryType<P extends AS> =
-  FilterTestBaseQueryType<P> & FilterBooleanValueQueryType
+export type FilterBooleanType = FilterBooleanValueQueryType
 
 export type FilterBooleanValueQueryType =
   | FilterBooleanBasicQueryType
   | FilterBooleanBasicArrayQueryType
 
-export type FilterBooleanBasicQueryType = {
+export type FilterBooleanBasicQueryType = FilterTestBaseQueryType & {
   value: boolean | null
   test: '=' | '!='
 }
 
-export type FilterBooleanBasicArrayQueryType = {
-  value: Array<boolean | null>
-  test: 'in'
-}
-
-export const FilterQuery = (
-  type: 'string' | 'number' | 'date' | 'boolean',
-  path: Array<string>,
-) => {
-  let Basic
-
-  switch (type) {
-    case 'string':
-      Basic = FilterStringQuery(path)
-      break
-    case 'number':
-      Basic = FilterNumberQuery(path)
-      break
-    case 'date':
-      Basic = FilterDateQuery(path)
-      break
-    case 'boolean':
-      Basic = FilterBooleanQuery(path)
-      break
+export type FilterBooleanBasicArrayQueryType =
+  FilterTestBaseQueryType & {
+    value: Array<boolean | null>
+    test: 'in'
   }
 
-  return z.union([
-    FilterNotQuery(Basic),
-    FilterAndQuery(Basic),
-    FilterAndBasicQuery(Basic),
-    FilterOrQuery(Basic),
-    FilterOrBasicQuery(Basic),
-    Basic,
-  ])
+export const FilterQuery = (
+  list:
+    | z.ZodTypeAny
+    | readonly [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]],
+) => {
+  const array = 'length' in list ? list.concat(list) : [list, list]
+  const child: readonly [
+    z.ZodTypeAny,
+    z.ZodTypeAny,
+    ...z.ZodTypeAny[],
+  ] = [
+    FilterAndQuery(list),
+    FilterAndBasicQuery(list),
+    FilterOrQuery(list),
+    FilterOrBasicQuery(list),
+    // FilterNotQuery(list),
+    // z.union(array),
+  ]
+
+  // if (isLarge(array)) {
+  //   child.push()
+  // } else {
+  //   child.push(...array)
+  // }
+
+  return z.union(child)
 }
 
-export const FilterStringQuery = (path: Array<string>) =>
+export const FilterQuery2 = (
+  list: z.ZodUnion<
+    readonly [
+      z.ZodType<FilterTestQueryType>,
+      ...z.ZodType<FilterTestQueryType>[],
+    ]
+  >,
+) => {
+  // const child: readonly [
+  //   z.ZodTypeAny,
+  //   z.ZodTypeAny,
+  //   ...z.ZodTypeAny[],
+  // ] = [
+  //   FilterAndQuery(list),
+  //   FilterAndBasicQuery(list),
+  //   FilterOrQuery(list),
+  //   FilterOrBasicQuery(list),
+  //   FilterNotQuery(list),
+  //   list,
+  //   // z.union(array),
+  // ]
+
+  return list
+
+  // if (isLarge(array)) {
+  //   child.push()
+  // } else {
+  //   child.push(...array)
+  // }
+
+  // return z.union(child)
+}
+
+export const FilterString = (path: Array<string>) =>
   z.union([
     FilterStringBasicQuery(path),
     FilterStringBasicEqualityQuery(path),
     FilterStringBasicArrayQuery(path),
   ])
 
-export const FilterNumberQuery = (path: Array<string>) =>
+export const FilterNumber = (path: Array<string>) =>
   z.union([
     FilterNumberBasicQuery(path),
     FilterNumberBasicEqualityQuery(path),
     FilterNumberBasicArrayQuery(path),
   ])
 
-export const FilterDateQuery = (path: Array<string>) =>
+export const FilterDate = (path: Array<string>) =>
   z.union([
     FilterDateBasicQuery(path),
     FilterDateBasicEqualityQuery(path),
     FilterDateBasicArrayQuery(path),
   ])
 
-export const FilterBooleanQuery = (path: Array<string>) =>
+export const FilterBoolean = (path: Array<string>) =>
   z.union([
     FilterBooleanBasicQuery(path),
     FilterBooleanBasicArrayQuery(path),
@@ -205,49 +239,92 @@ export const FilterBooleanQuery = (path: Array<string>) =>
 
 // not
 
-export const FilterNotQuery = (base: z.ZodType<any>) => {
-  const and = FilterAndQuery(base)
-  const or = FilterOrQuery(base)
-  const single = z.union([and, or, base])
+function isLarge(
+  list: readonly [Z2, Z2, ...Z2[]] | Z2[],
+): list is [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]] {
+  return list.length > 1
+}
+
+export const FilterNotQuery = (
+  list: Z2 | readonly [Z2, Z2, ...Z2[]],
+) => {
+  // | Array<FilterAndQueryType<T> | FilterOrQueryType<T> | T>
+  // | FilterAndQueryType<T>
+  // | FilterOrQueryType<T>
+  // | T
+  const and = FilterAndQuery(list)
+  const or = FilterOrQuery(list)
+  const array = 'length' in list ? list : [list]
+  const single = isLarge(array)
+    ? z.union([and, or, z.union(array)])
+    : z.union([and, or, array[0]])
+  const condition = isLarge(array)
+    ? z.union([z.array(single), single])
+    : z.union([z.array(single), and, array[0]])
+
+  console.log(array)
 
   return z.object({
     type: z.enum(['not']),
-    condition: z.union([z.array(single), and, or, base]),
+    condition: z.union([and, z.string()]),
   })
 }
 
 // and
 
-export const FilterAndQuery = (base: z.ZodType<any>) =>
+export const FilterAndQuery = (list: Z2 | readonly [Z2, Z2, ...Z2[]]) =>
   z.object({
     type: z.enum(['and']),
-    condition: z.array(z.union([FilterOrBasicQuery(base), base])),
+    condition:
+      'length' in list
+        ? z.array(z.union([FilterAndBasicQuery(list), ...list]))
+        : z.array(z.union([FilterAndBasicQuery(list), list])),
   })
 
-export const FilterAndBasicQuery = (base: z.ZodType<any>) =>
+export const FilterAndBasicQuery = (
+  list: Z2 | readonly [Z2, Z2, ...Z2[]],
+) =>
   z.object({
     type: z.enum(['and']),
-    condition: z.array(base),
+    condition:
+      'length' in list
+        ? list.length === 1
+          ? z.array(list[0])
+          : z.array(z.union(list))
+        : z.array(list),
   })
 
 // or
 
-export const FilterOrQuery = (base: z.ZodType<any>) =>
+export const FilterOrQuery = (list: Z2 | readonly [Z2, Z2, ...Z2[]]) =>
   z.object({
     type: z.enum(['or']),
-    condition: z.array(z.union([FilterAndBasicQuery(base), base])),
+    condition:
+      'length' in list
+        ? z.array(z.union([FilterAndBasicQuery(list), ...list]))
+        : z.array(z.union([FilterAndBasicQuery(list), list])),
   })
 
-export const FilterOrBasicQuery = (base: z.ZodType<any>) =>
+export const FilterOrBasicQuery = (
+  list: Z2 | readonly [Z2, Z2, ...Z2[]],
+) =>
   z.object({
     type: z.enum(['or']),
-    condition: z.array(base),
+    condition:
+      'length' in list
+        ? list.length === 1
+          ? z.array(list[0])
+          : z.array(z.union(list))
+        : z.array(list),
   })
 
 // base
 
-export const FilterTestBaseQuery = (path: Array<string>) =>
-  z.object({
+export const FilterTestBaseQuery = (
+  // path: [z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
+  path: Array<string>,
+) => {
+  return z.object({
     type: z.enum(['test']),
     path: z
       .array(z.string())
@@ -258,11 +335,13 @@ export const FilterTestBaseQuery = (path: Array<string>) =>
         },
       ),
   })
+}
 
 // string
 
 export const FilterStringBasicQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.string(),
       test: z.enum(['start', 'end', 'match']),
@@ -270,7 +349,8 @@ export const FilterStringBasicQuery = (path: Array<string>) =>
   )
 
 export const FilterStringBasicEqualityQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.union([z.string(), z.null()]),
       test: z.enum(['=', '!=']),
@@ -278,7 +358,8 @@ export const FilterStringBasicEqualityQuery = (path: Array<string>) =>
   )
 
 export const FilterStringBasicArrayQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.array(z.union([z.string(), z.null()])),
       test: z.enum(['in']),
@@ -288,7 +369,8 @@ export const FilterStringBasicArrayQuery = (path: Array<string>) =>
 // number
 
 export const FilterNumberBasicQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.number(),
       test: z.enum(['>=', '>', '<=', '<']),
@@ -296,7 +378,8 @@ export const FilterNumberBasicQuery = (path: Array<string>) =>
   )
 
 export const FilterNumberBasicEqualityQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.union([z.number(), z.null()]),
       test: z.enum(['=', '!=']),
@@ -304,7 +387,8 @@ export const FilterNumberBasicEqualityQuery = (path: Array<string>) =>
   )
 
 export const FilterNumberBasicArrayQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.array(z.union([z.number(), z.null()])),
       test: z.enum(['in']),
@@ -314,7 +398,8 @@ export const FilterNumberBasicArrayQuery = (path: Array<string>) =>
 // date
 
 export const FilterDateBasicQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.coerce.date(),
       test: z.enum(['>=', '>', '<=', '<']),
@@ -322,7 +407,8 @@ export const FilterDateBasicQuery = (path: Array<string>) =>
   )
 
 export const FilterDateBasicEqualityQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.union([z.coerce.date(), z.null()]),
       test: z.enum(['=', '!=']),
@@ -330,7 +416,8 @@ export const FilterDateBasicEqualityQuery = (path: Array<string>) =>
   )
 
 export const FilterDateBasicArrayQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.array(z.union([z.coerce.date(), z.null()])),
       test: z.enum(['in']),
@@ -340,7 +427,8 @@ export const FilterDateBasicArrayQuery = (path: Array<string>) =>
 // boolean
 
 export const FilterBooleanBasicQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.union([z.boolean(), z.null()]),
       test: z.enum(['=', '!=']),
@@ -348,9 +436,22 @@ export const FilterBooleanBasicQuery = (path: Array<string>) =>
   )
 
 export const FilterBooleanBasicArrayQuery = (path: Array<string>) =>
-  FilterTestBaseQuery(path).merge(
+  z.intersection(
+    FilterTestBaseQuery(path),
     z.object({
       value: z.array(z.union([z.boolean(), z.null()])),
       test: z.enum(['in']),
     }),
   )
+
+type AType = {
+  filter: FilterQueryType<FilterBooleanType>
+}
+
+const b = FilterBoolean(['foo', 'bar'])
+const q = FilterQuery2(b)
+const A: z.ZodType<AType> = z.object({
+  filter: b,
+})
+
+console.log(A)

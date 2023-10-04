@@ -6,6 +6,7 @@ import {
   SchemaPropertyContainerType,
   SchemaPropertyType,
 } from '~/code/type/schema'
+import { FilterLinkType } from '../../type/permit/manage'
 
 export function handleFilter({
   base,
@@ -30,17 +31,46 @@ export function handleFilter({
     })
     list.push(`]),`)
   } else {
-    list.push(`filter: z.object({`)
-    handleEachProperty({
+    const pathList: Array<FilterLinkType> = []
+    const path = []
+    handleEachFilterProperty({
       base,
       schema: { type: 'object', property: filter },
-    }).forEach(line => {
-      list.push(`  ${line}`)
+      list: pathList,
+      path,
     })
-    list.push(`}),`)
+    const filterPathList: Array<string> = []
+    pathList.forEach(link => {
+      const filterText = getFilterType(link.type)
+      if (filterText) {
+        filterPathList.push(
+          `${filterText}(${JSON.stringify(link.path)})`,
+        )
+      }
+    })
+
+    if (filterPathList.length > 1) {
+      list.push(
+        `filter: Filter.FilterQuery([${filterPathList.join(', ')}]),`,
+      )
+    } else {
+      list.push(`filter: Filter.FilterQuery(${filterPathList[0]}),`)
+    }
   }
 
   return list
+}
+function getFilterType(type: string) {
+  switch (type) {
+    case 'string':
+      return `Filter.FilterString`
+    case 'number':
+      return `Filter.FilterNumber`
+    case 'date':
+      return `Filter.FilterDate`
+    case 'boolean':
+      return `Filter.FilterBoolean`
+  }
 }
 
 export function handleSchema({
@@ -170,5 +200,80 @@ export function handleProperty({
       ? `z.optional(${expression})`
       : expression
     list.push(`${name}: ${text},`)
+  }
+}
+
+export function handleEachFilterProperty({
+  base,
+  schema,
+  list,
+  path,
+}: {
+  base: BaseType
+  schema: SchemaPropertyContainerType
+  list: Array<FilterLinkType>
+  path: Array<string>
+}) {
+  for (const name in schema.property) {
+    const property = schema.property[name]
+
+    handleFilterProperty({
+      name,
+      base,
+      property,
+      list,
+      path: path.concat([name]),
+    })
+  }
+}
+
+export function handleFilterProperty({
+  name,
+  base,
+  list,
+  path,
+  property,
+}: {
+  name: string
+  base: BaseType
+  property: SchemaPropertyType
+  list: Array<FilterLinkType>
+  path: Array<string>
+}) {
+  switch (property.type) {
+    case 'timestamp':
+      list.push({ type: `date`, path, optional: !!property.optional })
+      break
+    case 'text':
+    case 'uuid':
+      list.push({ type: `string`, path, optional: !!property.optional })
+      break
+    case 'integer':
+    case 'decimal':
+      list.push({ type: `number`, path, optional: !!property.optional })
+      break
+    case 'boolean':
+      list.push({
+        type: `boolean`,
+        path,
+        optional: !!property.optional,
+      })
+      break
+    case 'json':
+      list.push({ type: `object`, path, optional: !!property.optional })
+      break
+    case 'object':
+    case undefined:
+      // list.push(`${name}${optional}: ${listPrefix}{`)
+      handleEachFilterProperty({
+        base,
+        schema: property,
+        list,
+        path,
+      })
+      // list.push(`}${listSuffix}`)
+      break
+    default:
+      throw new Error(`Invalid permit type property '${property.type}'`)
   }
 }
