@@ -147,9 +147,7 @@ export function handleCreate({
   const list: Array<string> = []
 
   const typeName = toPascalCase(name)
-  list.push(
-    `export const ${typeName}: z.ZodType<Type.${typeName}Type> =`,
-  )
+  list.push(`export const ${typeName} =`)
 
   manageTool.handleSchema({ base, mutate }).forEach(line => {
     list.push(`  ${line}`)
@@ -172,9 +170,7 @@ export function handleUpdate({
   const list: Array<string> = []
 
   const typeName = toPascalCase(name)
-  list.push(
-    `export const ${typeName}: z.ZodType<Type.${typeName}Type> =`,
-  )
+  list.push(`export const ${typeName} =`)
 
   manageTool.handleSchema({ base, mutate }).forEach(line => {
     list.push(`  ${line}`)
@@ -197,9 +193,7 @@ export function handleRemove({
   const list: Array<string> = []
 
   const typeName = toPascalCase(name)
-  list.push(
-    `export const ${typeName}: z.ZodType<Type.${typeName}Type> =`,
-  )
+  list.push(`export const ${typeName} =`)
 
   manageTool.handleSchema({ base, mutate }).forEach(line => {
     list.push(`  ${line}`)

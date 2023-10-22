@@ -15,8 +15,6 @@ const filter: TestFilterType = TestFilter.parse({
   value: 'hello',
 })
 
-console.log(filter)
-
 console.log(
   TestFilter.parse({
     type: 'and',

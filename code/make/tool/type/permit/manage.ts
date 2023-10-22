@@ -51,7 +51,7 @@ export function handleFilter({
     pathList.forEach(link => {
       const filterText = getFilterType(link.type)
       if (filterText) {
-        filterPathList.push(`${filterText}<Array<string>>`)
+        filterPathList.push(`${filterText}`)
       }
     })
     list.push(
