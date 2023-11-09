@@ -6,7 +6,7 @@ import {
   TossCallCast,
   LoadCallCast,
   SaveCallCast,
-} from '../form'
+} from '../../form'
 import { Kysely } from 'kysely'
 
 export type NameCast = {
