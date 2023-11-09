@@ -163,7 +163,7 @@ export function hookLink({
       break
     case 'object':
     case undefined: {
-      if (link.need) {
+      if (!link.need) {
         list.push(`${name}: z.optional(`)
         list.push(`  z.object({`)
         hookEachLink({ base, form: link }).forEach(line => {
@@ -187,7 +187,7 @@ export function hookLink({
   return list
 
   function push(name: string, expression: string) {
-    const text = link.need ? `z.optional(${expression})` : expression
+    const text = !link.need ? `z.optional(${expression})` : expression
     list.push(`${name}: ${text},`)
   }
 }

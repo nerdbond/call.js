@@ -22,12 +22,12 @@ export function hookSeek({
   const list: Array<string> = []
 
   if (Array.isArray(seek)) {
-    list.push(`seek${need ? '?' : ''}:`)
+    list.push(`seek${!need ? '?' : ''}:`)
     seek.forEach(seek => {
       list.push(`  | {`)
       hookEachLink({
         base,
-        schema: { like: 'object', link: seek },
+        form: { like: 'object', link: seek },
       }).forEach(line => {
         list.push(`    ${line}`)
       })
@@ -38,7 +38,7 @@ export function hookSeek({
     const line = []
     hookEachSeekLink({
       base,
-      schema: { like: 'object', link: seek },
+      form: { like: 'object', link: seek },
       list: lineList,
       line,
     })
@@ -50,7 +50,7 @@ export function hookSeek({
       }
     })
     list.push(
-      `seek${need ? '?' : ''}: Seek.SeekCallCast<${seekPathList.join(
+      `seek${!need ? '?' : ''}: Seek.SeekCallCast<${seekPathList.join(
         ' | ',
       )}>`,
     )
@@ -92,7 +92,7 @@ export function hookForm({
     list.push(`  have: {`)
     hookEachLink({
       base,
-      schema: { like: 'object', link: move.have },
+      form: { like: 'object', link: move.have },
     }).forEach(line => {
       list.push(`    ${line}`)
     })
@@ -112,14 +112,14 @@ export function hookForm({
 
 export function hookEachLink({
   base,
-  schema,
+  form,
 }: {
   base: BaseCast
-  schema: FormLinkBaseCast
+  form: FormLinkBaseCast
 }) {
   const list: Array<string> = []
-  for (const name in schema.link) {
-    const link = schema.link[name]
+  for (const name in form.link) {
+    const link = form.link[name]
 
     hookLink({ base, name, link }).forEach(line => {
       list.push(`${line}`)
@@ -138,12 +138,14 @@ export function hookLink({
   link: FormLinkCast
 }) {
   const list: Array<string> = []
-  const need = link.need ? '?' : ''
+  const optional = !link.need ? '?' : ''
   const listPrefix = link.list ? `Array<` : ''
   const listSuffix = link.list ? `>` : ''
 
   function push(expression: string) {
-    list.push(`${name}${need}: ${listPrefix}${expression}${listSuffix}`)
+    list.push(
+      `${name}${optional}: ${listPrefix}${expression}${listSuffix}`,
+    )
   }
 
   switch (link.like) {
@@ -166,8 +168,8 @@ export function hookLink({
       break
     case 'object':
     case undefined:
-      list.push(`${name}${need}: ${listPrefix}{`)
-      hookEachLink({ base, schema: link }).forEach(line => {
+      list.push(`${name}${optional}: ${listPrefix}{`)
+      hookEachLink({ base, form: link }).forEach(line => {
         list.push(`  ${line}`)
       })
       list.push(`}${listSuffix}`)
@@ -181,17 +183,17 @@ export function hookLink({
 
 export function hookEachSeekLink({
   base,
-  schema,
+  form,
   list,
   line,
 }: {
   base: BaseCast
-  schema: FormLinkBaseCast
+  form: FormLinkBaseCast
   list: Array<SeekLinkCast>
   line: Array<string>
 }) {
-  for (const name in schema.link) {
-    const link = schema.link[name]
+  for (const name in form.link) {
+    const link = form.link[name]
 
     hookSeekLink({
       base,
@@ -216,7 +218,7 @@ export function hookSeekLink({
   list: Array<SeekLinkCast>
   line: Array<string>
 }) {
-  const need = link.need ? '?' : ''
+  const optional = link.need ? '?' : ''
   const listPrefix = link.list ? `Array<` : ''
   const listSuffix = link.list ? `>` : ''
 
@@ -253,7 +255,7 @@ export function hookSeekLink({
       // list.push(`${name}${need}: ${listPrefix}{`)
       hookEachSeekLink({
         base,
-        schema: link,
+        form: link,
         list,
         line,
       })

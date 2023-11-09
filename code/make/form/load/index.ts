@@ -58,7 +58,7 @@ export function hookEachProperty({
   for (const name in form.link) {
     const link = form.link[name]
     const field = path.concat([name]).join('__')
-    switch (link.type) {
+    switch (link.like) {
       case 'timestamp':
         list.push(`${field}: z.optional(z.nullable(z.coerce.date())),`)
         break

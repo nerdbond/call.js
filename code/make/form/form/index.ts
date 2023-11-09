@@ -49,7 +49,7 @@ export function hookEachLink({
   for (const name in form.link) {
     const link = form.link[name]
     const field = path.concat([name]).join('__')
-    switch (link.type) {
+    switch (link.like) {
       case 'timestamp':
         list.push(`${field}?: Date | null`)
         break

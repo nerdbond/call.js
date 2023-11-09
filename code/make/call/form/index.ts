@@ -116,28 +116,28 @@ export function hookEachLink({
       continue
     }
 
-    const need = link.need ? '?' : ''
-    switch (link.type) {
+    const optional = !link.need ? '?' : ''
+    switch (link.like) {
       case 'timestamp':
-        list.push(`${name}${need}: Date`)
+        list.push(`${name}${optional}: Date`)
         break
       case 'text':
       case 'uuid':
-        list.push(`${name}${need}: string`)
+        list.push(`${name}${optional}: string`)
         break
       case 'integer':
       case 'decimal':
-        list.push(`${name}${need}: number`)
+        list.push(`${name}${optional}: number`)
         break
       case 'boolean':
-        list.push(`${name}${need}: boolean`)
+        list.push(`${name}${optional}: boolean`)
         break
       case 'json':
-        list.push(`${name}${need}: object`)
+        list.push(`${name}${optional}: object`)
         break
       case 'object':
         if (typeof value === 'object') {
-          list.push(`${name}${need}: {`)
+          list.push(`${name}${optional}: {`)
           hookForm({
             base,
             form: link,
@@ -151,7 +151,7 @@ export function hookEachLink({
         break
       case 'record':
         if (typeof value === 'object' && value.case) {
-          list.push(`${name}${need}:`)
+          list.push(`${name}${optional}:`)
           for (const name in value.case) {
             const childForm = base[name]
             list.push(`  | {`)
@@ -172,7 +172,7 @@ export function hookEachLink({
           const prefix = link.list ? 'Array<{' : '{'
           const suffix = link.list ? '}>' : '}'
           list.push(`${name}: ${prefix}`)
-          const childForm = base[link.type]
+          const childForm = base[link.like]
           hookForm({
             base,
             form: childForm,

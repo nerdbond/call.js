@@ -11,12 +11,14 @@ export function handleProperty({
   link: FormLinkCast
 }) {
   const list: Array<string> = []
-  const need = link.need ? '?' : ''
+  const optional = !link.need ? '?' : ''
   const listPrefix = link.list ? `Array<` : ''
   const listSuffix = link.list ? `>` : ''
 
   function push(expression: string) {
-    list.push(`${name}${need}: ${listPrefix}${expression}${listSuffix}`)
+    list.push(
+      `${name}${optional}: ${listPrefix}${expression}${listSuffix}`,
+    )
   }
 
   switch (link.like) {
@@ -38,14 +40,14 @@ export function handleProperty({
       push(`object`)
       break
     case 'object':
-      list.push(`${name}${need}: ${listPrefix}{`)
+      list.push(`${name}${optional}: ${listPrefix}{`)
       handleEachProperty({ base, form: link }).forEach(line => {
         list.push(`  ${line}`)
       })
       list.push(`}${listSuffix}`)
       break
     default:
-      list.push(`${name}${need}: ${listPrefix}{`)
+      list.push(`${name}${optional}: ${listPrefix}{`)
       handleEachProperty({ base, form: link }).forEach(line => {
         list.push(`  ${line}`)
       })

@@ -123,9 +123,9 @@ export function hookEachLink({
       continue
     }
 
-    const prefix = link.need ? 'z.optional(' : ''
-    const suffix = link.need ? ')' : ''
-    switch (link.type) {
+    const prefix = !link.need ? 'z.optional(' : ''
+    const suffix = !link.need ? ')' : ''
+    switch (link.like) {
       case 'timestamp':
         list.push(`${name}: ${prefix}z.coerce.date()${suffix},`)
         break
@@ -187,7 +187,7 @@ export function hookEachLink({
           const prefix = link.list ? 'z.array(' : ''
           const suffix = link.list ? ')' : ''
           list.push(`${name}: ${prefix}z.object({`)
-          const childSchema = base[link.type]
+          const childSchema = base[link.like]
           hookSchema({
             base,
             form: childSchema,

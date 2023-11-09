@@ -31,7 +31,7 @@ export function hookContainer({
       hookSeek({
         base,
         seek: read.seek,
-        need: true,
+        need: false,
       }).forEach(line => {
         list.push(`  ${line}`)
       })
@@ -129,7 +129,7 @@ export function hookProperty({
 }) {
   const list: Array<string> = []
 
-  const need = '?'
+  const optional = '?'
   switch (link.like) {
     case 'timestamp':
     case 'text':
@@ -138,11 +138,11 @@ export function hookProperty({
     case 'decimal':
     case 'json':
     case 'boolean':
-      list.push(`${name}${need}: boolean`)
+      list.push(`${name}${optional}: boolean`)
       break
     case 'object':
       if (typeof value === 'object') {
-        list.push(`${name}${need}:`)
+        list.push(`${name}${optional}:`)
         hookContainer({
           base,
           form: link,
@@ -157,7 +157,7 @@ export function hookProperty({
       break
     case 'record': {
       if (typeof value === 'object' && value.case) {
-        list.push(`${name}${need}:`)
+        list.push(`${name}${optional}:`)
         for (const name in value.case) {
           const container = value.case[name]
           const childSchema = base[name]
@@ -178,7 +178,7 @@ export function hookProperty({
     default: {
       if (typeof value === 'object') {
         const childSchema = base[link.like]
-        list.push(`${name}${need}:`)
+        list.push(`${name}${optional}:`)
         hookContainer({
           base,
           form: childSchema,
