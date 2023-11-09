@@ -6,6 +6,10 @@
 <br/>
 <br/>
 
+<p align='center'>
+  <img src='https://github.com/wavebond/call.js/blob/make/view/base.gif?raw=true' height='192'>
+</p>
+
 <h3 align='center'>@wavebond/call</h3>
 <p align='center'>
   GraphQL-like query resolver for TypeScript
