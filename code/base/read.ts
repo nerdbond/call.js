@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { ComparisonOperatorExpression } from 'kysely'
 import { FormLinkBaseCast, ReadCallCast } from '../form'
 import { Robe } from './robe'
-import { moveHoldFormToSite } from './table'
+import { moveHoldFormToSite } from './form'
 
 export function moveReadToHoldForm(
   robe: Robe,

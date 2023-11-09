@@ -1,6 +1,6 @@
 {
   "name": "@wavebond/call",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "main": "./host/index.js",
   "scripts": {
     "make": "tsc && tsc-alias",

@@ -1,14 +1,15 @@
 import { z } from 'zod'
-import * as Filter from '~/code/form/call/seek'
+import * as Seek from '~/code/form/call/seek'
 
-const TestFilter = Filter.FilterQuery([
-  Filter.FilterString(['foo', 'bar']),
-  Filter.FilterString(['hello', 'world']),
-  Filter.FilterNumber(['baz']),
+const TestSeek = Seek.SeekCall([
+  Seek.SeekString(['foo', 'bar']),
+  Seek.SeekString(['hello', 'world']),
+  Seek.SeekNumber(['baz']),
 ])
-type TestFilterType = z.infer<typeof TestFilter>
 
-const filter: TestFilterType = TestFilter.parse({
+type TestSeekType = z.infer<typeof TestSeek>
+
+const filter: TestSeekType = TestSeek.parse({
   type: 'test',
   path: ['foo', 'bar'],
   test: '=',
@@ -16,7 +17,7 @@ const filter: TestFilterType = TestFilter.parse({
 })
 
 console.log(
-  TestFilter.parse({
+  TestSeek.parse({
     type: 'and',
     condition: [
       {
@@ -30,7 +31,7 @@ console.log(
 )
 
 console.log(
-  TestFilter.parse({
+  TestSeek.parse({
     type: 'or',
     condition: [
       {

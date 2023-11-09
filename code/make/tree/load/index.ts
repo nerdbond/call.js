@@ -2,12 +2,12 @@ import { toPascalCase } from '~/code/tool'
 import { BaseCast } from '~/code/form/base'
 import { FormLinkBaseCast } from '~/code/form/form'
 
-export default function handle({ base }: { base: BaseCast }) {
+export default function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []
 
   for (const name in base) {
     list.push(``)
-    handleOne({ name, base }).forEach(line => {
+    hookOne({ name, base }).forEach(line => {
       list.push(line)
     })
   }
@@ -15,7 +15,7 @@ export default function handle({ base }: { base: BaseCast }) {
   return list
 }
 
-export function handleOne({
+export function hookOne({
   name,
   base,
 }: {
@@ -23,15 +23,15 @@ export function handleOne({
   base: BaseCast
 }) {
   const list: Array<string> = []
-  const schema = base[name]
+  const form = base[name]
 
   const typeName = toPascalCase(name)
 
   list.push(
-    `export const ${typeName}: z.ZodType<${typeName}Type> = z.object({`,
+    `export const ${typeName}: z.ZodType<${typeName}Cast> = z.object({`,
   )
 
-  handleEachProperty({ base, schema }).forEach(line => {
+  hookEachLink({ base, form }).forEach(line => {
     list.push(`  ${line}`)
   })
 
@@ -40,17 +40,17 @@ export function handleOne({
   return list
 }
 
-export function handleEachProperty({
+export function hookEachLink({
   base,
-  schema,
+  form,
 }: {
   base: BaseCast
-  schema: FormLinkBaseCast
+  form: FormLinkBaseCast
 }) {
   const list: Array<string> = []
-  for (const name in schema.property) {
-    const property = schema.property[name]
-    switch (property.type) {
+  for (const name in form.link) {
+    const link = form.link[name]
+    switch (link.like) {
       case 'timestamp':
         list.push(`  ${name}: z.optional(z.coerce.date()),`)
         break
@@ -74,16 +74,16 @@ export function handleEachProperty({
         break
       case 'object':
         list.push(`  ${name}: z.optional(z.object({`)
-        handleEachProperty({ base, schema: property }).forEach(line => {
+        hookEachLink({ base, form: link }).forEach(line => {
           list.push(`  ${line}`)
         })
         list.push(`})),`)
         break
       default:
-        const type = base[property.type]
-          ? toPascalCase(property.type)
+        const type = base[link.like]
+          ? toPascalCase(link.like)
           : 'z.object({}).passthrough()'
-        if (property.list) {
+        if (link.list) {
           list.push(`  ${name}: list(() => ${type}),`)
         } else {
           list.push(`  ${name}: record(() => ${type}),`)

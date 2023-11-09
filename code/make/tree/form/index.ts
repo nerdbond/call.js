@@ -2,12 +2,12 @@ import { toPascalCase } from '~/code/tool'
 import { BaseCast } from '~/code/form/base'
 import { FormLinkBaseCast } from '~/code/form/form'
 
-export default function handle({ base }: { base: BaseCast }) {
+export default function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []
 
   for (const name in base) {
     list.push(``)
-    handleOne({ name, base }).forEach(line => {
+    hookOne({ name, base }).forEach(line => {
       list.push(line)
     })
   }
@@ -15,7 +15,7 @@ export default function handle({ base }: { base: BaseCast }) {
   return list
 }
 
-export function handleOne({
+export function hookOne({
   name,
   base,
 }: {
@@ -26,7 +26,7 @@ export function handleOne({
   const schema = base[name]
 
   list.push(`export type ${toPascalCase(name)}Type = {`)
-  handleEachProperty({ base, schema }).forEach(line => {
+  hookEachProperty({ base, schema }).forEach(line => {
     list.push(`  ${line}`)
   })
   list.push(`}`)
@@ -34,7 +34,7 @@ export function handleOne({
   return list
 }
 
-export function handleEachProperty({
+export function hookEachProperty({
   base,
   schema,
 }: {
@@ -42,9 +42,9 @@ export function handleEachProperty({
   schema: FormLinkBaseCast
 }) {
   const list: Array<string> = []
-  for (const name in schema.property) {
-    const property = schema.property[name]
-    switch (property.type) {
+  for (const name in schema.link) {
+    const link = schema.link[name]
+    switch (link.like) {
       case 'timestamp':
         list.push(`  ${name}?: Date`)
         break
@@ -64,16 +64,16 @@ export function handleEachProperty({
         break
       case 'object':
         list.push(`  ${name}?: {`)
-        handleEachProperty({ base, schema: property }).forEach(line => {
+        hookEachProperty({ base, schema: link }).forEach(line => {
           list.push(`  ${line}`)
         })
         list.push(`}`)
         break
       default:
-        const type = base[property.type]
-          ? `${toPascalCase(property.type)}Type`
+        const type = base[link.like]
+          ? `${toPascalCase(link.like)}Type`
           : 'object'
-        if (property.list) {
+        if (link.list) {
           list.push(`  ${name}?: List<${type}>`)
         } else {
           list.push(`  ${name}?: ${type}`)
