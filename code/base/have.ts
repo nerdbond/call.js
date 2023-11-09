@@ -1,28 +1,28 @@
 export function transformHaveToHoldForm(
-  effect: Record<string, any>,
+  have: Record<string, any>,
   definition: Record<string, string>,
-  path: Array<string> = [],
-  output: Record<string, any> = {},
+  line: Array<string> = [],
+  head: Record<string, any> = {},
 ) {
-  for (const name in effect) {
-    const value = effect[name]
+  for (const name in have) {
+    const value = have[name]
 
     if (value && typeof value === 'object') {
       transformHaveToHoldForm(
         value as Record<string, any>,
         definition,
-        path.concat([name]),
-        output,
+        line.concat([name]),
+        head,
       )
     } else {
-      const key = path.concat([name]).join('$')
+      const key = line.concat([name]).join('$')
       const field = definition[key]
 
       if (field) {
-        output[field] = value
+        head[field] = value
       }
     }
   }
 
-  return output
+  return head
 }

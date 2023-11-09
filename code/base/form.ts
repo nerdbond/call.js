@@ -18,9 +18,9 @@ export function moveHoldFormToSite(
   return head
 }
 
-export type NestedCallMesh = Record<string, NestedCallTask>
+export type NestCallMesh = Record<string, NestCallTask>
 
-export type NestedCallTask = (
+export type NestCallTask = (
   id: string,
   read: ReadCallCast,
   readForm?: ZodType<any>,
