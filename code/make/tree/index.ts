@@ -11,7 +11,7 @@ export default async function handle({ base }: { base: BaseCast }) {
     `import { record } from '@wavebond/call/host/code/type/tree/mixin/record'`,
   )
   list.push(
-    `import { Paginated, paginated } from '@wavebond/call/host/code/type/tree/mixin/paginated'`,
+    `import { List, list } from '@wavebond/call/host/code/type/tree/mixin/list'`,
   )
   list.push(...handleType({ base }))
   list.push(...handleParser({ base }))

@@ -72,7 +72,7 @@ export function hookForm({
     }
 
     if ('read' in call && call.read) {
-      list.push(`record: {`)
+      list.push(`load: {`)
 
       hookEachLink({
         base,

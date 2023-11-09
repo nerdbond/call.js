@@ -27,7 +27,7 @@ export function hookOne({
   const list: Array<string> = []
   const form = base[name]
 
-  list.push(`export type ${toPascalCase(name)}Type = {`)
+  list.push(`export type ${toPascalCase(name)}Cast = {`)
   hookEachLink({ base, form }).forEach(line => {
     list.push(`  ${line}`)
   })

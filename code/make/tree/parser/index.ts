@@ -84,7 +84,7 @@ export function handleEachProperty({
           ? toPascalCase(property.type)
           : 'z.object({}).passthrough()'
         if (property.list) {
-          list.push(`  ${name}: paginated(() => ${type}),`)
+          list.push(`  ${name}: list(() => ${type}),`)
         } else {
           list.push(`  ${name}: record(() => ${type}),`)
         }

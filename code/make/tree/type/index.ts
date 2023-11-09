@@ -74,7 +74,7 @@ export function handleEachProperty({
           ? `${toPascalCase(property.type)}Type`
           : 'object'
         if (property.list) {
-          list.push(`  ${name}?: Paginated<${type}>`)
+          list.push(`  ${name}?: List<${type}>`)
         } else {
           list.push(`  ${name}?: ${type}`)
         }

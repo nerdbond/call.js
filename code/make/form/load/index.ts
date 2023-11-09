@@ -7,7 +7,7 @@ export default async function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []
 
   list.push(`import { z } from 'zod'`)
-  list.push(`import * as Type from '.'`)
+  list.push(`import * as Cast from '.'`)
 
   for (const name in base) {
     list.push(``)
@@ -33,7 +33,7 @@ export function hookOne({
   const typeName = toPascalCase(name)
 
   list.push(
-    `export const ${typeName}: z.ZodType<Type.${typeName}Type> = z.object({`,
+    `export const ${typeName}: z.ZodType<Cast.${typeName}Cast> = z.object({`,
   )
 
   hookEachProperty({ base, form }).forEach(line => {

@@ -1,5 +1,5 @@
 import { z } from 'zod'
 
-export function record(form: () => z.ZodType<any>) {
+export function site(form: () => z.ZodType<any>) {
   return z.optional(z.lazy(form))
 }

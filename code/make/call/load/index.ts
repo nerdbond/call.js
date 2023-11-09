@@ -79,7 +79,7 @@ export function hookSchema({
     }
 
     if ('read' in call && call.read) {
-      list.push(`record: z.object({`)
+      list.push(`load: z.object({`)
 
       hookEachLink({
         base,
