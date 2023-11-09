@@ -1,15 +1,15 @@
-import loveCode from '@nerdbond/love-code'
+import loveCode from '@wavebond/love-code'
 import { toPascalCase } from '~/code/tool/helper'
-import { BaseType } from '~/code/type/base'
+import { BaseType } from '~/code/form/base'
 import {
   QueryPayloadMapType,
   QueryPayloadType,
-} from '~/code/type/query'
+} from '~/code/form/query'
 import {
   ExtendQueryContainerType,
   ExtendQueryType,
-} from '~/code/type/query/extend'
-import { SchemaPropertyContainerType } from '~/code/type/schema'
+} from '~/code/form/query/extend'
+import { SchemaPropertyContainerType } from '~/code/form/schema'
 
 export default async function handle({
   base,

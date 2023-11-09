@@ -1,9 +1,9 @@
-import loveCode from '@nerdbond/love-code'
+import loveCode from '@wavebond/love-code'
 import makeEachParser from './parser'
 import makeEachType from './type'
-import { BaseType } from '~/code/type/base'
-import { ExtendPermitType } from '~/code/type/permit/extend'
-import { PermitBuilderMapType, PermitType } from '~/code/type/permit'
+import { BaseType } from '~/code/form/base'
+import { ExtendPermitType } from '~/code/form/permit/extend'
+import { PermitBuilderMapType, PermitType } from '~/code/form/permit'
 import { toPascalCase } from '~/code/tool/helper'
 
 export default async function make({

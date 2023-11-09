@@ -1,13 +1,13 @@
 import { toPascalCase } from '~/code/tool/helper'
-import { BaseType } from '~/code/type/base'
-import { CreatePermitType } from '~/code/type/permit/create'
-import { FilterPermitType } from '~/code/type/permit/filter'
-import { RemovePermitType } from '~/code/type/permit/remove'
-import { UpdatePermitType } from '~/code/type/permit/update'
+import { BaseType } from '~/code/form/base'
+import { CreatePermitType } from '~/code/form/permit/create'
+import { FilterPermitType } from '~/code/form/permit/filter'
+import { RemovePermitType } from '~/code/form/permit/remove'
+import { UpdatePermitType } from '~/code/form/permit/update'
 import {
   SchemaPropertyContainerType,
   SchemaPropertyType,
-} from '~/code/type/schema'
+} from '~/code/form/schema'
 
 export type FilterLinkType = {
   path: Array<string>

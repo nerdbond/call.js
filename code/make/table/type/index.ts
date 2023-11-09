@@ -1,7 +1,7 @@
-import loveCode from '@nerdbond/love-code'
+import loveCode from '@wavebond/love-code'
 import { toPascalCase } from '~/code/tool/helper'
-import { BaseType } from '~/code/type/base'
-import { SchemaPropertyContainerType } from '~/code/type/schema'
+import { BaseType } from '~/code/form/base'
+import { SchemaPropertyContainerType } from '~/code/form/schema'
 
 export default async function handle({ base }: { base: BaseType }) {
   const list: Array<string> = []

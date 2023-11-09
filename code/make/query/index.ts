@@ -1,7 +1,7 @@
-import { BaseType } from '~/code/type/base'
+import { BaseType } from '~/code/form/base'
 import handleType from './type'
 import handleParser from './parser'
-import { QueryPayloadMapType } from '~/code/type/query'
+import { QueryPayloadMapType } from '~/code/form/query'
 
 export default async function handle({
   base,

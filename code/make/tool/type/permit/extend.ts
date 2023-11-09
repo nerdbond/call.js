@@ -1,12 +1,12 @@
-import { BaseType } from '~/code/type/base'
+import { BaseType } from '~/code/form/base'
 import {
   ExtendPermitType,
   ExtendPermitValueType,
-} from '~/code/type/permit/extend'
+} from '~/code/form/permit/extend'
 import {
   SchemaPropertyContainerType,
   SchemaPropertyType,
-} from '~/code/type/schema'
+} from '~/code/form/schema'
 import { handleFilter } from './manage'
 import { toPascalCase } from '~/code/tool/helper'
 

@@ -1,4 +1,4 @@
-import { BaseType } from '~/code/type/base'
+import { BaseType } from '~/code/form/base'
 import handleType from './type'
 import handleParser from './parser'
 

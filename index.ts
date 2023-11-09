@@ -1,1 +1,1 @@
-export * from './code/type'
+export * from './code/form'

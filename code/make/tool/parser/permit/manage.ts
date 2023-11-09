@@ -1,11 +1,11 @@
 import { toPascalCase } from '~/code/tool/helper'
-import { BaseType } from '~/code/type/base'
-import { PermitType } from '~/code/type/permit'
-import { FilterPermitType } from '~/code/type/permit/filter'
+import { BaseType } from '~/code/form/base'
+import { PermitType } from '~/code/form/permit'
+import { FilterPermitType } from '~/code/form/permit/filter'
 import {
   SchemaPropertyContainerType,
   SchemaPropertyType,
-} from '~/code/type/schema'
+} from '~/code/form/schema'
 import { FilterLinkType } from '../../type/permit/manage'
 
 export function handleFilter({

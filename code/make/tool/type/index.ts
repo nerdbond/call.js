@@ -1,8 +1,8 @@
-import { BaseType } from '~/code/type/base'
+import { BaseType } from '~/code/form/base'
 import {
   SchemaPropertyContainerType,
   SchemaPropertyType,
-} from '~/code/type/schema'
+} from '~/code/form/schema'
 
 export function handleProperty({
   name,

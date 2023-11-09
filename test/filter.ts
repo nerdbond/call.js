@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import * as Filter from '~/code/type/query/filter'
+import * as Filter from '~/code/form/query/filter'
 
 const TestFilter = Filter.FilterQuery([
   Filter.FilterString(['foo', 'bar']),

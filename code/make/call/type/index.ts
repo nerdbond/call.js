@@ -1,13 +1,13 @@
-import { PermitType } from '~/code/type/permit'
+import { PermitType } from '~/code/form/permit'
 import * as extendTool from '~/code/make/tool/type/permit/extend'
 import * as manageTool from '~/code/make/tool/type/permit/manage'
-import { BaseType } from '~/code/type/base'
-import { SchemaType } from '~/code/type/schema'
+import { BaseType } from '~/code/form/base'
+import { SchemaType } from '~/code/form/schema'
 import { toPascalCase } from '~/code/tool/helper'
-import { ExtendPermitType } from '~/code/type/permit/extend'
-import { CreatePermitType } from '~/code/type/permit/create'
-import { UpdatePermitType } from '~/code/type/permit/update'
-import { RemovePermitType } from '~/code/type/permit/remove'
+import { ExtendPermitType } from '~/code/form/permit/extend'
+import { CreatePermitType } from '~/code/form/permit/create'
+import { UpdatePermitType } from '~/code/form/permit/update'
+import { RemovePermitType } from '~/code/form/permit/remove'
 
 export default function handle({
   base,
@@ -22,7 +22,7 @@ export default function handle({
   }>
 }) {
   const textList: Array<string> = []
-  textList.push(`import { Filter } from '@nerdbond/call'`)
+  textList.push(`import { Filter } from '@wavebond/call'`)
   handleEach({ base, schema, list, hoist: textList })
   return textList
 }
