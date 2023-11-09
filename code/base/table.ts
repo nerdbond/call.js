@@ -1,27 +1,27 @@
-import { ExtendQueryType } from '../form'
+import { ReadCallCast } from '../form'
 import { ZodType } from 'zod'
 
-export function transformTableToTree(
-  input: Record<string, any>,
-  output: Record<string, any> = {},
+export function moveHoldFormToSite(
+  base: Record<string, any>,
+  head: Record<string, any> = {},
 ) {
-  for (const inputField in input) {
-    const inputPath = inputField.split('__')
-    let node = output
-    for (let i = 0; i < inputPath.length - 1; i++) {
-      const inputPart = inputPath[i]
-      node = node[inputPart] ??= {}
+  for (const baseLink in base) {
+    const baseLine = baseLink.split('__')
+    let site = head
+    for (let i = 0; i < baseLine.length - 1; i++) {
+      const basePart = baseLine[i]
+      site = site[basePart] ??= {}
     }
-    node[inputPath[inputPath.length - 1]] = input[inputField]
+    site[baseLine[baseLine.length - 1]] = base[baseLink]
   }
 
-  return output
+  return head
 }
 
-export type NestedQueryMap = Record<string, NestedQueryFunction>
+export type NestedCallMesh = Record<string, NestedCallTask>
 
-export type NestedQueryFunction = (
+export type NestedCallTask = (
   id: string,
-  extend: ExtendQueryType,
-  extendSchema?: ZodType<any>,
+  read: ReadCallCast,
+  readForm?: ZodType<any>,
 ) => any

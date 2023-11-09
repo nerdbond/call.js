@@ -1,3 +1,3 @@
-import { SchemaType } from './schema'
+import { FormCast } from './form'
 
-export type BaseType = Record<string, SchemaType>
+export type BaseCast = Record<string, FormCast>

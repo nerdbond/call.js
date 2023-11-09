@@ -1,9 +1,9 @@
-import { BaseType } from '~/code/form/base'
+import { BaseCast } from '~/code/form/base'
 import handleType from './type'
 import handleParser from './parser'
 import loveCode from '@wavebond/love-code'
 
-export default async function handle({ base }: { base: BaseType }) {
+export default async function handle({ base }: { base: BaseCast }) {
   const list: Array<string> = []
 
   list.push(`import { z } from 'zod'`)

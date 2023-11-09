@@ -1,8 +1,8 @@
-import { toPascalCase } from '~/code/tool/helper'
-import { BaseType } from '~/code/form/base'
-import { SchemaPropertyContainerType } from '~/code/form/schema'
+import { toPascalCase } from '~/code/tool'
+import { BaseCast } from '~/code/form/base'
+import { FormLinkBaseCast } from '~/code/form/form'
 
-export default function handle({ base }: { base: BaseType }) {
+export default function handle({ base }: { base: BaseCast }) {
   const list: Array<string> = []
 
   for (const name in base) {
@@ -20,7 +20,7 @@ export function handleOne({
   base,
 }: {
   name: string
-  base: BaseType
+  base: BaseCast
 }) {
   const list: Array<string> = []
   const schema = base[name]
@@ -38,8 +38,8 @@ export function handleEachProperty({
   base,
   schema,
 }: {
-  base: BaseType
-  schema: SchemaPropertyContainerType
+  base: BaseCast
+  schema: FormLinkBaseCast
 }) {
   const list: Array<string> = []
   for (const name in schema.property) {
