@@ -19,7 +19,12 @@ export type BaseFormLinkCast = {
   list?: boolean
   need?: boolean // required
   name?: string // other side of polymorphic association
-  bind?: string | number | null | Record<string, string | number | null> // specify values
+  bind?:
+    | string
+    | number
+    | boolean
+    | null
+    | Record<string, string | number | boolean | null> // specify values
   back?: string
   size?: BaseFormLinkSizeCast
 }
