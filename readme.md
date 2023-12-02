@@ -211,9 +211,9 @@ import { HookFormCast } from '~/works/base/cast/call/task'
 export const read_chat_by_code_hook: HookFormCast = {
   host: 'foo',
   deck: 'bar',
-  // this `call` is referencing a call
+  // this `task` is referencing a task
   // defined in the @wavebond/seed project.
-  call: 'read_chat_by_code_hook',
+  task: 'read_chat_by_code_hook',
   // this `load` is referencing a type
   // we just defined for our load forms.
   load: 'load_chat_base',
