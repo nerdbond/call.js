@@ -1,6 +1,6 @@
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { FormLinkBaseCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { FormLinkBaseCast } from '~/code/cast/form'
 
 export default function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []
@@ -23,10 +23,10 @@ export function hookOne({
   base: BaseCast
 }) {
   const list: Array<string> = []
-  const schema = base[name]
+  const form = base[name]
 
-  list.push(`export type ${toPascalCase(name)}Type = {`)
-  hookEachProperty({ base, schema }).forEach(line => {
+  list.push(`export type ${toPascalCase(name)}Cast = {`)
+  hookEachProperty({ base, form }).forEach(line => {
     list.push(`  ${line}`)
   })
   list.push(`}`)
@@ -36,14 +36,14 @@ export function hookOne({
 
 export function hookEachProperty({
   base,
-  schema,
+  form,
 }: {
   base: BaseCast
-  schema: FormLinkBaseCast
+  form: FormLinkBaseCast
 }) {
   const list: Array<string> = []
-  for (const name in schema.link) {
-    const link = schema.link[name]
+  for (const name in form.link) {
+    const link = form.link[name]
     switch (link.like) {
       case 'timestamp':
         list.push(`  ${name}?: Date`)
@@ -64,19 +64,49 @@ export function hookEachProperty({
         break
       case 'object':
         list.push(`  ${name}?: {`)
-        hookEachProperty({ base, schema: link }).forEach(line => {
+        hookEachProperty({ base, form: link }).forEach(line => {
           list.push(`  ${line}`)
         })
         list.push(`}`)
         break
       default:
-        const type = base[link.like]
-          ? `${toPascalCase(link.like)}Type`
-          : 'object'
-        if (link.list) {
-          list.push(`  ${name}?: List<${type}>`)
+        if (link.like && base[link.like]) {
+          const type = `${toPascalCase(link.like)}Cast`
+          if (link.list) {
+            list.push(`  ${name}?: List<${type}>`)
+          } else {
+            list.push(`  ${name}?: ${type}`)
+          }
+        } else if (link.link) {
+          list.push(`  ${name}?: {`)
+          hookEachProperty({ base, form: link }).forEach(line => {
+            list.push(`  ${line}`)
+          })
+          list.push(`}`)
+        } else if (typeof link.like === 'string') {
+          const caseForm = Object.values(base).filter(form =>
+            form.case?.includes(link.like),
+          )
+
+          if (!caseForm.length) {
+            console.log(name, link)
+            throw new Error(
+              `Polymorphic association must be bound to at least 1 form.`,
+            )
+          }
+
+          const type = caseForm
+            .map(form => `${toPascalCase(form.name)}Cast`)
+            .join(' | ')
+          if (link.list) {
+            list.push(`  ${name}?: List<${type}>`)
+          } else {
+            list.push(`  ${name}?: ${type}`)
+          }
         } else {
-          list.push(`  ${name}?: ${type}`)
+          console.log(typeof link.like)
+          console.log(name, link)
+          throw new Error(`Link must have like or link`)
         }
     }
   }

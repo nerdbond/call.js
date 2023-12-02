@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import { ComparisonOperatorExpression } from 'kysely'
-import { FormLinkBaseCast, ReadCallCast } from '../../form'
+import { FormLinkBaseCast, ReadCallCast } from '../../cast'
 import { Robe } from './robe'
-import { moveHoldFormToSite } from './form'
+import { moveHaveFormToSite } from './form'
 
-export function moveReadToHoldForm(
+export function moveReadToHaveForm(
   robe: Robe,
   name: string,
   read: ReadCallCast,
@@ -67,7 +67,11 @@ export async function callAndReadRecord({
   read: ReadCallCast
 }) {
   const form = robe.base[name]
-  let call = robe.hold.selectFrom(name).select([form.hook])
+  if (!form.hook) {
+    throw new Error('Missing hook')
+  }
+  const hook = form.hook.join('__')
+  let call = robe.hold.selectFrom(name).select([hook])
 
   test.forEach(c => {
     call = call.where(c[0], c[1], c[2])
@@ -78,7 +82,7 @@ export async function callAndReadRecord({
   const site = await readRecord({
     robe,
     name,
-    hook: basicRecord[form.hook],
+    hook: basicRecord[hook],
     read: read,
   })
 
@@ -97,7 +101,12 @@ export async function callAndReadCollection({
   read: ReadCallCast
 }) {
   const form = robe.base[name]
-  let call = robe.hold.selectFrom(name).select([form.hook])
+  if (!form.hook) {
+    throw new Error('Missing hook')
+  }
+  const hook = form.hook.join('__')
+
+  let call = robe.hold.selectFrom(name).select([hook])
 
   test.forEach(c => {
     call = call.where(c[0], c[1], c[2])
@@ -107,13 +116,13 @@ export async function callAndReadCollection({
 
   const { total } = await robe.hold
     .selectFrom(name)
-    .select(robe.hold.fn.count<number>(form.hook).as('total'))
+    .select(robe.hold.fn.count<number>(hook).as('total'))
     .executeTakeFirstOrThrow()
 
   const site = await readCollection({
     robe,
     name,
-    hook: list.map(x => x[form.hook]),
+    hook: list.map(x => x[hook]),
     read: read,
   })
 
@@ -133,24 +142,29 @@ export async function readCollection({
 }) {
   const form = robe.base[name]
 
-  const [self, nest] = moveReadToHoldForm(robe, name, read)
+  if (!form.hook) {
+    throw new Error('Missing hook')
+  }
+  const formHook = form.hook.join('__')
+
+  const [self, nest] = moveReadToHaveForm(robe, name, read)
 
   let list: Array<object> = []
 
   if (self.length) {
     const tableMapList = await robe.hold
       .selectFrom(name)
-      .where(form.hook, 'in', hook)
+      .where(formHook, 'in', hook)
       .select(self)
       .execute()
 
     const siteMapList = tableMapList.map(tableMap =>
-      moveHoldFormToSite(tableMap),
+      moveHaveFormToSite(tableMap),
     )
 
     list = siteMapList
   } else {
-    list = hook.map(bond => ({ [form.hook]: bond }))
+    list = hook.map(bond => ({ [formHook]: bond }))
   }
 
   for (const name in nest) {
@@ -189,22 +203,27 @@ export async function readRecord({
 }) {
   const form = robe.base[name]
 
-  const [self, nest] = moveReadToHoldForm(robe, name, read)
+  if (!form.hook) {
+    throw new Error('Missing hook')
+  }
+  const formHook = form.hook.join('__')
+
+  const [self, nest] = moveReadToHaveForm(robe, name, read)
 
   const site: Record<string, any> = {}
 
   if (self.length) {
     const tableMap = await robe.hold
       .selectFrom(name)
-      .where(form.hook, '=', hook)
+      .where(formHook, '=', hook)
       .select(self)
       .executeTakeFirstOrThrow()
 
-    const siteMap = moveHoldFormToSite(tableMap)
+    const siteMap = moveHaveFormToSite(tableMap)
 
     _.merge(site, siteMap)
   } else {
-    site[form.hook] = hook
+    site[formHook] = hook
   }
 
   for (const name in nest) {

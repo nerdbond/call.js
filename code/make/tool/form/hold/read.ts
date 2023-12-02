@@ -1,7 +1,7 @@
-import { BaseCast } from '~/code/form/base'
-import { ReadHoldCast, ReadHoldBondCast } from '~/code/form/hold/read'
-import { FormLinkBaseCast, FormLinkCast } from '~/code/form/form'
-import { hookSeek } from './move'
+import { BaseCast } from '~/code/cast/base'
+import { ReadHaveCast, ReadHaveBondCast } from '~/code/form/hold/read'
+import { FormLinkBaseCast, FormLinkCast } from '~/code/cast/form'
+import { hookFind } from './move'
 import { toPascalCase } from '~/code/tool'
 
 export function hookContainer({
@@ -15,7 +15,7 @@ export function hookContainer({
   line: Array<string>
   base: BaseCast
   form: FormLinkBaseCast
-  read: ReadHoldCast
+  read: ReadHaveCast
   isList?: boolean
   rise: Array<string>
 }) {
@@ -28,7 +28,7 @@ export function hookContainer({
     list.push(`  single?: boolean`)
 
     if ('seek' in read && read.seek) {
-      hookSeek({
+      hookFind({
         base,
         seek: read.seek,
         need: false,
@@ -84,7 +84,7 @@ export function hookEachProperty({
 }: {
   base: BaseCast
   form: FormLinkBaseCast
-  read: ReadHoldCast
+  read: ReadHaveCast
   rise: Array<string>
   line: Array<string>
 }) {
@@ -123,7 +123,7 @@ export function hookProperty({
   name: string
   base: BaseCast
   link: FormLinkCast
-  value: ReadHoldBondCast
+  value: ReadHaveBondCast
   line: Array<string>
   rise: Array<string>
 }) {
@@ -176,7 +176,7 @@ export function hookProperty({
       break
     }
     default: {
-      if (typeof value === 'object') {
+      if (typeof value === 'object' && link.like) {
         const childSchema = base[link.like]
         list.push(`${name}${optional}:`)
         hookContainer({

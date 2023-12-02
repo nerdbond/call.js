@@ -8,7 +8,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.json"]
   },
-  "ignorePatterns": ["**/*.js", "import/github/**/*/data"],
+  "ignorePatterns": ["**/*.js", "import/github/**/*/data", "**/*.csv"],
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",

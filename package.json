@@ -1,6 +1,6 @@
 {
-  "name": "@wavebond/call",
-  "version": "0.2.8",
+  "name": "@wavebond/work",
+  "version": "0.0.1",
   "main": "./host/index.js",
   "scripts": {
     "make": "tsc && tsc-alias",
@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.199",
+    "@wavebond/kink": "^0.1.1",
     "@wavebond/love-code": "^0.1.0",
     "kysely": "^0.26.3",
     "lodash": "^4.17.21",

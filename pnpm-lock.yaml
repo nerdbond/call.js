@@ -8,6 +8,9 @@ dependencies:
   '@types/lodash':
     specifier: ^4.14.199
     version: 4.14.199
+  '@wavebond/kink':
+    specifier: ^0.1.1
+    version: 0.1.1
   '@wavebond/love-code':
     specifier: ^0.1.0
     version: 0.1.0
@@ -1098,6 +1101,12 @@ packages:
   /@vue/shared@3.3.8:
     resolution: {integrity: sha512-8PGwybFwM4x8pcfgqEQFy70NaQxASvOC5DJwLQfpArw1UDfUXrJkdxD3BhVTMS+0Lef/TU7YO0Jvr0jJY8T+mw==}
     dev: true
+
+  /@wavebond/kink@0.1.1:
+    resolution: {integrity: sha512-SobE89UJm5APd+3yyuQeXyTPXtImtUvqjWAgB/GKlz3LwM7+rYqTGf8kYKdfotTMdvBrR0WqIro0h2LIidsgaA==}
+    dependencies:
+      ts-custom-error: 3.3.1
+    dev: false
 
   /@wavebond/love-code@0.1.0:
     resolution: {integrity: sha512-c7ppO5cUUntBqMS+hR1Ofz5tNNHjindYE/T2BKZDcpWJCE4AHV9sFjaWPWAsu5KqbDIHY0KTMCRZishdTS4I7A==}
@@ -3437,6 +3446,11 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
     dev: true
+
+  /ts-custom-error@3.3.1:
+    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /ts-loader@9.4.4(typescript@4.9.4)(webpack@5.89.0):
     resolution: {integrity: sha512-MLukxDHBl8OJ5Dk3y69IsKVFRA/6MwzEqBgh+OXMPB/OD01KQuWPFd1WAQP8a5PeSCAxfnkhiuWqfmFJzJQt9w==}

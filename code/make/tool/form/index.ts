@@ -1,5 +1,5 @@
-import { BaseCast } from '~/code/form/base'
-import { FormLinkBaseCast, FormLinkCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { FormLinkBaseCast, FormLinkCast } from '~/code/cast/form'
 
 export function handleProperty({
   name,

@@ -4,9 +4,9 @@ import {
   MakeCallCast,
   ReadCallCast,
   TossCallCast,
-  LoadCallCast,
+  ReadCallCast,
   SaveCallCast,
-} from '../../form'
+} from '../../cast'
 import { Kysely } from 'kysely'
 
 export type NameCast = {
@@ -32,7 +32,7 @@ export class Robe {
     this.hold = hold
   }
 
-  async select(call: LoadCallCast & NameCast) {}
+  async select(call: ReadCallCast & NameCast) {}
 
   async create(call: MakeCallCast & NameCast) {}
 

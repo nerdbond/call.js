@@ -1,6 +1,6 @@
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { FormLinkBaseCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { FormLinkBaseCast } from '~/code/cast/form'
 
 export default function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []
@@ -80,13 +80,43 @@ export function hookEachLink({
         list.push(`})),`)
         break
       default:
-        const type = base[link.like]
-          ? toPascalCase(link.like)
-          : 'z.object({}).passthrough()'
-        if (link.list) {
-          list.push(`  ${name}: list(() => ${type}),`)
+        if (link.like && base[link.like]) {
+          const type = toPascalCase(link.like)
+          // : 'z.object({}).passthrough()'
+          if (link.list) {
+            list.push(`  ${name}: list(() => ${type}),`)
+          } else {
+            list.push(`  ${name}: site(() => ${type}),`)
+          }
+        } else if (link.link) {
+          list.push(`  ${name}: z.optional(z.object({`)
+          hookEachLink({ base, form: link }).forEach(line => {
+            list.push(`  ${line}`)
+          })
+          list.push(`})),`)
+        } else if (typeof link.like === 'string') {
+          const caseForm = Object.values(base).filter(form =>
+            form.case?.includes(link.like),
+          )
+
+          if (!caseForm.length) {
+            console.log(name, link)
+            throw new Error(
+              `Polymorphic association must be bound to at least 1 form.`,
+            )
+          }
+
+          const type = caseForm
+            .map(form => `site(() => ${toPascalCase(form.name)})`)
+            .join(', ')
+          if (link.list) {
+            list.push(`  ${name}: list(() => z.union([${type}])),`)
+          } else {
+            list.push(`  ${name}: z.union([${type}]),`)
+          }
         } else {
-          list.push(`  ${name}: record(() => ${type}),`)
+          console.log(name, link)
+          throw new Error(`Link must have like or link`)
         }
     }
   }

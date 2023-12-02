@@ -1,8 +1,8 @@
 import loveCode from '@wavebond/love-code'
 import makeEachLoad from './load'
 import makeEachType from './form'
-import { BaseCast } from '~/code/form/base'
-import { HoldMoldMeshCast, HoldCast } from '~/code/form/hold'
+import { BaseCast } from '~/code/cast/base'
+import { HaveMoldMeshCast, HaveCast } from '~/code/form/hold'
 import { toPascalCase } from '~/code/tool'
 
 export default async function make({
@@ -12,13 +12,13 @@ export default async function make({
 }: {
   base: BaseCast
   name: string
-  hold: HoldMoldMeshCast
+  hold: HaveMoldMeshCast
 }) {
   const form = base[name]
 
   const callList: Array<{
     name: string
-    call: HoldCast
+    call: HaveCast
   }> = []
 
   const indexTypeList: Array<string> = []

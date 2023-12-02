@@ -1,22 +1,22 @@
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { SeekHoldCast } from '~/code/form/hold/seek'
-import { FormLinkBaseCast, FormLinkCast } from '~/code/form/form'
-import { MoveHoldCast } from '~/code/form'
+import { BaseCast } from '~/code/cast/base'
+import { FindHaveCast } from '~/code/form/hold/seek'
+import { FormLinkBaseCast, FormLinkCast } from '~/code/cast/form'
+import { MoveHaveCast } from '~/code/cast'
 
-export type SeekLinkCast = {
+export type FindLinkCast = {
   line: Array<string>
   like: string
   need?: boolean
 }
 
-export function hookSeek({
+export function hookFind({
   base,
   seek,
   need,
 }: {
   base: BaseCast
-  seek: SeekHoldCast
+  seek: FindHaveCast
   need?: boolean
 }) {
   const list: Array<string> = []
@@ -34,9 +34,9 @@ export function hookSeek({
       list.push(`  }`)
     })
   } else {
-    const lineList: Array<SeekLinkCast> = []
+    const lineList: Array<FindLinkCast> = []
     const line = []
-    hookEachSeekLink({
+    hookEachFindLink({
       base,
       form: { like: 'object', link: seek },
       list: lineList,
@@ -44,13 +44,13 @@ export function hookSeek({
     })
     const seekPathList: Array<string> = []
     lineList.forEach(link => {
-      const seekText = loadSeekForm(link.like)
+      const seekText = loadFindForm(link.like)
       if (seekText) {
         seekPathList.push(`${seekText}`)
       }
     })
     list.push(
-      `seek${!need ? '?' : ''}: Seek.SeekCallCast<${seekPathList.join(
+      `seek${!need ? '?' : ''}: Find.FindCallCast<${seekPathList.join(
         ' | ',
       )}>`,
     )
@@ -59,16 +59,16 @@ export function hookSeek({
   return list
 }
 
-function loadSeekForm(like: string) {
+function loadFindForm(like: string) {
   switch (like) {
     case 'string':
-      return `Seek.SeekStringForm`
+      return `Find.FindStringForm`
     case 'number':
-      return `Seek.SeekNumberForm`
+      return `Find.FindNumberForm`
     case 'date':
-      return `Seek.SeekDateForm`
+      return `Find.FindDateForm`
     case 'boolean':
-      return `Seek.SeekBooleanForm`
+      return `Find.FindBooleanForm`
   }
 }
 
@@ -77,13 +77,13 @@ export function hookForm({
   move,
 }: {
   base: BaseCast
-  move: MoveHoldCast
+  move: MoveHaveCast
 }) {
   const list: Array<string> = []
   list.push(`{`)
 
   if ('seek' in move && move.seek) {
-    hookSeek({ base, seek: move.seek }).forEach(line => {
+    hookFind({ base, seek: move.seek }).forEach(line => {
       list.push(`  ${line}`)
     })
   }
@@ -175,13 +175,13 @@ export function hookLink({
       list.push(`}${listSuffix}`)
       break
     default:
-      throw new Error(`Invalid Hold like link '${link.like}'`)
+      throw new Error(`Invalid Have like link '${link.like}'`)
   }
 
   return list
 }
 
-export function hookEachSeekLink({
+export function hookEachFindLink({
   base,
   form,
   list,
@@ -189,13 +189,13 @@ export function hookEachSeekLink({
 }: {
   base: BaseCast
   form: FormLinkBaseCast
-  list: Array<SeekLinkCast>
+  list: Array<FindLinkCast>
   line: Array<string>
 }) {
   for (const name in form.link) {
     const link = form.link[name]
 
-    hookSeekLink({
+    hookFindLink({
       base,
       name,
       link,
@@ -205,7 +205,7 @@ export function hookEachSeekLink({
   }
 }
 
-export function hookSeekLink({
+export function hookFindLink({
   name,
   base,
   link,
@@ -215,7 +215,7 @@ export function hookSeekLink({
   base: BaseCast
   name: string
   link: FormLinkCast
-  list: Array<SeekLinkCast>
+  list: Array<FindLinkCast>
   line: Array<string>
 }) {
   const optional = link.need ? '?' : ''
@@ -253,7 +253,7 @@ export function hookSeekLink({
     case 'object':
     case undefined:
       // list.push(`${name}${need}: ${listPrefix}{`)
-      hookEachSeekLink({
+      hookEachFindLink({
         base,
         form: link,
         list,
@@ -262,7 +262,7 @@ export function hookSeekLink({
       // list.push(`}${listSuffix}`)
       break
     default:
-      throw new Error(`Invalid Hold like link '${link.like}'`)
+      throw new Error(`Invalid Have like link '${link.like}'`)
   }
 
   return list

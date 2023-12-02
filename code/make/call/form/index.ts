@@ -1,22 +1,29 @@
 import loveCode from '@wavebond/love-code'
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { CallHaulMeshCast, CallHaulCast } from '~/code/form/call'
-import { ReadCallBaseCast, ReadCallCast } from '~/code/form/call/read'
-import { FormLinkBaseCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { CallHaulMeshCast, CallHaulCast } from '~/code/cast/call'
+import { ReadCallBaseCast, ReadCallCast } from '~/code/cast/call/read'
+import { FormLinkBaseCast } from '~/code/cast/form'
 
 export default async function hook({
   base,
   call,
+  name,
 }: {
   base: BaseCast
   call: CallHaulMeshCast
+  name: string
 }) {
   const list: Array<string> = []
 
-  for (const name in call) {
+  for (const task in call) {
     list.push(``)
-    hookOne({ base, name, call: call[name]() }).forEach(line => {
+    const load = {
+      form: name,
+      task,
+      ...call[task](),
+    }
+    hookOne({ base, name: task, call: load }).forEach(line => {
       list.push(line)
     })
   }
@@ -35,9 +42,9 @@ export function hookOne({
   call: CallHaulCast
 }) {
   const list: Array<string> = []
-  const form = base[call.like]
+  const form = base[call.form]
 
-  list.push(`export type ${toPascalCase(name)}Type = {`)
+  list.push(`export type ${toPascalCase(name)}Cast = {`)
 
   hookForm({
     base,

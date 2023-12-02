@@ -1,9 +1,9 @@
 import loveCode from '@wavebond/love-code'
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { CallHaulMeshCast, CallHaulCast } from '~/code/form/call'
-import { ReadCallBaseCast, ReadCallCast } from '~/code/form/call/read'
-import { FormLinkBaseCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { CallHaulMeshCast, CallHaulCast } from '~/code/cast/call'
+import { ReadCallBaseCast, ReadCallCast } from '~/code/cast/call/read'
+import { FormLinkBaseCast } from '~/code/cast/form'
 
 export default async function hook({
   base,

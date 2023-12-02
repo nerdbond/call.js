@@ -1,13 +1,13 @@
-import { HoldCast, MoveHoldCast } from '~/code/form/hold'
+import { HaveCast, MoveHaveCast } from '~/code/form/hold'
 import * as readTool from '~/code/make/tool/form/hold/read'
 import * as moveTool from '~/code/make/tool/form/hold/move'
-import { BaseCast } from '~/code/form/base'
-import { FormCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { FormCast } from '~/code/cast/form'
 import { toPascalCase } from '~/code/tool'
-import { ReadHoldCast } from '~/code/form/hold/read'
-import { MakeHoldCast } from '~/code/form/hold/make'
-import { SaveHoldCast } from '~/code/form/hold/save'
-import { TossHoldCast } from '~/code/form/hold/toss'
+import { ReadHaveCast } from '~/code/form/hold/read'
+import { MakeHaveCast } from '~/code/form/hold/make'
+import { SaveHaveCast } from '~/code/form/hold/save'
+import { TossHaveCast } from '~/code/form/hold/toss'
 
 export default function hook({
   base,
@@ -18,7 +18,7 @@ export default function hook({
   form: FormCast
   list: Array<{
     name: string
-    call: HoldCast
+    call: HaveCast
   }>
 }) {
   const textList: Array<string> = []
@@ -37,7 +37,7 @@ export function hookEach({
   form: FormCast
   list: Array<{
     name: string
-    call: HoldCast
+    call: HaveCast
   }>
   rise: Array<string>
 }) {
@@ -52,7 +52,7 @@ export function hookEach({
           name,
           base,
           form,
-          read: call as ReadHoldCast,
+          read: call as ReadHaveCast,
           rise,
         }).forEach(line => {
           textList.push(`  ${line}`)
@@ -63,7 +63,7 @@ export function hookEach({
           name,
           base,
           form,
-          move: call as MakeHoldCast,
+          move: call as MakeHaveCast,
         }).forEach(line => {
           textList.push(line)
         })
@@ -72,7 +72,7 @@ export function hookEach({
         hookUpdate({
           name,
           base,
-          move: call as SaveHoldCast,
+          move: call as SaveHaveCast,
         }).forEach(line => {
           textList.push(line)
         })
@@ -81,7 +81,7 @@ export function hookEach({
         hookRemove({
           name,
           base,
-          move: call as TossHoldCast,
+          move: call as TossHaveCast,
         }).forEach(line => {
           textList.push(line)
         })
@@ -102,7 +102,7 @@ export function hookExtend({
   name: string
   base: BaseCast
   form: FormCast
-  read: ReadHoldCast
+  read: ReadHaveCast
   rise: Array<string>
 }) {
   const list: Array<string> = []
@@ -134,7 +134,7 @@ export function hookCreate({
   name: string
   base: BaseCast
   form: FormCast
-  move: MakeHoldCast
+  move: MakeHaveCast
 }) {
   const list: Array<string> = []
 
@@ -158,7 +158,7 @@ export function hookUpdate({
 }: {
   name: string
   base: BaseCast
-  move: SaveHoldCast
+  move: SaveHaveCast
 }) {
   const list: Array<string> = []
 
@@ -182,7 +182,7 @@ export function hookRemove({
 }: {
   name: string
   base: BaseCast
-  move: TossHoldCast
+  move: TossHaveCast
 }) {
   const list: Array<string> = []
 

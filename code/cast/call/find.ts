@@ -1,160 +1,160 @@
 import _ from 'lodash'
 import { z } from 'zod'
 
-export type SeekCallCast<
-  T extends SeekTestCallCast = SeekTestCallCast,
+export type FindCallCast<
+  T extends FindTestCallCast = FindTestCallCast,
 > =
-  | SeekAndCallCast<T>
-  | SeekAndBasicCallCast<T>
-  | SeekOrCallCast<T>
-  | SeekOrBasicCallCast<T>
-  | SeekNotCallCast<T>
+  | FindAndCallCast<T>
+  | FindAndBasicCallCast<T>
+  | FindOrCallCast<T>
+  | FindOrBasicCallCast<T>
+  | FindNotCallCast<T>
 
-export type SeekNotCallCast<T extends SeekTestCallCast> = {
+export type FindNotCallCast<T extends FindTestCallCast> = {
   form: 'not'
   test:
-    | SeekAndCallCast<T>
-    | SeekAndBasicCallCast<T>
-    | SeekOrCallCast<T>
-    | SeekOrBasicCallCast<T>
+    | FindAndCallCast<T>
+    | FindAndBasicCallCast<T>
+    | FindOrCallCast<T>
+    | FindOrBasicCallCast<T>
     | T
 }
 
-export type SeekAndCallCast<T extends SeekTestCallCast> = {
+export type FindAndCallCast<T extends FindTestCallCast> = {
   form: 'and'
-  test: Array<SeekOrBasicCallCast<T> | T>
+  test: Array<FindOrBasicCallCast<T> | T>
 }
 
-export type SeekOrCallCast<T extends SeekTestCallCast> = {
+export type FindOrCallCast<T extends FindTestCallCast> = {
   form: 'or'
-  test: Array<SeekAndBasicCallCast<T> | T>
+  test: Array<FindAndBasicCallCast<T> | T>
 }
 
-export type SeekAndBasicCallCast<T extends SeekTestCallCast> = {
+export type FindAndBasicCallCast<T extends FindTestCallCast> = {
   form: 'and'
   test: Array<T>
 }
 
-export type SeekOrBasicCallCast<T extends SeekTestCallCast> = {
+export type FindOrBasicCallCast<T extends FindTestCallCast> = {
   form: 'or'
   test: Array<T>
 }
 
-export type SeekTestCallCast =
-  | SeekStringType
-  | SeekNumberType
-  | SeekDateType
-  | SeekBooleanType
+export type FindTestCallCast =
+  | FindStringType
+  | FindNumberType
+  | FindDateType
+  | FindBooleanType
 
-export type SeekTestBaseCallCast = {
+export type FindTestBaseCallCast = {
   form: 'test'
   link: Array<string>
 }
 
 // string
 
-export type SeekStringType = SeekTestBaseCallCast &
-  SeekStringValueCallCast
+export type FindStringType = FindTestBaseCallCast &
+  FindStringValueCallCast
 
-export type SeekStringValueCallCast =
-  | SeekStringBasicCallCast
-  | SeekStringBasicEqualityCallCast
-  | SeekStringBasicArrayCallCast
+export type FindStringValueCallCast =
+  | FindStringBasicCallCast
+  | FindStringBasicEqualityCallCast
+  | FindStringBasicArrayCallCast
 
-export type SeekStringBasicCallCast = {
+export type FindStringBasicCallCast = {
   bond: string
   test: 'start' | 'end' | 'match'
 }
 
-export type SeekStringBasicEqualityCallCast = {
+export type FindStringBasicEqualityCallCast = {
   bond: string | null
   test: '=' | '!='
 }
 
-export type SeekStringBasicArrayCallCast = {
+export type FindStringBasicArrayCallCast = {
   bond: Array<string | null>
   test: 'in'
 }
 
 // number
 
-export type SeekNumberType = SeekTestBaseCallCast &
-  SeekNumberValueCallCast
+export type FindNumberType = FindTestBaseCallCast &
+  FindNumberValueCallCast
 
-export type SeekNumberValueCallCast =
-  | SeekNumberBasicCallCast
-  | SeekNumberBasicEqualityCallCast
-  | SeekNumberBasicArrayCallCast
+export type FindNumberValueCallCast =
+  | FindNumberBasicCallCast
+  | FindNumberBasicEqualityCallCast
+  | FindNumberBasicArrayCallCast
 
-export type SeekNumberBasicCallCast = {
+export type FindNumberBasicCallCast = {
   bond: number
   test: '>=' | '>' | '<=' | '<'
 }
 
-export type SeekNumberBasicEqualityCallCast = {
+export type FindNumberBasicEqualityCallCast = {
   bond: number | null
   test: '=' | '!='
 }
 
-export type SeekNumberBasicArrayCallCast = {
+export type FindNumberBasicArrayCallCast = {
   bond: Array<number | null>
   test: 'in'
 }
 
 // date
 
-export type SeekDateType = SeekTestBaseCallCast & SeekDateValueCallCast
+export type FindDateType = FindTestBaseCallCast & FindDateValueCallCast
 
-export type SeekDateValueCallCast =
-  | SeekDateBasicCallCast
-  | SeekDateBasicEqualityCallCast
-  | SeekDateBasicArrayCallCast
+export type FindDateValueCallCast =
+  | FindDateBasicCallCast
+  | FindDateBasicEqualityCallCast
+  | FindDateBasicArrayCallCast
 
-export type SeekDateBasicCallCast = {
+export type FindDateBasicCallCast = {
   bond: Date
   test: '>=' | '>' | '<=' | '<'
 }
 
-export type SeekDateBasicEqualityCallCast = {
+export type FindDateBasicEqualityCallCast = {
   bond: Date | null
   test: '=' | '!='
 }
 
-export type SeekDateBasicArrayCallCast = {
+export type FindDateBasicArrayCallCast = {
   bond: Array<Date | null>
   test: 'in'
 }
 
 // boolean
 
-export type SeekBooleanType = SeekBooleanValueCallCast
+export type FindBooleanType = FindBooleanValueCallCast
 
-export type SeekBooleanValueCallCast =
-  | SeekBooleanBasicCallCast
-  | SeekBooleanBasicArrayCallCast
+export type FindBooleanValueCallCast =
+  | FindBooleanBasicCallCast
+  | FindBooleanBasicArrayCallCast
 
-export type SeekBooleanBasicCallCast = SeekTestBaseCallCast & {
+export type FindBooleanBasicCallCast = FindTestBaseCallCast & {
   bond: boolean | null
   test: '=' | '!='
 }
 
-export type SeekBooleanBasicArrayCallCast = SeekTestBaseCallCast & {
+export type FindBooleanBasicArrayCallCast = FindTestBaseCallCast & {
   bond: Array<boolean | null>
   test: 'in'
 }
 
-export const SeekCall = (
+export const FindCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
 ) => {
   const array = 'length' in list ? list.concat(list) : [list, list]
   const child: [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>] = [
-    SeekAndCall(list),
-    SeekAndBasicCall(list),
-    SeekOrCall(list),
-    SeekOrBasicCall(list),
-    SeekNotCall(list),
+    FindAndCall(list),
+    FindAndBasicCall(list),
+    FindOrCall(list),
+    FindOrBasicCall(list),
+    FindNotCall(list),
   ]
 
   if (isLarge(array)) {
@@ -166,29 +166,29 @@ export const SeekCall = (
   return z.union(child)
 }
 
-export const SeekString = (link: Array<string>) =>
+export const FindString = (link: Array<string>) =>
   z.union([
-    SeekStringBasicCall(link),
-    SeekStringBasicEqualityCall(link),
-    SeekStringBasicArrayCall(link),
+    FindStringBasicCall(link),
+    FindStringBasicEqualityCall(link),
+    FindStringBasicArrayCall(link),
   ])
 
-export const SeekNumber = (link: Array<string>) =>
+export const FindNumber = (link: Array<string>) =>
   z.union([
-    SeekNumberBasicCall(link),
-    SeekNumberBasicEqualityCall(link),
-    SeekNumberBasicArrayCall(link),
+    FindNumberBasicCall(link),
+    FindNumberBasicEqualityCall(link),
+    FindNumberBasicArrayCall(link),
   ])
 
-export const SeekDate = (link: Array<string>) =>
+export const FindDate = (link: Array<string>) =>
   z.union([
-    SeekDateBasicCall(link),
-    SeekDateBasicEqualityCall(link),
-    SeekDateBasicArrayCall(link),
+    FindDateBasicCall(link),
+    FindDateBasicEqualityCall(link),
+    FindDateBasicArrayCall(link),
   ])
 
-export const SeekBoolean = (link: Array<string>) =>
-  z.union([SeekBooleanBasicCall(link), SeekBooleanBasicArrayCall(link)])
+export const FindBoolean = (link: Array<string>) =>
+  z.union([FindBooleanBasicCall(link), FindBooleanBasicArrayCall(link)])
 
 // not
 
@@ -200,13 +200,13 @@ function isLarge(
   return list.length > 1
 }
 
-export const SeekNotCall = (
+export const FindNotCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
 ) => {
-  const and = SeekAndCall(list)
-  const or = SeekOrCall(list)
+  const and = FindAndCall(list)
+  const or = FindOrCall(list)
   const array = 'length' in list ? list : [list]
   const single = isLarge(array)
     ? z.union([and, or, z.union(array)])
@@ -223,7 +223,7 @@ export const SeekNotCall = (
 
 // and
 
-export const SeekAndCall = (
+export const FindAndCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
@@ -232,11 +232,11 @@ export const SeekAndCall = (
     form: z.enum(['and']),
     test:
       'length' in list
-        ? z.array(z.union([SeekAndBasicCall(list), ...list]))
-        : z.array(z.union([SeekAndBasicCall(list), list])),
+        ? z.array(z.union([FindAndBasicCall(list), ...list]))
+        : z.array(z.union([FindAndBasicCall(list), list])),
   })
 
-export const SeekAndBasicCall = (
+export const FindAndBasicCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
@@ -253,7 +253,7 @@ export const SeekAndBasicCall = (
 
 // or
 
-export const SeekOrCall = (
+export const FindOrCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
@@ -262,11 +262,11 @@ export const SeekOrCall = (
     form: z.enum(['or']),
     test:
       'length' in list
-        ? z.array(z.union([SeekAndBasicCall(list), ...list]))
-        : z.array(z.union([SeekAndBasicCall(list), list])),
+        ? z.array(z.union([FindAndBasicCall(list), ...list]))
+        : z.array(z.union([FindAndBasicCall(list), list])),
   })
 
-export const SeekOrBasicCall = (
+export const FindOrBasicCall = (
   list:
     | z.ZodTypeAny
     | readonly [z.ZodTypeAny, z.ZodTypeAny, ...Array<z.ZodTypeAny>],
@@ -283,7 +283,7 @@ export const SeekOrBasicCall = (
 
 // base
 
-export const SeekTestBaseCall = (link: Array<string>) => {
+export const FindTestBaseCall = (link: Array<string>) => {
   return z.object({
     form: z.enum(['test']),
     link: z
@@ -299,27 +299,27 @@ export const SeekTestBaseCall = (link: Array<string>) => {
 
 // string
 
-export const SeekStringBasicCall = (link: Array<string>) =>
+export const FindStringBasicCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.string(),
       test: z.enum(['start', 'end', 'match']),
     }),
   )
 
-export const SeekStringBasicEqualityCall = (link: Array<string>) =>
+export const FindStringBasicEqualityCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.union([z.string(), z.null()]),
       test: z.enum(['=', '!=']),
     }),
   )
 
-export const SeekStringBasicArrayCall = (link: Array<string>) =>
+export const FindStringBasicArrayCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.array(z.union([z.string(), z.null()])),
       test: z.enum(['in']),
@@ -328,27 +328,27 @@ export const SeekStringBasicArrayCall = (link: Array<string>) =>
 
 // number
 
-export const SeekNumberBasicCall = (link: Array<string>) =>
+export const FindNumberBasicCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.number(),
       test: z.enum(['>=', '>', '<=', '<']),
     }),
   )
 
-export const SeekNumberBasicEqualityCall = (link: Array<string>) =>
+export const FindNumberBasicEqualityCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.union([z.number(), z.null()]),
       test: z.enum(['=', '!=']),
     }),
   )
 
-export const SeekNumberBasicArrayCall = (link: Array<string>) =>
+export const FindNumberBasicArrayCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.array(z.union([z.number(), z.null()])),
       test: z.enum(['in']),
@@ -357,27 +357,27 @@ export const SeekNumberBasicArrayCall = (link: Array<string>) =>
 
 // date
 
-export const SeekDateBasicCall = (link: Array<string>) =>
+export const FindDateBasicCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.coerce.date(),
       test: z.enum(['>=', '>', '<=', '<']),
     }),
   )
 
-export const SeekDateBasicEqualityCall = (link: Array<string>) =>
+export const FindDateBasicEqualityCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.union([z.coerce.date(), z.null()]),
       test: z.enum(['=', '!=']),
     }),
   )
 
-export const SeekDateBasicArrayCall = (link: Array<string>) =>
+export const FindDateBasicArrayCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.array(z.union([z.coerce.date(), z.null()])),
       test: z.enum(['in']),
@@ -386,18 +386,18 @@ export const SeekDateBasicArrayCall = (link: Array<string>) =>
 
 // boolean
 
-export const SeekBooleanBasicCall = (link: Array<string>) =>
+export const FindBooleanBasicCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.union([z.boolean(), z.null()]),
       test: z.enum(['=', '!=']),
     }),
   )
 
-export const SeekBooleanBasicArrayCall = (link: Array<string>) =>
+export const FindBooleanBasicArrayCall = (link: Array<string>) =>
   z.intersection(
-    SeekTestBaseCall(link),
+    FindTestBaseCall(link),
     z.object({
       bond: z.array(z.union([z.boolean(), z.null()])),
       test: z.enum(['in']),

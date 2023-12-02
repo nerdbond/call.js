@@ -1,7 +1,7 @@
 import loveCode from '@wavebond/love-code'
 import { toPascalCase } from '~/code/tool'
-import { BaseCast } from '~/code/form/base'
-import { FormLinkBaseCast } from '~/code/form/form'
+import { BaseCast } from '~/code/cast/base'
+import { FormLinkBaseCast } from '~/code/cast/form'
 
 export default async function hook({ base }: { base: BaseCast }) {
   const list: Array<string> = []

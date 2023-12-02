@@ -1,15 +1,14 @@
-import { SeekCallCast } from './seek'
-
-export type ReadCallMoldCast = () => ReadCallCast
+import { FindCallCast } from './find'
 
 export type ReadCallCast = {
   [key: string]: ReadCallBondCast
 }
 
 export type ReadCallBaseCast = {
-  seek?: SeekCallCast
-  read?: ReadCallCast
+  find?: FindCallCast
+  load?: ReadCallCast
   size?: boolean
+  // randomize
   stir?: boolean
   case?: Record<string, ReadCallBaseCast>
 }

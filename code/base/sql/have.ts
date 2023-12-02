@@ -1,4 +1,4 @@
-export function transformHaveToHoldForm(
+export function transformHaveToHaveForm(
   have: Record<string, any>,
   definition: Record<string, string>,
   line: Array<string> = [],
@@ -8,7 +8,7 @@ export function transformHaveToHoldForm(
     const value = have[name]
 
     if (value && typeof value === 'object') {
-      transformHaveToHoldForm(
+      transformHaveToHaveForm(
         value as Record<string, any>,
         definition,
         line.concat([name]),
