@@ -7,9 +7,10 @@ import { loadKink } from './kink'
 
 export const CallBack = z.object({
   code: z.object({
+    text: z.enum(['rise', 'fall']),
     call: z.number().int(),
   }),
-  form: z.enum(['kink', 'work']),
+  form: z.enum(['call_back']),
   load: z.object({}).passthrough(),
 })
 
@@ -45,7 +46,7 @@ export async function makeLoadCall(
   } catch (e) {
     if (e instanceof Error) {
       if (e.name === 'AbortError') {
-        return loadKink(kink('makeCall_time_meet', { link: host }))
+        return loadKink(kink('call_time_meet', { link: host }))
       }
     }
     return loadKink(e)
