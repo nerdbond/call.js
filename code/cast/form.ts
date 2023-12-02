@@ -1,28 +1,34 @@
-import { SeekHaveLinkCast } from './have/seek'
-
 export type FormCast = {
-  name: string
-  code?: Array<Array<string>>
-  case?: Array<string>
-  link: FormMeshCast
+  case?: Array<FormLinkCast>
+  link?: FormMeshCast
 }
 
 export type FormMeshCast = Record<string, FormLinkCast>
 
-export type FormLinkBaseCast =
-  | FormCast
-  | FormLinkCast
-  | SeekHaveLinkCast
-
 export type FormLinkCast = {
   like?: string
   base?: any // default
+  case?: Array<FormLinkCast>
   trim?: boolean
   fill?: boolean // polymorphic
-  have?: Array<any> // accept
+  take?: Array<any> // accept
   link?: FormMeshCast
   list?: boolean
   need?: boolean // required
-  bind?: Record<string, any> // specify values
+  hold?: boolean // defaults to true if not list
+  bind?:
+    | string
+    | number
+    | boolean
+    | null
+    | Record<string, string | number | boolean | null> // specify values
   back?: string
+  size?:
+    | number
+    | {
+        rise?: number
+        fall?: number
+        rise_meet?: number
+        fall_meet?: number
+      }
 }
