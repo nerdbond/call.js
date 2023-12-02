@@ -443,7 +443,7 @@ import {
   ReadChatByCodeHookCallCast,
 } from '~/works/form'
 
-export const readChatByCodeHook = (
+export const read_chat_by_code_hook = (
   call: ReadChatByCodeHookCallCast,
 ) => {
   const callHead = ReadChatByCodeHookCallTake.parse(call)
@@ -459,10 +459,10 @@ We have a base tool to perform CRUD operations on each record type.
 import { ReadChatCallCast, ReadChatCallTake } from '~/works/form'
 import mesh from '~/bindings/mesh'
 
-export const readChatByCodeHook = async (
-  call: Cast.ReadChatByCodeHookCall,
+export const read_chat_by_code_hook = async (
+  call: ReadChatByCodeHookCallCast,
 ) => {
-  const callHead = Take.ReadChatByCodeHookCall.parse(call)
+  const callHead = ReadChatByCodeHookCallTake.parse(call)
   // do SQL stuff on these parsed inputs.
   const back = await mesh.read(callHead)
   return back
