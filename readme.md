@@ -29,24 +29,28 @@ npm i @wavebond/work
 
 ## Example
 
+First you have to define the "haves", which are the rules defining what
+is allowed in a call. First we define the "load haves", the properties
+which you are allowed to query. This is a static definition used to
+generate type definitions.
+
 ```ts
-// ./calls/base/load/chat.ts
-export const ChatBase = {
+// ~/works/base/have/load/chat.ts
+export const HaveChatBase = {
   code: {
     load: {
       base: true,
-      hook: true,
       seed: true,
+      hook: true,
     },
   },
   flow: {
-    curb: 1000,
     load: {
       code: {
         load: {
           base: true,
-          hook: true,
           seed: true,
+          hook: true,
         },
       },
     },
@@ -54,11 +58,11 @@ export const ChatBase = {
 }
 ```
 
-Next we collect all our uniquely named loads into an object keyed by
-name.
+Then we aggregate all the load haves into one object with names as the
+keys.
 
 ```ts
-// ./calls/base/load/index.ts
+// ~/works/base/have/load/index.ts
 import * as chat from './chat'
 
 const load = {
@@ -68,46 +72,51 @@ const load = {
 export default load
 ```
 
-```ts
-// ./calls/base/cast/task.ts
-import task from '~/calls/base/task'
+Then given we have all the load rules defined, we can create a type for
+the list of have load names.
 
-export type TaskNameCast = keyof typeof task
+```ts
+// ~/works/base/cast/have/load.ts
+import load from '~/works/base/have/load'
+
+export type HaveLoadNameCast = keyof typeof load
 ```
 
-And then we build some types from that, so we can type our tasks next.
+Given those have load names, we can create a type used by the "have
+tasks", or the task creation rules.
 
 ```ts
-// ./calls/base/cast/load.ts
-import { TaskCast } from '@wavebond/work'
-import { TaskNameCast } from '~/calls/base/cast/task'
-import load from './load'
+// ~/works/base/cast/have/task.ts
+import { HaveLoadNameCast } from '~/works/base/cast/have/load'
 
-export type LoadNameCast = keyof typeof load
-
-export type LoadTaskCast = TaskCast<TaskNameCast, FormNameCast>
+export type HaveTaskCast = HaveTaskFormCast<HaveLoadNameCast>
 ```
 
-Define some tasks, which have some type niceties.
+So now we have a `HaveTaskCast` type, and this is used to type our
+definition of have tasks, so we can get autocompletion for the load
+names. These are also static definitions, so don't have any dynamic
+parameters, because they are used to create compile-time type
+definitions.
 
 ```ts
-// ./calls/base/task/chat.ts
-import { LoadTaskCast } from '../cast/task'
-
-export const readChatByCodeHook: LoadTaskCast = {
-  host: 'foo',
-  deck: 'bar',
-  // this `call` is referencing a call
-  // defined in the @wavebond/seed project.
-  call: 'readChatByCodeHook',
-  // this `load` is referencing a type
-  // we just defined for our load forms.
-  load: 'ChatBase',
+// ~/works/base/have/task/chat.ts
+export const HaveReadChatByCodeHook: HaveTaskCast = {
+  seek: {
+    code: {
+      link: {
+        hook: { like: 'string' },
+      },
+    },
+  },
+  load: 'HaveChatBase',
 }
 ```
 
+Given a bunch of have task definitions, for the definition of possible
+tasks, we aggregate them as well.
+
 ```ts
-// ./calls/base/task/index.ts
+// ~/works/base/have/task/index.ts
 import * as chat from './chat'
 
 const task = {
@@ -117,6 +126,125 @@ const task = {
 export default task
 ```
 
+Now we are done with the "have" types, the specs on what types of calls
+can be created.
+
+We move on to creating "call" types, starting with the load call types.
+These define our specific query structure, given the limitations of the
+corresponding have load type.
+
+```ts
+// ~/works/base/call/load/chat.ts
+export const ChatBase = {
+  like: 'chat',
+  load: {
+    code: {
+      load: {
+        base: true,
+        hook: true,
+        seed: true,
+      },
+    },
+    flow: {
+      load: {
+        code: {
+          load: {
+            base: true,
+            hook: true,
+            seed: true,
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Then like usual, we aggregate all our call load type definitions.
+
+```ts
+// ~/works/base/call/load/index.ts
+import * as chat from './chat'
+
+const load = {
+  ...chat,
+}
+
+export default load
+```
+
+And we can collect the names for all the call load types.
+
+```ts
+// ~/works/base/cast/call/load.ts
+import load from '~/works/base/call/load'
+
+export type LoadNameCast = keyof typeof load
+```
+
+Given the load names, we can create a `TaskCast` type which will be used
+to get autocomplete on (a) the have task names, and (b) the call load
+names.
+
+```ts
+// ~/works/base/cast/call/task.ts
+import task from '~/works/base/have/task'
+import { LoadNameCast } from '~/works/base/cast/call/load'
+
+export type HaveTaskNameCast = keyof typeof task
+
+export type TaskCast = TaskFormCast<HaveTaskNameCast, LoadNameCast>
+```
+
+Given the `TaskCast`, we can create specific task structures which we
+will use to make API calls at runtime. This takes a reference to a have
+task name, and a call load name.
+
+```ts
+// ~/works/base/call/task/chat.ts
+import { TaskCast } from '~/works/base/cast/call/task'
+
+export const ReadChatByCodeHook: TaskCast = {
+  host: 'foo',
+  deck: 'bar',
+  // this `call` is referencing a call
+  // defined in the @wavebond/seed project.
+  call: 'HaveReadChatByCodeHook',
+  // this `load` is referencing a type
+  // we just defined for our load forms.
+  load: 'ChatBase',
+}
+```
+
+Then we aggregate them like usual.
+
+```ts
+// ~/works/base/call/task/index.ts
+import * as chat from './chat'
+
+const task = {
+  ...chat,
+}
+
+export default task
+```
+
+```ts
+// ~/works/base/have/index.ts
+import task from './task'
+import load from './load'
+
+export default { task, load }
+```
+
+```ts
+// ~/works/base/call/index.ts
+import task from './task'
+import load from './load'
+
+export default { task, load }
+```
+
 Now we build our script to generate the call files and their types.
 
 ```ts
@@ -124,21 +252,18 @@ Now we build our script to generate the call files and their types.
 import makeWork from '@wavebond/work/make'
 import baseForm from '~/calls/base/form'
 import baseHave from '~/calls/base/have'
-import baseLoad from '~/calls/base/load'
-import baseTask from '~/calls/base/task'
+import baseCall from '~/calls/base/call'
 import fs from 'fs'
 
 async function make() {
   const { load, task, form } = await makeWork({
     form: baseForm,
     have: baseHave,
-    load: baseLoad,
-    task: baseTask,
+    call: baseCall,
   })
-  fs.mkdirSync('./calls', { recursive: true })
-  fs.writeFileSync('./calls/load.ts', load)
-  fs.writeFileSync('./calls/task.ts', task)
-  fs.writeFileSync('./calls/form.ts', form)
+  fs.writeFileSync('~/works/load.ts', load)
+  fs.writeFileSync('~/works/task.ts', task)
+  fs.writeFileSync('~/works/form.ts', form)
 }
 ```
 
@@ -167,6 +292,17 @@ async function test() {
       link: ['code', 'hook'],
       bond: 'tibetan',
     },
+    load: {
+      flow: {
+        curb: 1000,
+        sort: [
+          {
+            link: ['code', 'hook'],
+            bond: 'fall',
+          }
+        ]
+      }
+    }
   })
 
   console.log(back)
@@ -215,6 +351,65 @@ async function test() {
   //     call: 404
   //   },
   // }
+}
+```
+
+Under the hood, this will make a `POST` request to the `host` with this
+JSON body:
+
+```ts
+{
+  form: 'call',
+  name: 'readChatByCodeHook',
+  host: 'foo',
+  deck: 'bar',
+  code: '12321',
+  find: {
+    form: 'test',
+    link: ['code', 'hook'],
+    bond: 'tibetan',
+  },
+  load: {
+    code: {
+      load: {
+        base: true,
+        hook: true,
+        seed: true,
+      },
+    },
+    flow: {
+      curb: 1000,
+      sort: [
+        {
+          link: ['code', 'hook'],
+          bond: 'fall',
+        }
+      ],
+      load: {
+        code: {
+          load: {
+            base: true,
+            hook: true,
+            seed: true,
+          },
+        },
+      },
+    }
+  }
+}
+```
+
+Then you will need to implement a handler for this call in the host/deck
+namespace.
+
+```ts
+import { Cast, Take } from '~/works/form'
+
+const readChatByCodeHook = (call: Cast.ReadChatByCodeHookCall) => {
+  const callHead = Take.ReadChatByCodeHookCall.parse(call)
+  // do SQL stuff on these parsed inputs.
+  const back = {}
+  return back
 }
 ```
 
