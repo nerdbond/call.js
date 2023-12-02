@@ -1,6 +1,4 @@
-import { FormCast } from './form'
-
-export type BaseCast = Record<string, FormCast>
+export type BaseCast = Record<string, BaseFormCast>
 
 // simplified schema tailored to relational databases.
 export type BaseFormCast = {
