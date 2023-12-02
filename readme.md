@@ -283,8 +283,8 @@ import { LoadChatBaseCast } from '~/calls/form'
 
 const work = new Work({
   host: 'http://localhost:3000',
-  // set auth token for seed.surf
-  code: process.env.SEED_CODE
+  // set auth token where work POSTs to.
+  code: process.env.WORK_CODE
   // load the generated types for making calls.
   load: Load,
   task: Task,
