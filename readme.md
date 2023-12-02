@@ -283,7 +283,7 @@ import { LoadChatBaseCast } from '~/calls/form'
 
 const work = new Work({
   host: 'http://localhost:3000',
-  // set auth token where work POSTs to.
+  // set auth token POST
   code: process.env.WORK_CODE
   // load the generated types for making calls.
   load: Load,
@@ -291,36 +291,42 @@ const work = new Work({
 })
 
 async function test() {
-  const back = await work.call<LoadChatBaseCast>('read_chat_by_code_hook', {
-    take: {
-      find: {
-        form: 'test',
-        link: ['code', 'hook'],
-        test: '=',
-        bond: 'tibetan',
-      },
-    },
-    load: {
-      flow: {
+  const back = await work.call({
+    hook: {
+      read_chat_by_code_hook: {
         take: {
-          curb: 1000,
-          sort: [
-            {
-              link: ['code', 'hook'],
-              bond: 'fall',
-            }
-          ]
+          find: {
+            form: 'test',
+            link: ['code', 'hook'],
+            test: '=',
+            bond: 'tibetan',
+          },
         },
         load: {
-          code: {
+          flow: {
+            take: {
+              curb: 1000,
+              sort: [
+                {
+                  link: ['code', 'hook'],
+                  bond: 'fall',
+                }
+              ]
+            },
             load: {
-              hook: true
+              code: {
+                load: {
+                  hook: true
+                }
+              }
             }
           }
         }
       }
     }
   })
+
+  const chat = back.load.read_chat_by_code_hook as LoadChatBaseCast
 
   console.log(back)
   // {
@@ -330,24 +336,26 @@ async function test() {
   //     call: 200
   //   },
   //   load: {
-  //     form: 'chat',
-  //     code: {
-  //       base: '129381983918',
-  //       hook: 'tibetan',
-  //       seed: 'mbdzkv'
-  //     },
-  //     flow: {
-  //       size: 296,
-  //       load: [
-  //         {
-  //           code: {
-  //             base: '329391982911',
-  //             hook: 'foo',
-  //             seed: 'mbfztn'
-  //           }
-  //         },
-  //         // ...
-  //       ]
+  //     read_chat_by_code_hook: {
+  //       form: 'chat',
+  //       code: {
+  //         base: '129381983918',
+  //         hook: 'tibetan',
+  //         seed: 'mbdzkv'
+  //       },
+  //       flow: {
+  //         size: 296,
+  //         load: [
+  //           {
+  //             code: {
+  //               base: '329391982911',
+  //               hook: 'foo',
+  //               seed: 'mbfztn'
+  //             }
+  //           },
+  //           // ...
+  //         ]
+  //       }
   //     }
   //   }
   // }
@@ -379,35 +387,18 @@ JSON body:
 ```ts
 {
   form: 'call',
-  task: 'read_chat_by_code_hook',
-  host: 'foo',
-  deck: 'bar',
-  code: '12321',
-  take: {
-    find: {
-      form: 'test',
-      link: ['code', 'hook'],
-      test: '=',
-      bond: 'tibetan',
-    },
-  },
-  load: {
-    code: {
-      load: {
-        base: true,
-        hook: true,
-        seed: true,
-      },
-    },
-    flow: {
+  hook: {
+    read_chat_by_code_hook: {
+      host: 'foo',
+      deck: 'bar',
+      code: '12321',
       take: {
-        curb: 1000,
-        sort: [
-          {
-            link: ['code', 'hook'],
-            bond: 'fall',
-          }
-        ],
+        find: {
+          form: 'test',
+          link: ['code', 'hook'],
+          test: '=',
+          bond: 'tibetan',
+        },
       },
       load: {
         code: {
@@ -417,7 +408,27 @@ JSON body:
             seed: true,
           },
         },
-      },
+        flow: {
+          take: {
+            curb: 1000,
+            sort: [
+              {
+                link: ['code', 'hook'],
+                bond: 'fall',
+              }
+            ],
+          },
+          load: {
+            code: {
+              load: {
+                base: true,
+                hook: true,
+                seed: true,
+              },
+            },
+          },
+        }
+      }
     }
   }
 }
