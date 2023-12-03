@@ -1,9 +1,11 @@
 export type FormCast = {
   case?: Array<FormLinkCast>
-  link?: FormMeshCast
+  link?: FormLinkMeshCast
 }
 
-export type FormMeshCast = Record<string, FormLinkCast>
+export type FormMeshCast = Record<string, FormCast>
+
+export type FormLinkMeshCast = Record<string, FormLinkCast>
 
 export type FormLinkCast = {
   like?: string
@@ -12,7 +14,7 @@ export type FormLinkCast = {
   trim?: boolean
   fill?: boolean // polymorphic
   take?: Array<any> // accept
-  link?: FormMeshCast
+  link?: FormLinkMeshCast
   list?: boolean
   need?: boolean // required
   hold?: boolean // defaults to true if not list

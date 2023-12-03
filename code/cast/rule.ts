@@ -1,8 +1,14 @@
-export type RuleTaskCast<Load extends string> = {
+export type RuleTaskMeshCast = Record<string, RuleTaskCast>
+
+export type RuleTaskCast = {
   take?: RuleLinkMeshCast
-  back?: string
-  load?: Load
+  like?: string
+  load?: {
+    like: string
+  }
 }
+
+export type RuleLoadMeshCast = Record<string, RuleLoadCast>
 
 export type RuleLoadCast = {
   back?: string

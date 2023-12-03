@@ -1,17 +1,34 @@
-import { BaseCast } from '~/code/cast/base'
-import hookForm from './form'
-import hookLoad from './load'
-import { CallHaulMeshCast } from '~/code/cast/call'
+import loveCode from '@wavebond/love-code'
+import {
+  FormMeshCast,
+  MeshBaseCast,
+  RuleLoadMeshCast,
+  RuleTaskMeshCast,
+} from '~/code/cast'
+import makeCast from './cast'
 
-export default async function hook({
-  base,
-  call,
-}: {
-  base: BaseCast
-  call: CallHaulMeshCast
-}) {
-  const form = await hookForm({ base, call })
-  const load = await hookLoad({ base, call })
+export type MakeTakeCast = {
+  rule: {
+    task: RuleTaskMeshCast
+    load: RuleLoadMeshCast
+  }
+  call: {
+    task: RuleTaskMeshCast
+    load: RuleLoadMeshCast
+  }
+  mesh: MeshBaseCast
+  cast: FormMeshCast
+}
 
-  return { form, load }
+export default async function make(take: MakeTakeCast) {
+  const textList: Array<string> = []
+
+  for (const name in take.call.task) {
+    const task = take.call.task[name]
+    const nameTextList = await makeCast(task)
+    textList.push(...nameTextList)
+  }
+
+  const text = await loveCode(textList.join('\n'))
+  return text
 }
