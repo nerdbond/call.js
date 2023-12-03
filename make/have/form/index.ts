@@ -1,6 +1,6 @@
 import { HaveCast, MoveHaveCast } from '~/code/form/hold'
-import * as readTool from '~/code/make/tool/form/hold/read'
-import * as moveTool from '~/code/make/tool/form/hold/move'
+import * as readTool from '~/make/tool/form/hold/read'
+import * as moveTool from '~/make/tool/form/hold/move'
 import { BaseCast } from '~/code/cast/base'
 import { FormCast } from '~/code/cast/form'
 import { toPascalCase } from '~/code/tool'

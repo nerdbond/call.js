@@ -1,6 +1,6 @@
 import { FormCast } from '~/code/cast/form'
-import * as readTool from '~/code/make/tool/load/hold/read'
-import * as manageTool from '~/code/make/tool/load/hold/move'
+import * as readTool from '~/make/tool/load/hold/read'
+import * as manageTool from '~/make/tool/load/hold/move'
 import { ReadHaveCast } from '~/code/form/hold/read'
 import { BaseCast } from '~/code/cast/base'
 import { HaveCast } from '~/code/form/hold'

@@ -1,3 +1,5 @@
+import { FormMeshCast } from './form'
+
 export type CallTaskCast<Load extends string> = {
   take?: CallMeshTakeCast
   load?: Load
@@ -16,4 +18,12 @@ export type CallLoadCast = {
 
 export type CallMeshTakeCast = {
   [name: string]: CallMeshTakeCast | string | number | boolean | null
+}
+
+export type CallCast = {
+  find?: FormMeshCast
+  load?: CallMeshLoadCast
+  // curb?: number
+  // sort: any
+  take?: CallMeshTakeCast
 }

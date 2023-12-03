@@ -467,6 +467,20 @@ export const read_chat_by_code_hook = async (
   const back = await mesh.read(callHead)
   return back
 }
+
+export const make_chat = async (call: MakeChatByCodeHookCallCast) => {
+  const callHead = MakeChatByCodeHookCallTake.parse(call)
+  // do SQL stuff on these parsed inputs.
+  const back = await mesh.read(callHead)
+  return back
+}
+
+export const load_flow = async call => {
+  const callHead = LoadFlow.parse(call)
+  // do SQL stuff on these parsed inputs.
+  const back = await mesh.read(callHead)
+  return back
+}
 ```
 
 Perhaps the `mesh` looks like this:
@@ -484,6 +498,27 @@ export default new Mesh(base)
 export const read = (mesh, call) => {}
 
 export const make = (mesh, call) => {}
+```
+
+```ts
+const read_chat = (call, host) => {
+  // the host can have passthrough data
+}
+
+const bind = {
+  head: {
+    chat: read_chat,
+    chat_by_hook: read_chat_by_hook,
+    make_chat,
+    flow: read_flow,
+  },
+  chat: {
+    flow: read_flow_from_chat,
+  },
+  flow: {
+    take: read_flow_take_from_flow,
+  },
+}
 ```
 
 ## License
