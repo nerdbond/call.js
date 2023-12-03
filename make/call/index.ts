@@ -1,24 +1,6 @@
 import loveCode from '@wavebond/love-code'
-import {
-  FormMeshCast,
-  MeshBaseCast,
-  RuleLoadMeshCast,
-  RuleTaskMeshCast,
-} from '~/code/cast'
 import makeCast from './cast'
-
-export type MakeTakeCast = {
-  rule: {
-    task: RuleTaskMeshCast
-    load: RuleLoadMeshCast
-  }
-  call: {
-    task: RuleTaskMeshCast
-    load: RuleLoadMeshCast
-  }
-  mesh: MeshBaseCast
-  cast: FormMeshCast
-}
+import { MakeTakeCast } from '../cast'
 
 export default async function make(take: MakeTakeCast) {
   const textList: Array<string> = []
