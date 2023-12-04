@@ -1,6 +1,8 @@
 export type FormCast = {
+  like?: string
   case?: Array<FormLinkCast>
   link?: FormLinkMeshCast
+  test?: (bond: any, link?: any) => boolean
 }
 
 export type FormMeshCast = Record<string, FormCast>
@@ -10,6 +12,7 @@ export type FormLinkMeshCast = Record<string, FormLinkCast>
 export type FormLinkCast = {
   like?: string
   base?: any // default
+  test?: (bond: any, link?: any) => boolean
   case?: Array<FormLinkCast>
   trim?: boolean
   fill?: boolean // polymorphic
@@ -19,11 +22,9 @@ export type FormLinkCast = {
   need?: boolean // required
   hold?: boolean // defaults to true if not list
   bind?:
-    | string
-    | number
-    | boolean
-    | null
-    | Record<string, string | number | boolean | null> // specify values
+    | FormBondCast
+    | Record<string, FormBondCast>
+    | Array<FormBondCast> // specify values
   back?: string
   size?:
     | number
@@ -34,3 +35,5 @@ export type FormLinkCast = {
         fall_meet?: number
       }
 }
+
+export type FormBondCast = string | number | boolean | null

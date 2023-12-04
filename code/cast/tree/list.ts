@@ -5,11 +5,11 @@ export type List<T> = {
   load?: Array<T>
 }
 
-export function list(schema: () => z.ZodType<any>) {
+export function list(form: () => z.ZodType<any>) {
   return z.optional(
     z.object({
       size: z.optional(z.number().int()),
-      load: z.optional(z.array(z.lazy(schema))),
+      load: z.optional(z.array(z.lazy(form))),
     }),
   )
 }

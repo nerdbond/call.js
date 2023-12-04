@@ -56,7 +56,7 @@ export async function makeLoadCall(
 function loadBaseHeadMesh(code: string) {
   return {
     Authorization: `Bearer ${code}`,
-    'Content-Cast': 'application/json',
+    'Content-Type': 'application/json',
     Accept: 'application/json',
   }
 }

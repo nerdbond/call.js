@@ -1,8 +1,17 @@
+import { FormLinkCast, FormMeshCast } from './form'
+
 export type RuleTaskMeshCast = Record<string, RuleTaskCast>
+
+export type RuleHostCast = {
+  form?: FormMeshCast
+  load?: RuleLoadCast
+  task?: RuleTaskCast
+}
 
 export type RuleTaskCast = {
   take?: RuleLinkMeshCast
   like?: string
+  find?: FormLinkCast
   load?: {
     like: string
   }
@@ -12,7 +21,7 @@ export type RuleLoadMeshCast = Record<string, RuleLoadCast>
 
 export type RuleLoadCast = {
   back?: string
-  load: RuleMeshLoadCast
+  load?: RuleMeshLoadCast
 }
 
 export type RuleMeshLoadCast = Record<
@@ -26,6 +35,7 @@ export type RuleLoadLinkCast = {
   curb?: number
   take?: RuleLinkMeshCast
   load?: RuleMeshLoadCast
+  like?: string
   case?: Record<string, RuleLoadLinkCast>
 }
 

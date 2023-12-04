@@ -1,8 +1,16 @@
 import { FormMeshCast } from './form'
 
-export type CallTaskCast<Load extends string> = {
+export type CallTaskCast = {
   take?: CallMeshTakeCast
-  load?: Load
+  load?: {
+    like: string
+  }
+}
+
+export type CallHostCast = {
+  form?: FormMeshCast
+  load?: CallLoadCast
+  task?: CallTaskCast
 }
 
 export type CallMeshLoadCast = Record<string, boolean | CallLoadCast>

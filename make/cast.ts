@@ -6,6 +6,7 @@ import {
 } from '~/code/cast'
 
 export type MakeTakeCast = {
+  file: string
   rule: {
     task: RuleTaskMeshCast
     load: RuleLoadMeshCast
@@ -15,5 +16,5 @@ export type MakeTakeCast = {
     load: RuleLoadMeshCast
   }
   mesh: MeshBaseCast
-  cast: FormMeshCast
+  form: FormMeshCast
 }

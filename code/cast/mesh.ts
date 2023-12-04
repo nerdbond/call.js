@@ -2,7 +2,6 @@ export type MeshBaseCast = Record<string, MeshFormCast>
 
 // simplified schema tailored to relational databases.
 export type MeshFormCast = {
-  name: string
   code?: Array<Array<string>>
   link: MeshFormLinkMeshCast
 }
