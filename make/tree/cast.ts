@@ -28,7 +28,7 @@ export function make_site({
   const list: Array<string> = []
   const mesh_form = take.mesh[name]
 
-  list.push(`export type ${toPascalCase(name)}Cast = {`)
+  list.push(`export type ${toPascalCase(name)} = {`)
   make_link_list({ mesh_form, ...take }).forEach(line => {
     list.push(`  ${line}`)
   })
@@ -66,7 +66,7 @@ export function make_link_list({
         break
       default:
         if (link.like && take.mesh[link.like]) {
-          const type = `${toPascalCase(link.like)}Cast`
+          const type = `${toPascalCase(link.like)}`
           if (link.list) {
             list.push(`  ${name}?: List<${type}>`)
           } else {
@@ -95,7 +95,7 @@ export function make_link_list({
                 type = `object`
                 break
               default:
-                type = `${toPascalCase(form.like)}Cast`
+                type = `${toPascalCase(form.like)}`
                 break
             }
             if (link.list) {

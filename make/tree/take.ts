@@ -36,7 +36,7 @@ export function make_site({
   const typeName = toPascalCase(name)
 
   list.push(
-    `export const ${typeName}Take: z.ZodType<Cast.${typeName}Cast> = z.object({`,
+    `export const ${typeName}: z.ZodType<Cast.${typeName}> = z.object({`,
   )
 
   make_list_link({ ...take, mesh_form }).forEach(line => {
@@ -81,7 +81,7 @@ export function make_list_link({
         break
       default:
         if (link.like && take.mesh[link.like]) {
-          const type = toPascalCase(link.like) + 'Take'
+          const type = toPascalCase(link.like)
           // : 'z.object({}).passthrough()'
           if (link.list) {
             list.push(`  ${name}: list(() => ${type}),`)
@@ -122,7 +122,7 @@ export function make_list_link({
                 type = `z.passthrough({})`
                 break
               default:
-                type = `${toPascalCase(form.like)}Take`
+                type = `${toPascalCase(form.like)}`
                 isCast = true
                 break
             }

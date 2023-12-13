@@ -1,5 +1,5 @@
 import { MakeTakeCast } from './cast'
-import make_call from './call'
+import make_call from './rule'
 import make_load from './load'
 import make_form from './form'
 import make_tree from './tree'
