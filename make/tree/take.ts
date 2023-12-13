@@ -7,10 +7,10 @@ export default function make(take: MakeTakeCast) {
 
   list.push(`import { z } from 'zod'`)
   list.push(
-    `import { list } from '@wavebond/work/host/code/cast/tree/list'`,
+    `import { list } from '@termsurf/work/host/code/cast/tree/list'`,
   )
   list.push(
-    `import { site } from '@wavebond/work/host/code/cast/tree/site'`,
+    `import { site } from '@termsurf/work/host/code/cast/tree/site'`,
   )
   list.push(`import * as Cast from './cast'`)
 

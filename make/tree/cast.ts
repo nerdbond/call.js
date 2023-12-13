@@ -6,7 +6,7 @@ export default function make(take: MakeTakeCast) {
   const list: Array<string> = []
 
   list.push(
-    `import { List } from '@wavebond/work/host/code/cast/tree/list'`,
+    `import { List } from '@termsurf/work/host/code/cast/tree/list'`,
   )
 
   for (const name in take.mesh) {

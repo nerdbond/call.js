@@ -7,10 +7,10 @@
 <br/>
 
 <p align='center'>
-  <img src='https://github.com/wavebond/call.js/blob/make/view/base.gif?raw=true' height='192'>
+  <img src='https://github.com/termsurf/call.js/blob/make/view/base.gif?raw=true' height='192'>
 </p>
 
-<h3 align='center'>@wavebond/work</h3>
+<h3 align='center'>@termsurf/work</h3>
 <p align='center'>
   GraphQL-like query resolver for TypeScript
 </p>
@@ -22,9 +22,9 @@
 ## Installation
 
 ```
-pnpm add @wavebond/work
-yarn add @wavebond/work
-npm i @wavebond/work
+pnpm add @termsurf/work
+yarn add @termsurf/work
+npm i @termsurf/work
 ```
 
 ## Example
@@ -91,7 +91,7 @@ tasks", or the task creation rules.
 ```ts
 // ~/works/base/cast/rule/task.ts
 import { RuleLoadNameCast } from '~/works/base/cast/rule/load'
-import { RuleTaskCast } from '@wavebond/work'
+import { RuleTaskCast } from '@termsurf/work'
 
 export type RuleTaskFormCast = RuleTaskCast<RuleLoadNameCast>
 ```
@@ -212,7 +212,7 @@ export const read_chat_by_code_hook: HookFormCast = {
   host: 'foo',
   deck: 'bar',
   // this `task` is referencing a task
-  // defined in the @wavebond/seed project.
+  // defined in the @termsurf/seed project.
   task: 'read_chat_by_code_hook',
   // this `load` is referencing a type
   // we just defined for our load forms.
@@ -254,7 +254,7 @@ Now we build our script to generate the call files and their types. The
 
 ```ts
 // ./scripts/work/make.ts
-import makeWork from '@wavebond/work/make'
+import makeWork from '@termsurf/work/make'
 import baseForm from '~/calls/base/form'
 import baseRule from '~/calls/base/rule'
 import baseCall from '~/calls/base/call'
@@ -276,7 +276,7 @@ Then here, the `test` function makes a call to a `host` with the
 payload.
 
 ```ts
-import Work from '@wavebond/work'
+import Work from '@termsurf/work'
 import Load from '~/calls/load'
 import Task from '~/calls/task'
 import { LoadChatBaseCast } from '~/calls/form'
@@ -525,17 +525,17 @@ const bind = {
 
 MIT
 
-## WaveBond
+## termsurf
 
-This is being developed by the folks at [WaveBond](https://wave.bond), a
+This is being developed by the folks at [termsurf](https://wave.bond), a
 California-based project for helping humanity master information and
-computation. WaveBond started off in the winter of 2008 as a spark of an
+computation. termsurf started off in the winter of 2008 as a spark of an
 idea, to forming a company 10 years later in the winter of 2018, to a
 seed of a project just beginning its development phases. It is entirely
 bootstrapped by working full time and running
-[Etsy](https://etsy.com/shop/wavebond) and
+[Etsy](https://etsy.com/shop/termsurf) and
 [Amazon](https://www.amazon.com/s?rh=p_27%3AMount+Build) shops. Also
-find us on [Facebook](https://www.facebook.com/wavebond),
-[Twitter](https://twitter.com/_wavebond), and
-[LinkedIn](https://www.linkedin.com/company/wavebond). Check out our
+find us on [Facebook](https://www.facebook.com/termsurf),
+[Twitter](https://twitter.com/termsurf), and
+[LinkedIn](https://www.linkedin.com/company/termsurf). Check out our
 other GitHub projects as well!

@@ -1,4 +1,4 @@
-import loveCode from '@wavebond/love-code'
+import loveCode from '@termsurf/love-code'
 import { toPascalCase } from '~/code/tool'
 import { BaseCast } from '~/code/cast/mesh'
 import { CallHaulMeshCast, CallHaulCast } from '~/code/cast/call'

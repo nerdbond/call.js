@@ -1,4 +1,4 @@
-import love_code from '@wavebond/love-code'
+import love_code from '@termsurf/love-code'
 import make_cast from './cast'
 import make_take from './take'
 import { MakeTakeCast } from '../cast'

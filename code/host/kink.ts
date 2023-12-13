@@ -1,4 +1,4 @@
-import Kink, { KinkList } from '@wavebond/kink'
+import Kink, { KinkList } from '@termsurf/kink'
 import { z } from 'zod'
 import _ from 'lodash'
 import kink from '~/code/kink'
@@ -20,16 +20,13 @@ export type KinkBack = {
 export function loadZodErrorJSON(error: z.ZodError) {
   const back: KinkBack = {
     code: {
-      call: 406
+      call: 406,
     },
     like: 'kink',
     load: error.issues.map(error => {
       switch (error.code) {
         case z.ZodIssueCode.invalid_type:
-          return kink(
-            'form_fail',
-            _.omit(error, ['code']),
-          ).toJSON()
+          return kink('form_fail', _.omit(error, ['code'])).toJSON()
         case z.ZodIssueCode.unrecognized_keys:
           return kink(
             'form_link_fail',

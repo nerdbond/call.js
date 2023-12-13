@@ -1,6 +1,6 @@
-import Kink from '@wavebond/kink'
+import Kink from '@termsurf/kink'
 
-const host = '@wavebond/work'
+const host = '@termsurf/work'
 
 type BaseZodError = {
   link: Array<string | number>
