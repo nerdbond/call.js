@@ -7,10 +7,10 @@
 <br/>
 
 <p align='center'>
-  <img src='https://github.com/termsurf/call.js/blob/make/view/base.gif?raw=true' height='192'>
+  <img src='https://github.com/cluesurf/call.js/blob/make/view/base.gif?raw=true' height='192'>
 </p>
 
-<h3 align='center'>@termsurf/call</h3>
+<h3 align='center'>@cluesurf/call</h3>
 <p align='center'>
   GraphQL-like query resolver for TypeScript
 </p>
@@ -22,9 +22,9 @@
 ## Installation
 
 ```
-pnpm add @termsurf/call
-yarn add @termsurf/call
-npm i @termsurf/call
+pnpm add @cluesurf/call
+yarn add @cluesurf/call
+npm i @cluesurf/call
 ```
 
 ## Keywords
@@ -98,7 +98,7 @@ tasks", or the task creation rules.
 ```ts
 // ~/calls/type/rule/task.ts
 import { RuleLoadName } from '~/calls/type/rule/load'
-import { RuleTask } from '@termsurf/call'
+import { RuleTask } from '@cluesurf/call'
 
 export type RuleTaskForm = RuleTask<RuleLoadName>
 ```
@@ -207,7 +207,7 @@ import { HookForm } from '~/calls/type/call/task'
 
 export const read_chat_by_code_hook: HookForm = {
   // this `task` is referencing a task
-  // defined in the @termsurf/seed project.
+  // defined in the @cluesurf/seed project.
   task: 'read_chat_by_code_hook',
   // this `load` is referencing a type
   // we just defined for our load forms.
@@ -243,7 +243,7 @@ Now we build our script to generate the call files and their types. The
 
 ```ts
 // ./scripts/work/make.ts
-import makeWork from '@termsurf/call/make'
+import makeWork from '@cluesurf/call/make'
 import baseForm from '~/calls/source/form'
 import baseRule from '~/calls/source/rule'
 import baseCall from '~/calls/source/call'
@@ -265,7 +265,7 @@ Then here, the `test` function makes a call to a `host` with the
 payload.
 
 ```ts
-import Call from '@termsurf/call'
+import Call from '@cluesurf/call'
 import Load from '~/calls/load'
 import Task from '~/calls/task'
 import { LoadChatBase } from '~/calls/form'
@@ -510,21 +510,41 @@ const bind = {
 }
 ```
 
+```
+/sources
+  /calls
+    /index.ts
+  /rules
+    /tasks
+    /loads
+/calls (generated)
+  /read-chat-by-code
+/handlers
+  /read-chat-by-code
+/types
+  /calls
+    /read-chat-by-code
+      /index.ts
+      /parser.ts // Input models, don't need output models
+
+readChatByCodeHook(take)
+```
+
 ## License
 
 MIT
 
-## termsurf
+## cluesurf
 
-This is being developed by the folks at [termsurf](https://wave.bond), a
+This is being developed by the folks at [cluesurf](https://wave.bond), a
 California-based project for helping humanity master information and
-computation. termsurf started off in the winter of 2008 as a spark of an
+computation. cluesurf started off in the winter of 2008 as a spark of an
 idea, to forming a company 10 years later in the winter of 2018, to a
 seed of a project just beginning its development phases. It is entirely
 bootstrapped by working full time and running
-[Etsy](https://etsy.com/shop/termsurf) and
+[Etsy](https://etsy.com/shop/cluesurf) and
 [Amazon](https://www.amazon.com/s?rh=p_27%3AMount+Build) shops. Also
-find us on [Facebook](https://www.facebook.com/termsurf),
-[Twitter](https://twitter.com/termsurf), and
-[LinkedIn](https://www.linkedin.com/company/termsurf). Check out our
+find us on [Facebook](https://www.facebook.com/cluesurf),
+[Twitter](https://twitter.com/cluesurf), and
+[LinkedIn](https://www.linkedin.com/company/cluesurf). Check out our
 other GitHub projects as well!

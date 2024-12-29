@@ -1,5 +1,5 @@
 {
-  "name": "@termsurf/work",
+  "name": "@cluesurf/work",
   "version": "0.0.1",
   "main": "./host/index.js",
   "scripts": {
@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.199",
-    "@termsurf/kink": "^0.1.1",
-    "@termsurf/love-code": "^0.1.0",
+    "@cluesurf/kink": "^0.1.1",
+    "@cluesurf/love-code": "^0.1.0",
     "kysely": "^0.26.3",
     "lodash": "^4.17.21",
     "zod": "^3.22.2"
